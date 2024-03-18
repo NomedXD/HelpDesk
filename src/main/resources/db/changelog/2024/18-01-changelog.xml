@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.24.xsd"
+        objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+    <changeSet id="1710762007949-1" author="ycovich (generated)">
+        <createTable tableName="attachment">
+            <column name="id" type="INT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_attachment"/>
+            </column>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="blob" type="bytea"/>
+            <column name="ticket_id" type="INT"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1710762007949-2" author="ycovich (generated)">
+        <createTable tableName="categories">
+            <column name="id" type="INT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_categories"/>
+            </column>
+            <column name="name" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1710762007949-3" author="ycovich (generated)">
+        <createTable tableName="comments">
+            <column name="id" type="INT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_comments"/>
+            </column>
+            <column name="user_id" type="INT"/>
+            <column name="text" type="VARCHAR(255)"/>
+            <column name="date" type="DATE"/>
+            <column name="ticket_id" type="INT"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1710762007949-4" author="ycovich (generated)">
+        <createTable tableName="feedbacks">
+            <column name="id" type="INT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_feedbacks"/>
+            </column>
+            <column name="user_id" type="INT"/>
+            <column name="rate" type="TINYINT"/>
+            <column name="date" type="DATE"/>
+            <column name="text" type="VARCHAR(255)"/>
+            <column name="ticket_id" type="INT"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1710762007949-5" author="ycovich (generated)">
+        <createTable tableName="histories">
+            <column name="id" type="INT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_histories"/>
+            </column>
+            <column name="ticket_id" type="INT"/>
+            <column name="date" type="DATE"/>
+            <column name="action" type="VARCHAR(255)"/>
+            <column name="user_id" type="INT"/>
+            <column name="description" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1710762007949-6" author="ycovich (generated)">
+        <createTable tableName="tickets">
+            <column name="id" type="INT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_tickets"/>
+            </column>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="description" type="VARCHAR(255)"/>
+            <column name="created_on" type="DATETIME"/>
+            <column name="desired_resolution_date" type="DATETIME"/>
+            <column name="state_id" type="SMALLINT"/>
+            <column name="urgency_id" type="SMALLINT"/>
+            <column name="assignee_id" type="INT"/>
+            <column name="owner_id" type="INT"/>
+            <column name="approver_id" type="INT"/>
+            <column name="category_id" type="INT"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1710762007949-7" author="ycovich (generated)">
+        <createTable tableName="user_role">
+            <column name="id" type="INT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_userrole"/>
+            </column>
+            <column name="name" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1710762007949-8" author="ycovich (generated)">
+        <createTable tableName="users">
+            <column name="id" type="INT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_users"/>
+            </column>
+            <column name="first_name" type="VARCHAR(255)"/>
+            <column name="last_name" type="VARCHAR(255)"/>
+            <column name="email" type="VARCHAR(255)"/>
+            <column name="role_id" type="INT"/>
+            <column name="password" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1710762007949-9" author="ycovich (generated)">
+        <addUniqueConstraint columnNames="ticket_id" constraintName="uc_feedbacks_ticket" tableName="feedbacks"/>
+    </changeSet>
+    <changeSet id="1710762007949-10" author="ycovich (generated)">
+        <addUniqueConstraint columnNames="user_id" constraintName="uc_feedbacks_user" tableName="feedbacks"/>
+    </changeSet>
+    <changeSet id="1710762007949-11" author="ycovich (generated)">
+        <addUniqueConstraint columnNames="user_id" constraintName="uc_histories_user" tableName="histories"/>
+    </changeSet>
+    <changeSet id="1710762007949-12" author="ycovich (generated)">
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="comments" constraintName="FK_COMMENTS_ON_USER"
+                                 referencedColumnNames="id" referencedTableName="users"/>
+    </changeSet>
+    <changeSet id="1710762007949-13" author="ycovich (generated)">
+        <addForeignKeyConstraint baseColumnNames="ticket_id" baseTableName="feedbacks"
+                                 constraintName="FK_FEEDBACKS_ON_TICKET" referencedColumnNames="id"
+                                 referencedTableName="tickets"/>
+    </changeSet>
+    <changeSet id="1710762007949-14" author="ycovich (generated)">
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="feedbacks"
+                                 constraintName="FK_FEEDBACKS_ON_USER" referencedColumnNames="id"
+                                 referencedTableName="users"/>
+    </changeSet>
+    <changeSet id="1710762007949-15" author="ycovich (generated)">
+        <addForeignKeyConstraint baseColumnNames="ticket_id" baseTableName="histories"
+                                 constraintName="FK_HISTORIES_ON_TICKET" referencedColumnNames="id"
+                                 referencedTableName="tickets"/>
+    </changeSet>
+    <changeSet id="1710762007949-16" author="ycovich (generated)">
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="histories"
+                                 constraintName="FK_HISTORIES_ON_USER" referencedColumnNames="id"
+                                 referencedTableName="users"/>
+    </changeSet>
+    <changeSet id="1710762007949-17" author="ycovich (generated)">
+        <addForeignKeyConstraint baseColumnNames="approver_id" baseTableName="tickets"
+                                 constraintName="FK_TICKETS_ON_APPROVER" referencedColumnNames="id"
+                                 referencedTableName="users"/>
+    </changeSet>
+    <changeSet id="1710762007949-18" author="ycovich (generated)">
+        <addForeignKeyConstraint baseColumnNames="assignee_id" baseTableName="tickets"
+                                 constraintName="FK_TICKETS_ON_ASSIGNEE" referencedColumnNames="id"
+                                 referencedTableName="users"/>
+    </changeSet>
+    <changeSet id="1710762007949-19" author="ycovich (generated)">
+        <addForeignKeyConstraint baseColumnNames="category_id" baseTableName="tickets"
+                                 constraintName="FK_TICKETS_ON_CATEGORY" referencedColumnNames="id"
+                                 referencedTableName="categories"/>
+    </changeSet>
+    <changeSet id="1710762007949-20" author="ycovich (generated)">
+        <addForeignKeyConstraint baseColumnNames="owner_id" baseTableName="tickets" constraintName="FK_TICKETS_ON_OWNER"
+                                 referencedColumnNames="id" referencedTableName="users"/>
+    </changeSet>
+    <changeSet id="1710762007949-21" author="ycovich (generated)">
+        <addForeignKeyConstraint baseColumnNames="role_id" baseTableName="users" constraintName="FK_USERS_ON_ROLE"
+                                 referencedColumnNames="id" referencedTableName="user_role"/>
+    </changeSet>
+
+</databaseChangeLog>
