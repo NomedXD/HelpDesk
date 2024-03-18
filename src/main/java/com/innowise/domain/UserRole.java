@@ -3,7 +3,11 @@ package com.innowise.domain;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import lombok.*;
+import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import org.hibernate.proxy.HibernateProxy;
 
 import java.util.Objects;
@@ -12,6 +16,7 @@ import java.util.Objects;
 @Setter
 @ToString
 @RequiredArgsConstructor
+@Table(name = "user_role")
 @Entity
 public class UserRole {
     @Id

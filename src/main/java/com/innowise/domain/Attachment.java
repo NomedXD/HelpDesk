@@ -1,7 +1,15 @@
 package com.innowise.domain;
 
-import jakarta.persistence.*;
-import lombok.*;
+import jakarta.persistence.Basic;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.proxy.HibernateProxy;
 
 import java.util.Objects;
@@ -10,6 +18,7 @@ import java.util.Objects;
 @Setter
 @ToString
 @RequiredArgsConstructor
+@SuperBuilder
 @Entity
 @Table(name = "attachment")
 public class Attachment {
@@ -24,7 +33,7 @@ public class Attachment {
     private byte[] blob;
 
     @Column(name = "ticket_id")
-    private Integer ticket_id;
+    private Integer ticketId;
 
     @Override
     public final boolean equals(Object o) {
