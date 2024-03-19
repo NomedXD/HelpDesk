@@ -2,10 +2,34 @@ package com.innowise.domain;
 
 import com.innowise.domain.enums.TicketState;
 import com.innowise.domain.enums.TicketUrgency;
-import jakarta.persistence.*;
-import java.time.LocalDateTime;
-import java.util.List;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import lombok.Data;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
+import org.hibernate.proxy.HibernateProxy;
 
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Objects;
+
+@Getter
+@Setter
+@ToString
+@RequiredArgsConstructor
+@SuperBuilder
 @Entity
 @Table(name = "tickets")
 public class Ticket {
@@ -20,10 +44,10 @@ public class Ticket {
     private String description;
 
     @Column(name = "created_on")
-    private LocalDateTime createdOn;
+    private LocalDate createdOn;
 
     @Column(name = "desired_resolution_date")
-    private LocalDateTime desiredResolutionDate;
+    private LocalDate desiredResolutionDate;
 
     @Enumerated(EnumType.ORDINAL)
     @Column(name = "state_id")
@@ -49,15 +73,34 @@ public class Ticket {
     @JoinColumn(name = "category_id")
     private Category category;
 
-    @OneToMany(mappedBy = "ticket_id")
+    @OneToMany(mappedBy = "ticketId")
+    @ToString.Exclude
     private List<Attachment> attachments;
 
-    @OneToMany(mappedBy = "ticket_id")
+    @OneToMany(mappedBy = "ticketId")
+    @ToString.Exclude
     private List<Comment> comments;
 
     @OneToMany(mappedBy = "ticket")
+    @ToString.Exclude
     private List<History> histories;
 
     @OneToOne(mappedBy = "ticket")
     private Feedback feedback;
+
+    @Override
+    public final boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null) return false;
+        Class<?> oEffectiveClass = o instanceof HibernateProxy ? ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass() : o.getClass();
+        Class<?> thisEffectiveClass = this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass() : this.getClass();
+        if (thisEffectiveClass != oEffectiveClass) return false;
+        Ticket ticket = (Ticket) o;
+        return getId() != null && Objects.equals(getId(), ticket.getId());
+    }
+
+    @Override
+    public final int hashCode() {
+        return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
+    }
 }
