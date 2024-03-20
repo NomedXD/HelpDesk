@@ -15,7 +15,7 @@ public class UserRoleRepositoryImpl implements UserRoleRepository {
     private Session session;
 
     @Override
-    public UserRole findById(Long id) {
+    public UserRole findById(Integer id) {
         return session.find(UserRole.class, id);
     }
 
@@ -35,7 +35,7 @@ public class UserRoleRepositoryImpl implements UserRoleRepository {
     }
 
     @Override
-    public void delete(Long id) {
+    public void delete(Integer id) {
         Optional<UserRole> userRoleToDelete = Optional.of(session.find(UserRole.class, id));
         if (userRoleToDelete.isEmpty()) {
             //todo throw exception

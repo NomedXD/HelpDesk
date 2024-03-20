@@ -15,7 +15,7 @@ public class CommentRepositoryImpl implements CommentRepository {
     private Session session;
 
     @Override
-    public Comment findById(Long id) {
+    public Comment findById(Integer id) {
         return session.find(Comment.class, id);
     }
 
@@ -35,7 +35,7 @@ public class CommentRepositoryImpl implements CommentRepository {
     }
 
     @Override
-    public void delete(Long id) {
+    public void delete(Integer id) {
         Optional<Comment> commentToDelete = Optional.of(session.find(Comment.class, id));
         if (commentToDelete.isEmpty()) {
             //todo throw exception

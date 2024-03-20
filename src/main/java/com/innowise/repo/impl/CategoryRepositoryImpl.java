@@ -13,7 +13,7 @@ public class CategoryRepositoryImpl implements CategoryRepository {
     private Session session;
 
     @Override
-    public Category findById(Long id) {
+    public Category findById(Integer id) {
         return session.find(Category.class, id);
     }
 
@@ -33,7 +33,7 @@ public class CategoryRepositoryImpl implements CategoryRepository {
     }
 
     @Override
-    public void delete(Long id) {
+    public void delete(Integer id) {
         Optional<Category> categoryToDelete = Optional.of(session.find(Category.class, id));
         if (categoryToDelete.isEmpty()) {
             //todo throw exception
