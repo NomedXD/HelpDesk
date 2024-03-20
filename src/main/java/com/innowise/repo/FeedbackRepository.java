@@ -3,9 +3,10 @@ package com.innowise.repo;
 import com.innowise.domain.Feedback;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface FeedbackRepository {
-    Feedback findById(Integer id);
+    Optional<Feedback> findById(Integer id);
     List<Feedback> findAll();
 
     Feedback save(Feedback feedback);

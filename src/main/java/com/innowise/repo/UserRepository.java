@@ -3,9 +3,10 @@ package com.innowise.repo;
 import com.innowise.domain.User;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface UserRepository {
-    User findById(Integer id);
+    Optional<User> findById(Integer id);
     List<User> findAll();
 
     User save(User user);

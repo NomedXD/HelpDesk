@@ -3,9 +3,10 @@ package com.innowise.repo;
 import com.innowise.domain.Comment;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface CommentRepository {
-    Comment findById(Integer id);
+    Optional<Comment> findById(Integer id);
     List<Comment> findAll();
 
     Comment save(Comment comment);

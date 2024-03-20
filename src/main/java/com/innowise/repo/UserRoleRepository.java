@@ -3,9 +3,10 @@ package com.innowise.repo;
 import com.innowise.domain.UserRole;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface UserRoleRepository {
-    UserRole findById(Integer id);
+    Optional<UserRole> findById(Integer id);
     List<UserRole> findAll();
 
     UserRole save(UserRole userRole);

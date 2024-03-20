@@ -3,9 +3,10 @@ package com.innowise.repo;
 import com.innowise.domain.History;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface HistoryRepository {
-    History findById(Integer id);
+    Optional<History> findById(Integer id);
     List<History> findAll();
 
     History save(History history);

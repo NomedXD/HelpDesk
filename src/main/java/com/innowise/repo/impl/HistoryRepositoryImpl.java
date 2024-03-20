@@ -15,8 +15,8 @@ public class HistoryRepositoryImpl implements HistoryRepository {
     private Session session;
 
     @Override
-    public History findById(Integer id) {
-        return session.find(History.class, id);
+    public Optional<History> findById(Integer id) {
+        return Optional.ofNullable(session.find(History.class, id));
     }
 
     @Override
@@ -36,7 +36,7 @@ public class HistoryRepositoryImpl implements HistoryRepository {
 
     @Override
     public void delete(Integer id) {
-        Optional<History> historyToDelete = Optional.of(session.find(History.class, id));
+        Optional<History> historyToDelete = Optional.ofNullable(session.find(History.class, id));
         if (historyToDelete.isEmpty()) {
             //todo throw exception
         }

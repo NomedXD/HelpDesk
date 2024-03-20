@@ -15,8 +15,8 @@ public class FeedbackRepositoryImpl implements FeedbackRepository {
     private Session session;
 
     @Override
-    public Feedback findById(Integer id) {
-        return session.find(Feedback.class, id);
+    public Optional<Feedback> findById(Integer id) {
+        return Optional.ofNullable(session.find(Feedback.class, id));
     }
 
     @Override
@@ -36,7 +36,7 @@ public class FeedbackRepositoryImpl implements FeedbackRepository {
 
     @Override
     public void delete(Integer id) {
-        Optional<Feedback> feedbackToDelete = Optional.of(session.find(Feedback.class, id));
+        Optional<Feedback> feedbackToDelete = Optional.ofNullable(session.find(Feedback.class, id));
         if (feedbackToDelete.isEmpty()) {
             //todo throw exception
         }

@@ -15,8 +15,8 @@ public class AttachmentRepositoryImpl implements AttachmentRepository {
     private Session session;
 
     @Override
-    public Attachment findById(Integer id) {
-        return session.find(Attachment.class, id);
+    public Optional<Attachment> findById(Integer id) {
+        return Optional.of(session.find(Attachment.class, id));
     }
 
     @Override
@@ -36,7 +36,7 @@ public class AttachmentRepositoryImpl implements AttachmentRepository {
 
     @Override
     public void delete(Integer id) {
-        Optional<Attachment> attachmentToDelete = Optional.of(session.find(Attachment.class, id));
+        Optional<Attachment> attachmentToDelete = Optional.ofNullable(session.find(Attachment.class, id));
         if (attachmentToDelete.isEmpty()) {
             //todo throw exception
         }

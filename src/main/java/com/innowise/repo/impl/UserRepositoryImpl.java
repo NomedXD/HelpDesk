@@ -15,8 +15,8 @@ public class UserRepositoryImpl implements UserRepository {
     private Session session;
 
     @Override
-    public User findById(Integer id) {
-        return session.find(User.class, id);
+    public Optional<User> findById(Integer id) {
+        return Optional.ofNullable(session.find(User.class, id));
     }
 
     @Override
@@ -36,7 +36,7 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public void delete(Integer id) {
-        Optional<User> userToDelete = Optional.of(session.find(User.class, id));
+        Optional<User> userToDelete = Optional.ofNullable(session.find(User.class, id));
         if (userToDelete.isEmpty()) {
             //todo throw exception
         }
