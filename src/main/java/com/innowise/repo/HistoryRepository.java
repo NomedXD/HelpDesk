@@ -8,6 +8,7 @@ import java.util.Optional;
 public interface HistoryRepository {
     Optional<History> findById(Integer id);
     List<History> findAll();
+    List<History> findAllByTicketId(Integer ticketId);
 
     History save(History history);
     History update(History history);

@@ -4,10 +4,12 @@ import com.innowise.domain.Category;
 import com.innowise.repo.CategoryRepository;
 import jakarta.persistence.PersistenceContext;
 import org.hibernate.Session;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
 
+@Repository
 public class CategoryRepositoryImpl implements CategoryRepository {
     @PersistenceContext
     private Session session;

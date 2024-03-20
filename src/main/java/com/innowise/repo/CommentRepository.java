@@ -13,4 +13,7 @@ public interface CommentRepository {
     Comment update(Comment comment);
 
     void delete(Integer id);
+
+    List<Comment> findAllByTicketId(Integer ticketId);
+    List<Comment> findTop5ByTicketId(Integer ticketId);
 }

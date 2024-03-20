@@ -25,6 +25,13 @@ public class HistoryRepositoryImpl implements HistoryRepository {
     }
 
     @Override
+    public List<History> findAllByTicketId(Integer ticketId) {
+        return session.createQuery("FROM Feedback WHERE ticket.id = :id ORDER BY date DESC", History.class)
+                .setParameter("id", ticketId)
+                .list();
+    }
+
+    @Override
     public History save(History history) {
         return session.merge(history);
     }

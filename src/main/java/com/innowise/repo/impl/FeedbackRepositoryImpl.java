@@ -43,4 +43,11 @@ public class FeedbackRepositoryImpl implements FeedbackRepository {
 
         session.remove(feedbackToDelete);
     }
+
+    @Override
+    public List<Feedback> findAllByTicketId(Integer ticketId) {
+        return session.createQuery("FROM Feedback WHERE ticket.id = :id ORDER BY date DESC", Feedback.class)
+                .setParameter("id", ticketId)
+                .list();
+    }
 }

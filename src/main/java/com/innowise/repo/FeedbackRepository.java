@@ -8,6 +8,7 @@ import java.util.Optional;
 public interface FeedbackRepository {
     Optional<Feedback> findById(Integer id);
     List<Feedback> findAll();
+    List<Feedback> findAllByTicketId(Integer ticketId);
 
     Feedback save(Feedback feedback);
     Feedback update(Feedback feedback);
