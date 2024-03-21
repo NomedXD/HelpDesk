@@ -1,19 +1,18 @@
-package com.innowise.dto.requestDto;
+package com.innowise.dto.request;
 
 import com.innowise.domain.enums.TicketUrgency;
-
+import lombok.Builder;
+import org.springframework.web.multipart.MultipartFile;
 import java.time.LocalDate;
 
-// Only for Creation and editing by creator
-public record TicketRequestDto(
-        Integer id,
+@Builder
+public record CreateTicketRequest(
         Integer categoryId,
-        Integer creatorId,
+        Integer ownerId,
         String name,
         String description,
         TicketUrgency urgency,
         LocalDate desiredResolutionDate,
-        // todo Think about this and multiple attachments
-        byte[] attachment,
+        MultipartFile[] files,
         String comment) {
 }

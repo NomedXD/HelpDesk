@@ -2,36 +2,27 @@ package com.innowise.services.impl;
 
 import com.innowise.util.mappers.HistoryListMapper;
 import com.innowise.util.mappers.HistoryMapper;
-import com.innowise.dto.responseDto.HistoryResponseDto;
+import com.innowise.dto.response.HistoryResponse;
 import com.innowise.domain.History;
 import com.innowise.exceptions.NoSuchHistoryException;
 import com.innowise.exceptions.NoSuchTicketException;
 import com.innowise.repositories.HistoryRepository;
 import com.innowise.services.HistoryService;
 import com.innowise.services.TicketService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+@RequiredArgsConstructor
 @Service
 @Transactional
 public class HistoryServiceImpl implements HistoryService {
     private final HistoryRepository historyRepository;
     private final HistoryMapper historyMapper;
     private final HistoryListMapper historyListMapper;
-
     private final TicketService ticketService;
-
-    @Autowired
-    public HistoryServiceImpl(HistoryRepository historyRepository,
-                              HistoryMapper historyMapper, HistoryListMapper historyListMapper, TicketService ticketService) {
-        this.historyRepository = historyRepository;
-        this.historyMapper = historyMapper;
-        this.historyListMapper = historyListMapper;
-        this.ticketService = ticketService;
-    }
 
     @Override
     public History saveService(History history) {
@@ -39,7 +30,7 @@ public class HistoryServiceImpl implements HistoryService {
     }
 
     @Override
-    public List<HistoryResponseDto> findAll() {
+    public List<HistoryResponse> findAll() {
         return historyListMapper.toHistoryResponseDtoList(historyRepository.findAll());
     }
 
@@ -53,12 +44,12 @@ public class HistoryServiceImpl implements HistoryService {
     }
 
     @Override
-    public HistoryResponseDto findById(Integer id) {
+    public HistoryResponse findById(Integer id) {
         return historyMapper.toHistoryResponseDto(historyRepository.findById(id).orElseThrow(() -> new NoSuchHistoryException(id)));
     }
 
     @Override
-    public List<HistoryResponseDto> findAllByTicketId(Integer ticketId) {
+    public List<HistoryResponse> findAllByTicketId(Integer ticketId) {
         if (ticketService.existsByIdService(ticketId)) {
             return historyListMapper.toHistoryResponseDtoList(historyRepository.findAllByTicketId(ticketId));
         } else {

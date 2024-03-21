@@ -1,7 +1,7 @@
 package com.innowise.util.mappers;
 
-import com.innowise.dto.requestDto.FeedbackRequestDto;
-import com.innowise.dto.responseDto.FeedbackResponseDto;
+import com.innowise.dto.request.FeedbackRequest;
+import com.innowise.dto.response.FeedbackResponse;
 import com.innowise.domain.Feedback;
 import org.mapstruct.Mapper;
 
@@ -9,7 +9,7 @@ import java.util.List;
 
 @Mapper(componentModel = "spring", uses = FeedbackMapper.class)
 public interface FeedbackListMapper {
-    List<Feedback> toFeedbackList(List<FeedbackRequestDto> feedbackRequestDtoList);
+    List<Feedback> toFeedbackList(List<FeedbackRequest> feedbackRequestList);
 
-    List<FeedbackResponseDto> toFeedbackResponseDtoList(List<Feedback> feedbackList);
+    List<FeedbackResponse> toFeedbackResponseDtoList(List<Feedback> feedbackList);
 }

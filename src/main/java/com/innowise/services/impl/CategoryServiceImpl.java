@@ -4,22 +4,18 @@ import com.innowise.domain.Category;
 import com.innowise.exceptions.NoSuchCategoryException;
 import com.innowise.repositories.CategoryRepository;
 import com.innowise.services.CategoryService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 
+@RequiredArgsConstructor
 @Service
 @Transactional
 public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository categoryRepository;
-
-    @Autowired
-    public CategoryServiceImpl(CategoryRepository categoryRepository) {
-        this.categoryRepository = categoryRepository;
-    }
 
     @Override
     public String findById(Integer id) throws NoSuchCategoryException{

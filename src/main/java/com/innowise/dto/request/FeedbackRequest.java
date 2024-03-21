@@ -1,6 +1,6 @@
-package com.innowise.dto.requestDto;
+package com.innowise.dto.request;
 
-public record FeedbackRequestDto(
+public record FeedbackRequest(
         Integer userId,
         Byte rate,
         String text,

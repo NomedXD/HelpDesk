@@ -1,25 +1,27 @@
 package com.innowise.services;
 
-import com.innowise.dto.requestDto.TicketChangeStatusRequestDto;
-import com.innowise.dto.requestDto.TicketRequestDto;
-import com.innowise.dto.responseDto.TicketResponseDto;
+import com.innowise.dto.request.ChangeTicketStatusRequest;
+import com.innowise.dto.request.CreateTicketRequest;
+import com.innowise.dto.request.UpdateTicketRequest;
+import com.innowise.dto.response.TicketResponse;
 import com.innowise.domain.Ticket;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
 public interface TicketService {
-    TicketResponseDto save(TicketRequestDto ticketRequestDto);
+    TicketResponse save(CreateTicketRequest request) throws IOException;
 
-    List<TicketResponseDto> findAll();
+    List<TicketResponse> findAll();
 
-    TicketResponseDto update(TicketRequestDto ticketRequestDto);
+    TicketResponse update(UpdateTicketRequest request);
 
     void delete(Integer id);
 
-    TicketResponseDto findById(Integer id);
+    TicketResponse findById(Integer id);
 
-    TicketResponseDto updateStatus(TicketChangeStatusRequestDto ticketChangeStatusRequestDto);
+    TicketResponse updateStatus(ChangeTicketStatusRequest request);
 
     Optional<Ticket> findByIdService(Integer id);
 

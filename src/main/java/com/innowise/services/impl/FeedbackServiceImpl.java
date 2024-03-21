@@ -2,8 +2,8 @@ package com.innowise.services.impl;
 
 import com.innowise.util.mappers.FeedbackListMapper;
 import com.innowise.util.mappers.FeedbackMapper;
-import com.innowise.dto.requestDto.FeedbackRequestDto;
-import com.innowise.dto.responseDto.FeedbackResponseDto;
+import com.innowise.dto.request.FeedbackRequest;
+import com.innowise.dto.response.FeedbackResponse;
 import com.innowise.domain.Feedback;
 import com.innowise.domain.Ticket;
 import com.innowise.domain.User;
@@ -17,13 +17,14 @@ import com.innowise.repositories.FeedbackRepository;
 import com.innowise.services.FeedbackService;
 import com.innowise.services.TicketService;
 import com.innowise.services.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
 
+@RequiredArgsConstructor
 @Service
 @Transactional
 public class FeedbackServiceImpl implements FeedbackService {
@@ -33,22 +34,12 @@ public class FeedbackServiceImpl implements FeedbackService {
     private final TicketService ticketService;
     private final UserService userService;
 
-    @Autowired
-    public FeedbackServiceImpl(FeedbackRepository feedbackRepository,
-                               FeedbackMapper feedbackMapper, FeedbackListMapper feedbackListMapper, TicketService ticketService, UserService userService) {
-        this.feedbackRepository = feedbackRepository;
-        this.feedbackMapper = feedbackMapper;
-        this.feedbackListMapper = feedbackListMapper;
-        this.ticketService = ticketService;
-        this.userService = userService;
-    }
-
     @Override
-    public FeedbackResponseDto save(FeedbackRequestDto feedbackRequestDto) {
-        Feedback feedback = feedbackMapper.toFeedback(feedbackRequestDto);
+    public FeedbackResponse save(FeedbackRequest feedbackRequest) {
+        Feedback feedback = feedbackMapper.toFeedback(feedbackRequest);
 
-        Ticket ticket = ticketService.findByIdService(feedbackRequestDto.ticketId()).orElseThrow(() -> new NoSuchTicketException(feedbackRequestDto.ticketId()));
-        User owner = userService.findByIdService(feedbackRequestDto.userId()).orElseThrow(() -> new NoSuchUserIdException(feedbackRequestDto.userId()));
+        Ticket ticket = ticketService.findByIdService(feedbackRequest.ticketId()).orElseThrow(() -> new NoSuchTicketException(feedbackRequest.ticketId()));
+        User owner = userService.findByIdService(feedbackRequest.userId()).orElseThrow(() -> new NoSuchUserIdException(feedbackRequest.userId()));
 
         // todo На фронте тоже отключить кнопку для не DONE тикетов
         if (!ticket.getState().equals(TicketState.DONE)) {
@@ -66,7 +57,7 @@ public class FeedbackServiceImpl implements FeedbackService {
     }
 
     @Override
-    public List<FeedbackResponseDto> findAll() {
+    public List<FeedbackResponse> findAll() {
         return feedbackListMapper.toFeedbackResponseDtoList(feedbackRepository.findAll());
     }
 
@@ -80,12 +71,12 @@ public class FeedbackServiceImpl implements FeedbackService {
     }
 
     @Override
-    public FeedbackResponseDto findById(Integer id) {
+    public FeedbackResponse findById(Integer id) {
         return feedbackMapper.toFeedbackResponseDto(feedbackRepository.findById(id).orElseThrow(() -> new NoSuchFeedbackException(id)));
     }
 
     @Override
-    public List<FeedbackResponseDto> findAllByTicketId(Integer ticketId) {
+    public List<FeedbackResponse> findAllByTicketId(Integer ticketId) {
         if (ticketService.existsByIdService(ticketId)) {
             return feedbackListMapper.toFeedbackResponseDtoList(feedbackRepository.findAllByTicketId(ticketId));
         } else {

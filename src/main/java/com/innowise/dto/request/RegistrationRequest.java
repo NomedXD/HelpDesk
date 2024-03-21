@@ -1,6 +1,6 @@
-package com.innowise.dto.requestDto;
+package com.innowise.dto.request;
 
-public record RegistrationRequestDto(
+public record RegistrationRequest(
         String email,
         String password,
         String firstName,

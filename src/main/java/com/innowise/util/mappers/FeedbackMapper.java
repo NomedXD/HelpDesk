@@ -1,7 +1,7 @@
 package com.innowise.util.mappers;
 
-import com.innowise.dto.requestDto.FeedbackRequestDto;
-import com.innowise.dto.responseDto.FeedbackResponseDto;
+import com.innowise.dto.request.FeedbackRequest;
+import com.innowise.dto.response.FeedbackResponse;
 import com.innowise.domain.Feedback;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -10,7 +10,7 @@ import org.mapstruct.Mapping;
 public interface FeedbackMapper {
     @Mapping(source = "userId", target = "user.id")
     @Mapping(source = "ticketId", target = "ticket.id")
-    Feedback toFeedback(FeedbackRequestDto feedbackRequestDto);
+    Feedback toFeedback(FeedbackRequest feedbackRequest);
 
-    FeedbackResponseDto toFeedbackResponseDto(Feedback feedback);
+    FeedbackResponse toFeedbackResponseDto(Feedback feedback);
 }

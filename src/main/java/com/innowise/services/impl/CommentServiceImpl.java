@@ -2,8 +2,8 @@ package com.innowise.services.impl;
 
 import com.innowise.util.mappers.CommentListMapper;
 import com.innowise.util.mappers.CommentMapper;
-import com.innowise.dto.requestDto.CommentRequestDto;
-import com.innowise.dto.responseDto.CommentResponseDto;
+import com.innowise.dto.request.CommentRequest;
+import com.innowise.dto.response.CommentResponse;
 import com.innowise.domain.Comment;
 import com.innowise.domain.User;
 import com.innowise.exceptions.NoSuchCommentException;
@@ -39,18 +39,18 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public CommentResponseDto save(CommentRequestDto commentRequestDto) {
-        Comment comment = commentMapper.toComment(commentRequestDto);
+    public CommentResponse save(CommentRequest commentRequest) {
+        Comment comment = commentMapper.toComment(commentRequest);
 
-        comment.setUser(userService.findByIdService(commentRequestDto.userId()).orElseThrow(() -> new NoSuchUserIdException(commentRequestDto.userId())));
-        comment.setTicketId(ticketService.findByIdService(commentRequestDto.userId()).orElseThrow(() -> new NoSuchTicketException(commentRequestDto.ticketId())).getId());
+        comment.setUser(userService.findByIdService(commentRequest.userId()).orElseThrow(() -> new NoSuchUserIdException(commentRequest.userId())));
+        comment.setTicketId(ticketService.findByIdService(commentRequest.userId()).orElseThrow(() -> new NoSuchTicketException(commentRequest.ticketId())).getId());
         comment.setDate(LocalDateTime.now());
 
         return commentMapper.toCommentResponseDto(commentRepository.save(comment));
     }
 
     @Override
-    public List<CommentResponseDto> findAll() {
+    public List<CommentResponse> findAll() {
         return commentListMapper.toCommentResponseDtoList(
                 commentRepository.findAll()
         );
@@ -58,8 +58,8 @@ public class CommentServiceImpl implements CommentService {
 
     // User can't edit comments
     @Override
-    public CommentResponseDto update(CommentRequestDto commentRequestDto) {
-        return commentMapper.toCommentResponseDto(commentRepository.update(commentMapper.toComment(commentRequestDto)));
+    public CommentResponse update(CommentRequest commentRequest) {
+        return commentMapper.toCommentResponseDto(commentRepository.update(commentMapper.toComment(commentRequest)));
     }
 
     @Override
@@ -72,13 +72,13 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public CommentResponseDto findById(Integer id) {
+    public CommentResponse findById(Integer id) {
         return commentMapper.toCommentResponseDto(
                 commentRepository.findById(id).orElseThrow(() -> new NoSuchCommentException(id)));
     }
 
     @Override
-    public List<CommentResponseDto> findAllByTicketId(Integer ticketId) {
+    public List<CommentResponse> findAllByTicketId(Integer ticketId) {
         if (ticketService.existsByIdService(ticketId)) {
             return commentListMapper.toCommentResponseDtoList(commentRepository.findAllByTicketId(ticketId));
         } else {
@@ -87,7 +87,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public List<CommentResponseDto> findPaginatedByTicketId(Integer page, Integer pageSize, Integer ticketId) {
+    public List<CommentResponse> findPaginatedByTicketId(Integer page, Integer pageSize, Integer ticketId) {
         if (ticketService.existsByIdService(ticketId)) {
             return commentListMapper.toCommentResponseDtoList(commentRepository.findPaginatedByTicketId(page, pageSize, ticketId));
         } else {
