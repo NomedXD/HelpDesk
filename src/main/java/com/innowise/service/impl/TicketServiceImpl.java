@@ -1,13 +1,10 @@
 package com.innowise.service.impl;
 
+import com.innowise.domain.*;
 import com.innowise.util.mapper.TicketMapper;
 import com.innowise.controller.dto.request.TicketChangeStatusRequestDto;
 import com.innowise.controller.dto.request.TicketRequest;
 import com.innowise.controller.dto.response.TicketResponseDto;
-import com.innowise.domain.Comment;
-import com.innowise.domain.History;
-import com.innowise.domain.Ticket;
-import com.innowise.domain.User;
 import com.innowise.domain.enums.TicketState;
 import com.innowise.repo.CategoryRepository;
 import com.innowise.repo.HistoryRepository;
@@ -20,9 +17,12 @@ import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -58,21 +58,32 @@ public class TicketServiceImpl implements TicketService {
     }
 
     @Override
-    public TicketResponseDto save(TicketRequest ticket) {
-        Ticket ticketToSave = ticketMapper.toTicket(ticket);
-        User owner = userRepository.findById(ticket.ownerId()).orElseThrow(
+    public Ticket save(TicketRequest request) throws IOException {
+        Ticket ticket = ticketMapper.toTicket(request);
+        User owner = userRepository.findById(request.ownerId()).orElseThrow(
                 //todo throw Entity Not Found
         );
 
-        ticketToSave.setCategory(categoryRepository.findById(ticket.categoryId()).orElseThrow(
+        ticket.setCategory(categoryRepository.findById(request.categoryId()).orElseThrow(
                 //todo throw Entity Not Found
         ));
-        ticketToSave.setOwner(owner);
-        ticketToSave.setCreatedOn(LocalDate.now());
+        ticket.setOwner(owner);
+        ticket.setCreatedOn(LocalDate.now());
 
-        session.persist(ticketToSave);
+        session.persist(ticket);
 
-        //todo save files (Attachments) Usovich ticketToSave.setAttachments();
+        // Draft attachment save handling
+        // TODO check if ticket.getId() == null
+        List<Attachment> content = new ArrayList<>();
+        for (MultipartFile file: request.files()){
+            Attachment attachment = new Attachment();
+            attachment.setTicketId(ticket.getId());
+            attachment.setName(file.getOriginalFilename());
+            attachment.setBlob(file.getBytes());
+            content.add(attachment);
+        }
+        ticket.setAttachments(content);
+
         //when file attached or removed from ticket, new History object
 
         History history = History.builder()
@@ -80,12 +91,12 @@ public class TicketServiceImpl implements TicketService {
                 .action("Ticket is created")
                 .date(LocalDateTime.now())
                 .user(owner)
-                .ticket(ticketToSave)
+                .ticket(ticket)
                 .build();
         session.persist(history);
-        ticketToSave.setHistories(List.of(history));
+        ticket.setHistories(List.of(history));
 
-        return ticketMapper.toTicketResponseDto(ticketToSave);
+        return ticket;
     }
 
 //    @Override
