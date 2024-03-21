@@ -3,13 +3,15 @@ package com.innowise.repo;
 import com.innowise.domain.History;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface HistoryRepository {
-    History findById(Long id);
+    Optional<History> findById(Integer id);
     List<History> findAll();
+    List<History> findAllByTicketId(Integer ticketId);
 
     History save(History history);
     History update(History history);
 
-    void delete(Long id);
+    void delete(Integer id);
 }

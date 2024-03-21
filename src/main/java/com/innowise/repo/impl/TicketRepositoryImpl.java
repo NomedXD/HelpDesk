@@ -15,8 +15,8 @@ public class TicketRepositoryImpl implements TicketRepository {
     private Session session;
 
     @Override
-    public Ticket findById(Long id) {
-        return session.find(Ticket.class, id);
+    public Optional<Ticket> findById(Integer id) {
+        return Optional.ofNullable(session.find(Ticket.class, id));
     }
 
     @Override
@@ -35,8 +35,8 @@ public class TicketRepositoryImpl implements TicketRepository {
     }
 
     @Override
-    public void delete(Long id) {
-        Optional<Ticket> ticketToDelete = Optional.of(session.find(Ticket.class, id));
+    public void delete(Integer id) {
+        Optional<Ticket> ticketToDelete = Optional.ofNullable(session.find(Ticket.class, id));
         if (ticketToDelete.isEmpty()) {
             //todo throw exception
         }

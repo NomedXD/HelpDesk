@@ -4,17 +4,19 @@ import com.innowise.domain.Category;
 import com.innowise.repo.CategoryRepository;
 import jakarta.persistence.PersistenceContext;
 import org.hibernate.Session;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
 
+@Repository
 public class CategoryRepositoryImpl implements CategoryRepository {
     @PersistenceContext
     private Session session;
 
     @Override
-    public Category findById(Long id) {
-        return session.find(Category.class, id);
+    public Optional<Category> findById(Integer id) {
+        return Optional.ofNullable(session.find(Category.class, id));
     }
 
     @Override
@@ -33,8 +35,8 @@ public class CategoryRepositoryImpl implements CategoryRepository {
     }
 
     @Override
-    public void delete(Long id) {
-        Optional<Category> categoryToDelete = Optional.of(session.find(Category.class, id));
+    public void delete(Integer id) {
+        Optional<Category> categoryToDelete = Optional.ofNullable(session.find(Category.class, id));
         if (categoryToDelete.isEmpty()) {
             //todo throw exception
         }

@@ -15,13 +15,20 @@ public class HistoryRepositoryImpl implements HistoryRepository {
     private Session session;
 
     @Override
-    public History findById(Long id) {
-        return session.find(History.class, id);
+    public Optional<History> findById(Integer id) {
+        return Optional.ofNullable(session.find(History.class, id));
     }
 
     @Override
     public List<History> findAll() {
         return session.createQuery("From History", History.class).list();
+    }
+
+    @Override
+    public List<History> findAllByTicketId(Integer ticketId) {
+        return session.createQuery("FROM Feedback WHERE ticket.id = :id ORDER BY date DESC", History.class)
+                .setParameter("id", ticketId)
+                .list();
     }
 
     @Override
@@ -35,8 +42,8 @@ public class HistoryRepositoryImpl implements HistoryRepository {
     }
 
     @Override
-    public void delete(Long id) {
-        Optional<History> historyToDelete = Optional.of(session.find(History.class, id));
+    public void delete(Integer id) {
+        Optional<History> historyToDelete = Optional.ofNullable(session.find(History.class, id));
         if (historyToDelete.isEmpty()) {
             //todo throw exception
         }

@@ -3,13 +3,14 @@ package com.innowise.repo;
 import com.innowise.domain.Ticket;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface TicketRepository {
-    Ticket findById(Long id);
+    Optional<Ticket> findById(Integer id);
     List<Ticket> findAll();
 
     Ticket save(Ticket ticket);
     Ticket update(Ticket ticket);
 
-    void delete(Long id);
+    void delete(Integer id);
 }

@@ -15,8 +15,8 @@ public class FeedbackRepositoryImpl implements FeedbackRepository {
     private Session session;
 
     @Override
-    public Feedback findById(Long id) {
-        return session.find(Feedback.class, id);
+    public Optional<Feedback> findById(Integer id) {
+        return Optional.ofNullable(session.find(Feedback.class, id));
     }
 
     @Override
@@ -35,12 +35,19 @@ public class FeedbackRepositoryImpl implements FeedbackRepository {
     }
 
     @Override
-    public void delete(Long id) {
-        Optional<Feedback> feedbackToDelete = Optional.of(session.find(Feedback.class, id));
+    public void delete(Integer id) {
+        Optional<Feedback> feedbackToDelete = Optional.ofNullable(session.find(Feedback.class, id));
         if (feedbackToDelete.isEmpty()) {
             //todo throw exception
         }
 
         session.remove(feedbackToDelete);
+    }
+
+    @Override
+    public List<Feedback> findAllByTicketId(Integer ticketId) {
+        return session.createQuery("FROM Feedback WHERE ticket.id = :id ORDER BY date DESC", Feedback.class)
+                .setParameter("id", ticketId)
+                .list();
     }
 }

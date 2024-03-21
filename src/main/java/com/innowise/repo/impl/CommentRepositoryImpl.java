@@ -15,8 +15,8 @@ public class CommentRepositoryImpl implements CommentRepository {
     private Session session;
 
     @Override
-    public Comment findById(Long id) {
-        return session.find(Comment.class, id);
+    public Optional<Comment> findById(Integer id) {
+        return Optional.ofNullable(session.find(Comment.class, id));
     }
 
     @Override
@@ -35,12 +35,28 @@ public class CommentRepositoryImpl implements CommentRepository {
     }
 
     @Override
-    public void delete(Long id) {
-        Optional<Comment> commentToDelete = Optional.of(session.find(Comment.class, id));
+    public void delete(Integer id) {
+        Optional<Comment> commentToDelete = Optional.ofNullable(session.find(Comment.class, id));
         if (commentToDelete.isEmpty()) {
             //todo throw exception
         }
 
         session.remove(commentToDelete);
+    }
+
+    @Override
+    public List<Comment> findAllByTicketId(Integer ticketId) {
+        return session.createQuery("FROM Comment WHERE ticketId = :id ORDER BY date DESC ", Comment.class)
+                .setParameter("id", ticketId)
+                .list();
+    }
+
+    @Override
+    public List<Comment> findTop5ByTicketId(Integer ticketId) {
+        return session.createQuery("FROM Comment WHERE ticketId = :id ORDER BY date DESC ", Comment.class)
+                .setParameter("id", ticketId)
+                .setFirstResult(0)
+                .setMaxResults(5)
+                .list();
     }
 }
