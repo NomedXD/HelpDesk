@@ -1,7 +1,7 @@
 package com.innowise.services.impl;
 
-import com.innowise.dto.mappers.TicketListMapper;
-import com.innowise.dto.mappers.TicketMapper;
+import com.innowise.util.mappers.TicketListMapper;
+import com.innowise.util.mappers.TicketMapper;
 import com.innowise.dto.requestDto.TicketChangeStatusRequestDto;
 import com.innowise.dto.requestDto.TicketRequestDto;
 import com.innowise.dto.responseDto.TicketResponseDto;

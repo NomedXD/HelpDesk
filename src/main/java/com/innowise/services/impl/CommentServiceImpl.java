@@ -1,7 +1,7 @@
 package com.innowise.services.impl;
 
-import com.innowise.dto.mappers.CommentListMapper;
-import com.innowise.dto.mappers.CommentMapper;
+import com.innowise.util.mappers.CommentListMapper;
+import com.innowise.util.mappers.CommentMapper;
 import com.innowise.dto.requestDto.CommentRequestDto;
 import com.innowise.dto.responseDto.CommentResponseDto;
 import com.innowise.domain.Comment;

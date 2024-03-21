@@ -1,7 +1,7 @@
 package com.innowise.services.impl;
 
-import com.innowise.dto.mappers.HistoryListMapper;
-import com.innowise.dto.mappers.HistoryMapper;
+import com.innowise.util.mappers.HistoryListMapper;
+import com.innowise.util.mappers.HistoryMapper;
 import com.innowise.dto.responseDto.HistoryResponseDto;
 import com.innowise.domain.History;
 import com.innowise.exceptions.NoSuchHistoryException;

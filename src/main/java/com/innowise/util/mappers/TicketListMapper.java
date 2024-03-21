@@ -1,4 +1,4 @@
-package com.innowise.dto.mappers;
+package com.innowise.util.mappers;
 
 import com.innowise.dto.requestDto.TicketRequestDto;
 import com.innowise.dto.responseDto.TicketResponseDto;

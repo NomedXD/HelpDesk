@@ -1,4 +1,4 @@
-package com.innowise.dto.mappers;
+package com.innowise.util.mappers;
 
 import com.innowise.dto.responseDto.HistoryResponseDto;
 import com.innowise.domain.History;
