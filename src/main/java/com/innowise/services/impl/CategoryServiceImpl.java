@@ -18,8 +18,9 @@ public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository categoryRepository;
 
     @Override
-    public String findById(Integer id) throws NoSuchCategoryException{
-        return categoryRepository.findById(id).orElseThrow(() -> new NoSuchCategoryException(id)).getName();
+    public Category findById(Integer id) throws NoSuchCategoryException{
+        return categoryRepository.findById(id)
+                .orElseThrow(() -> new NoSuchCategoryException(id));
     }
 
     @Override
@@ -27,10 +28,5 @@ public class CategoryServiceImpl implements CategoryService {
         return categoryRepository.findAll().stream()
                 .map(Category::getName)
                 .toList();
-    }
-
-    @Override
-    public Optional<Category> findByIdService(Integer id) {
-        return categoryRepository.findById(id);
     }
 }

@@ -8,18 +8,18 @@ import com.innowise.domain.Comment;
 import com.innowise.domain.User;
 import com.innowise.exceptions.NoSuchCommentException;
 import com.innowise.exceptions.NoSuchTicketException;
-import com.innowise.exceptions.NoSuchUserIdException;
 import com.innowise.repositories.CommentRepository;
 import com.innowise.services.CommentService;
 import com.innowise.services.TicketService;
 import com.innowise.services.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
+@RequiredArgsConstructor
 @Service
 @Transactional
 public class CommentServiceImpl implements CommentService {
@@ -29,20 +29,11 @@ public class CommentServiceImpl implements CommentService {
     private final TicketService ticketService;
     private final UserService userService;
 
-    @Autowired
-    public CommentServiceImpl(CommentRepository commentRepository, CommentMapper commentMapper, CommentListMapper commentListMapper, TicketService ticketService, UserService userService) {
-        this.commentRepository = commentRepository;
-        this.commentMapper = commentMapper;
-        this.commentListMapper = commentListMapper;
-        this.ticketService = ticketService;
-        this.userService = userService;
-    }
-
     @Override
     public CommentResponse save(CommentRequest commentRequest) {
         Comment comment = commentMapper.toComment(commentRequest);
 
-        comment.setUser(userService.findByIdService(commentRequest.userId()).orElseThrow(() -> new NoSuchUserIdException(commentRequest.userId())));
+        comment.setUser(userService.findById(commentRequest.userId()));
         comment.setTicketId(ticketService.findByIdService(commentRequest.userId()).orElseThrow(() -> new NoSuchTicketException(commentRequest.ticketId())).getId());
         comment.setDate(LocalDateTime.now());
 

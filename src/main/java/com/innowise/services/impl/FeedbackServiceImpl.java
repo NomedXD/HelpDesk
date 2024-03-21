@@ -10,7 +10,6 @@ import com.innowise.domain.User;
 import com.innowise.domain.enums.TicketState;
 import com.innowise.exceptions.NoSuchFeedbackException;
 import com.innowise.exceptions.NoSuchTicketException;
-import com.innowise.exceptions.NoSuchUserIdException;
 import com.innowise.exceptions.NotOwnerTicketException;
 import com.innowise.exceptions.TicketNotDoneException;
 import com.innowise.repositories.FeedbackRepository;
@@ -39,7 +38,7 @@ public class FeedbackServiceImpl implements FeedbackService {
         Feedback feedback = feedbackMapper.toFeedback(feedbackRequest);
 
         Ticket ticket = ticketService.findByIdService(feedbackRequest.ticketId()).orElseThrow(() -> new NoSuchTicketException(feedbackRequest.ticketId()));
-        User owner = userService.findByIdService(feedbackRequest.userId()).orElseThrow(() -> new NoSuchUserIdException(feedbackRequest.userId()));
+        User owner = userService.findById(feedbackRequest.userId());
 
         // todo На фронте тоже отключить кнопку для не DONE тикетов
         if (!ticket.getState().equals(TicketState.DONE)) {

@@ -1,15 +1,12 @@
 package com.innowise.services.impl;
 
-import com.innowise.domain.Attachment;
+import com.innowise.domain.*;
 import com.innowise.dto.request.CreateTicketRequest;
 import com.innowise.util.mappers.TicketListMapper;
 import com.innowise.util.mappers.TicketMapper;
 import com.innowise.dto.request.ChangeTicketStatusRequest;
 import com.innowise.dto.request.UpdateTicketRequest;
 import com.innowise.dto.response.TicketResponse;
-import com.innowise.domain.History;
-import com.innowise.domain.Ticket;
-import com.innowise.domain.User;
 import com.innowise.domain.enums.TicketState;
 import com.innowise.exceptions.NoSuchCategoryException;
 import com.innowise.exceptions.NoSuchTicketException;
@@ -31,6 +28,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -48,38 +46,41 @@ public class TicketServiceImpl implements TicketService {
 
     @Override
     public TicketResponse save(CreateTicketRequest request) throws IOException {
-        Ticket ticket = ticketMapper.toTicket(request);
-        ticket.setCreatedOn(LocalDate.now());
-        ticket.setCategory(categoryService
-                .findByIdService(request.categoryId()).orElseThrow(() ->
-                        new NoSuchCategoryException(request.categoryId())));
-        Optional<User> owner = userService
-                .findByIdService(request.ownerId());
-        ticket.setOwner(owner.orElseThrow(() ->
-                new NoSuchUserIdException(request.ownerId())));
-
-        if (request.comment() != null && !request.comment().isBlank()) {
-            ticket.setComments(List.of(commentService.saveByTicket
-                    (owner.get(), request.comment(), ticket.getId())));
-            // TODO discuss problem of returning DTO from save method (by ycovich)
-        } else {
-            ticket.setComments(new ArrayList<>());
-        }
-
+        var category = categoryService.findById(request.categoryId());
+        var owner = userService.findById(request.ownerId());
+        List<Comment> comments = new ArrayList<>();
         List<Attachment> content = new ArrayList<>();
+        List<History> history = new ArrayList<>();
+
+        Ticket ticket = Ticket.builder()
+                .name(request.name())
+                .createdOn(LocalDate.now())
+                .desiredResolutionDate(request.desiredResolutionDate())
+                .description(request.description())
+                .category(category)
+                .owner(owner)
+                .urgency(request.urgency())
+                .build();
+        Ticket persistedTicket = ticketRepository.save(ticket);
+        // This is the point when we can retrieve ticket ID from database and can proceed with other fields
+        if (request.comment() != null && !request.comment().isBlank()) {
+             comments = List.of(commentService.saveByTicket
+                    (owner, request.comment(), persistedTicket.getId()));
+        }
         for (MultipartFile file : request.files()) {
             Attachment attachment = new Attachment();
-            attachment.setTicketId(ticket.getId());
+            attachment.setTicketId(persistedTicket.getId());
             attachment.setName(file.getOriginalFilename());
             attachment.setBlob(file.getBytes());
             content.add(attachment);
         }
-        ticket.setAttachments(content);
+        history = List.of(historyService.saveService(HistoryBuilder
+                        .buildHistory(owner, persistedTicket, HistoryCreationOption.CREATE_TICKET)));
+        persistedTicket.setComments(comments);
+        persistedTicket.setAttachments(content);
+        persistedTicket.setHistories(history);
 
-        ticket.setHistories(List.of(historyService
-                .saveService(HistoryBuilder
-                        .buildHistory(owner.get(), ticket, HistoryCreationOption.CREATE_TICKET))));
-        return ticketMapper.toTicketResponseDto(ticketRepository.save(ticket));
+        return ticketMapper.toTicketResponseDto(ticketRepository.save(persistedTicket));
     }
 
     @Override
@@ -106,8 +107,7 @@ public class TicketServiceImpl implements TicketService {
         ticket.setUrgency(updateTicketRequest.urgency());
         ticket.setDesiredResolutionDate(updateTicketRequest.desiredResolutionDate());
 
-        ticket.setCategory(categoryService.findByIdService(updateTicketRequest.categoryId()).orElseThrow(
-                () -> new NoSuchCategoryException(updateTicketRequest.categoryId())));
+        ticket.setCategory(categoryService.findById(updateTicketRequest.categoryId()));
 
 //        User owner = userService.findByIdService(updateTicketRequest.ownerId()).orElseThrow(() -> new NoSuchUserIdException(updateTicketRequest.ownerId()));
 //        if (!owner.getId().equals(ticket.getOwner().getId())) {
@@ -147,7 +147,6 @@ public class TicketServiceImpl implements TicketService {
     public Optional<Ticket> findByIdService(Integer id) {
         return ticketRepository.findById(id);
     }
-    // TODO discuss problem of returning DTO from save method (by ycovich)
 
     @Override
     public boolean existsByIdService(Integer id) {
