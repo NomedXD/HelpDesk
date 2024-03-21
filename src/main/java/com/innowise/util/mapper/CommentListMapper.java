@@ -1,7 +1,7 @@
-package com.innowise.controller.dto.mapper;
+package com.innowise.util.mapper;
 
-import com.innowise.controller.dto.requestDto.CommentRequestDto;
-import com.innowise.controller.dto.responseDto.CommentResponseDto;
+import com.innowise.controller.dto.request.CommentRequestDto;
+import com.innowise.controller.dto.response.CommentResponseDto;
 import com.innowise.domain.Comment;
 import org.mapstruct.Mapper;
 

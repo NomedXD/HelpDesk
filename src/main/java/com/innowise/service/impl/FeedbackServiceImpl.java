@@ -1,8 +1,8 @@
 package com.innowise.service.impl;
 
-import com.innowise.controller.dto.mapper.FeedbackMapper;
-import com.innowise.controller.dto.requestDto.FeedbackRequestDto;
-import com.innowise.controller.dto.responseDto.FeedbackResponseDto;
+import com.innowise.util.mapper.FeedbackMapper;
+import com.innowise.controller.dto.request.FeedbackRequestDto;
+import com.innowise.controller.dto.response.FeedbackResponseDto;
 import com.innowise.domain.Feedback;
 import com.innowise.domain.Ticket;
 import com.innowise.domain.User;

@@ -1,6 +1,6 @@
 package com.innowise.service;
 
-import com.innowise.controller.dto.responseDto.HistoryResponseDto;
+import com.innowise.controller.dto.response.HistoryResponseDto;
 
 import java.util.List;
 

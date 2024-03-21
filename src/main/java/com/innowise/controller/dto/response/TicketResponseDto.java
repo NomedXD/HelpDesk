@@ -1,4 +1,4 @@
-package com.innowise.controller.dto.responseDto;
+package com.innowise.controller.dto.response;
 
 import com.innowise.domain.enums.TicketState;
 import com.innowise.domain.enums.TicketUrgency;

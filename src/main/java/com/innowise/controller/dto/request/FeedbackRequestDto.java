@@ -1,4 +1,4 @@
-package com.innowise.controller.dto.requestDto;
+package com.innowise.controller.dto.request;
 
 public record FeedbackRequestDto(
         Integer userId,

@@ -1,4 +1,4 @@
-package com.innowise.controller.dto.responseDto;
+package com.innowise.controller.dto.response;
 
 public record FeedbackResponseDto(
         Byte rate,

@@ -1,9 +1,9 @@
 package com.innowise.service.impl;
 
-import com.innowise.controller.dto.mapper.CommentListMapper;
-import com.innowise.controller.dto.mapper.CommentMapper;
-import com.innowise.controller.dto.requestDto.CommentRequestDto;
-import com.innowise.controller.dto.responseDto.CommentResponseDto;
+import com.innowise.util.mapper.CommentListMapper;
+import com.innowise.util.mapper.CommentMapper;
+import com.innowise.controller.dto.request.CommentRequestDto;
+import com.innowise.controller.dto.response.CommentResponseDto;
 import com.innowise.domain.Comment;
 import com.innowise.repo.CommentRepository;
 import com.innowise.repo.TicketRepository;

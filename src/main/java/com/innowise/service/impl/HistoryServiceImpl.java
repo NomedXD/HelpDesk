@@ -1,8 +1,8 @@
 package com.innowise.service.impl;
 
-import com.innowise.controller.dto.mapper.HistoryListMapper;
-import com.innowise.controller.dto.mapper.HistoryMapper;
-import com.innowise.controller.dto.responseDto.HistoryResponseDto;
+import com.innowise.util.mapper.HistoryListMapper;
+import com.innowise.util.mapper.HistoryMapper;
+import com.innowise.controller.dto.response.HistoryResponseDto;
 import com.innowise.repo.HistoryRepository;
 import com.innowise.repo.TicketRepository;
 import com.innowise.service.HistoryService;

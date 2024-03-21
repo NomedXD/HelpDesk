@@ -1,7 +1,7 @@
-package com.innowise.controller.dto.mapper;
+package com.innowise.util.mapper;
 
-import com.innowise.controller.dto.requestDto.FeedbackRequestDto;
-import com.innowise.controller.dto.responseDto.FeedbackResponseDto;
+import com.innowise.controller.dto.request.FeedbackRequestDto;
+import com.innowise.controller.dto.response.FeedbackResponseDto;
 import com.innowise.domain.Feedback;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

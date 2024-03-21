@@ -1,7 +1,7 @@
 package com.innowise.service;
 
-import com.innowise.controller.dto.requestDto.FeedbackRequestDto;
-import com.innowise.controller.dto.responseDto.FeedbackResponseDto;
+import com.innowise.controller.dto.request.FeedbackRequestDto;
+import com.innowise.controller.dto.response.FeedbackResponseDto;
 
 import java.util.List;
 

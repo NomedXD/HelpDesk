@@ -1,6 +1,6 @@
-package com.innowise.controller.dto.mapper;
+package com.innowise.util.mapper;
 
-import com.innowise.controller.dto.responseDto.AttachmentResponseDto;
+import com.innowise.controller.dto.response.AttachmentResponseDto;
 import com.innowise.domain.Attachment;
 import org.mapstruct.Mapper;
 

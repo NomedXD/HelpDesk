@@ -1,6 +1,6 @@
-package com.innowise.controller.dto.mapper;
+package com.innowise.util.mapper;
 
-import com.innowise.controller.dto.responseDto.HistoryResponseDto;
+import com.innowise.controller.dto.response.HistoryResponseDto;
 import com.innowise.domain.History;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

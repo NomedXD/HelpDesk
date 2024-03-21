@@ -1,16 +1,17 @@
-package com.innowise.controller.dto.mapper;
+package com.innowise.util.mapper;
 
-import com.innowise.controller.dto.requestDto.TicketRequestDto;
-import com.innowise.controller.dto.responseDto.TicketResponseDto;
+import com.innowise.controller.dto.request.TicketRequest;
+import com.innowise.controller.dto.response.TicketResponseDto;
 import com.innowise.domain.Ticket;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring", uses = {HistoryListMapper.class, CommentListMapper.class, AttachmentListMapper.class})
 public interface TicketMapper {
-    @Mapping(source = "creatorId", target = "owner.id")
+    @Mapping(source = "ownerId", target = "owner.id")
+    @Mapping(source = "assigneeId", target = "assignee.id")
     @Mapping(source = "categoryId", target = "category.id")
-    Ticket toTicket(TicketRequestDto tweetRequestTo);
+    Ticket toTicket(TicketRequest tweetRequestTo);
 
     @Mapping(source = "category.name", target = "categoryName")
     @Mapping(source = "owner.firstName", target = "ownerName")
