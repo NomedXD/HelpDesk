@@ -1,6 +1,6 @@
-package com.innowise.dto.requestDto;
+package com.innowise.dto.request;
 
-public record CommentRequestDto(
+public record CommentRequest(
         // Id filed is not needed
         Integer userId,
         String text,

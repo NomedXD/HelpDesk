@@ -1,9 +1,9 @@
-package com.innowise.dto.requestDto;
+package com.innowise.dto.request;
 
 import com.innowise.domain.enums.TicketState;
 
 // For different status changes
-public record TicketChangeStatusRequestDto(
+public record ChangeTicketStatusRequest(
         Integer ticketId,
         TicketState state) {
 }

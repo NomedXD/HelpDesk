@@ -1,18 +1,18 @@
 package com.innowise.services;
 
-import com.innowise.dto.requestDto.FeedbackRequestDto;
-import com.innowise.dto.responseDto.FeedbackResponseDto;
+import com.innowise.dto.request.FeedbackRequest;
+import com.innowise.dto.response.FeedbackResponse;
 
 import java.util.List;
 
 public interface FeedbackService {
-    FeedbackResponseDto save(FeedbackRequestDto feedbackRequestDto);
+    FeedbackResponse save(FeedbackRequest feedbackRequest);
 
-    List<FeedbackResponseDto> findAll();
+    List<FeedbackResponse> findAll();
 
     void delete(Integer id);
 
-    FeedbackResponseDto findById(Integer id);
+    FeedbackResponse findById(Integer id);
 
-    List<FeedbackResponseDto> findAllByTicketId(Integer ticketId);
+    List<FeedbackResponse> findAllByTicketId(Integer ticketId);
 }

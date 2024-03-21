@@ -1,4 +1,4 @@
-package com.innowise.dto.responseDto;
+package com.innowise.dto.response;
 
 import com.innowise.domain.enums.TicketState;
 import com.innowise.domain.enums.TicketUrgency;
@@ -6,7 +6,7 @@ import com.innowise.domain.enums.TicketUrgency;
 import java.time.LocalDate;
 import java.util.List;
 
-public record TicketResponseDto(
+public record TicketResponse(
         LocalDate createdOn,
         TicketState state,
         TicketUrgency urgency,
@@ -15,9 +15,9 @@ public record TicketResponseDto(
         String ownerName,
         String approverName,
         String assigneeName,
-        // todo Think about this and multiple attachments
-        List<AttachmentResponseDto> attachments,
+        // TODO Multiple files problem (ycovich)
+        List<AttachmentResponse> attachments,
         String description,
-        List<HistoryResponseDto> historyResponseDtoList,
-        List<CommentResponseDto> commentResponseDtoList) {
+        List<HistoryResponse> historyResponseList,
+        List<CommentResponse> commentResponseList) {
 }
