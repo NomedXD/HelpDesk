@@ -5,6 +5,7 @@ import com.innowise.exceptions.NoSuchCategoryException;
 import com.innowise.repositories.CategoryRepository;
 import com.innowise.services.CategoryService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,4 +30,9 @@ public class CategoryServiceImpl implements CategoryService {
                 .map(Category::getName)
                 .toList();
     }
+
+    /*@Autowired
+    public void setCategoryRepository(CategoryRepository categoryRepository) {
+        this.categoryRepository = categoryRepository;
+    }*/
 }

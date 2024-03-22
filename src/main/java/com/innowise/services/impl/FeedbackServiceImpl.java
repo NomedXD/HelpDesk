@@ -17,6 +17,8 @@ import com.innowise.services.FeedbackService;
 import com.innowise.services.TicketService;
 import com.innowise.services.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,8 +32,8 @@ public class FeedbackServiceImpl implements FeedbackService {
     private final FeedbackRepository feedbackRepository;
     private final FeedbackMapper feedbackMapper;
     private final FeedbackListMapper feedbackListMapper;
-    private final TicketService ticketService;
     private final UserService userService;
+    private TicketService ticketService;
 
     @Override
     public FeedbackResponse save(FeedbackRequest feedbackRequest) {
@@ -81,5 +83,11 @@ public class FeedbackServiceImpl implements FeedbackService {
         } else {
             throw new NoSuchTicketException(ticketId);
         }
+    }
+
+    @Autowired
+    @Lazy
+    public void setTicketService(TicketService ticketService) {
+        this.ticketService = ticketService;
     }
 }
