@@ -2,13 +2,14 @@ package com.innowise.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.OneToMany;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -28,6 +29,8 @@ import java.util.Objects;
 @Entity
 public class User {
     @Id
+    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @Column(name = "first_name")
@@ -58,11 +61,13 @@ public class User {
     @ToString.Exclude
     private List<Ticket> ticketsAsApprover;
 
-    @OneToOne(mappedBy = "user")
-    private History history;
+    @OneToMany(mappedBy = "user")
+    @ToString.Exclude
+    private List<History> history;
 
-    @OneToOne(mappedBy = "user")
-    private Feedback feedback;
+    @OneToMany(mappedBy = "user")
+    @ToString.Exclude
+    private List<Feedback> feedback;
 
     @OneToMany(mappedBy = "user")
     @ToString.Exclude
