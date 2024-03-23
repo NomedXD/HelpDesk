@@ -31,7 +31,9 @@ public class HistoryRepositoryImpl implements HistoryRepository {
 
     @Override
     public void delete(Integer id) {
-        session.remove(session.find(History.class, id));
+        session.createQuery("DELETE History WHERE id = :id", History.class)
+                .setParameter("id", id)
+                .executeUpdate();
     }
 
     @Override

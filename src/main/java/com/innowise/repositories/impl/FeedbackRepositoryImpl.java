@@ -31,7 +31,9 @@ public class FeedbackRepositoryImpl implements FeedbackRepository {
 
     @Override
     public void delete(Integer id) {
-        session.remove(session.find(Feedback.class, id));
+        session.createQuery("DELETE Feedback WHERE id = :id", Feedback.class)
+                .setParameter("id", id)
+                .executeUpdate();
     }
 
     @Override

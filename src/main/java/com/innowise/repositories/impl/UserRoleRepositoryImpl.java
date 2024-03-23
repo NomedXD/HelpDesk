@@ -31,7 +31,9 @@ public class UserRoleRepositoryImpl implements UserRoleRepository {
 
     @Override
     public void delete(Integer id) {
-        session.remove(session.find(UserRole.class, id));
+        session.createQuery("DELETE UserRole WHERE id = :id", UserRole.class)
+                .setParameter("id", id)
+                .executeUpdate();
     }
 
     @Override

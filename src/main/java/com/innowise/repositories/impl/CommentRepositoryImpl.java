@@ -34,11 +34,11 @@ public class CommentRepositoryImpl implements CommentRepository {
         return Optional.ofNullable(session.find(Comment.class, id));
     }
 
-
-
     @Override
     public void delete(Integer id) {
-        session.remove(session.find(Comment.class, id));
+        session.createQuery("DELETE Comment WHERE id = :id", Comment.class)
+                .setParameter("id", id)
+                .executeUpdate();
     }
 
     @Override

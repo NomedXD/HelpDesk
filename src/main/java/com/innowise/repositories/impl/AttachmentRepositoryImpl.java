@@ -31,7 +31,9 @@ public class AttachmentRepositoryImpl implements AttachmentRepository {
 
     @Override
     public void delete(Integer id) {
-        session.remove(session.find(Attachment.class, id));
+        session.createQuery("DELETE Attachment WHERE id = :id", Attachment.class)
+                .setParameter("id", id)
+                .executeUpdate();
     }
 
     @Override
