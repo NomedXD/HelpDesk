@@ -9,6 +9,12 @@ import java.time.LocalDateTime;
 
 public class HistoryBuilder {
     public static History buildHistory(User user, Ticket ticket, HistoryCreationOption historyCreationOption) {
+        History history = buildHistory(user, historyCreationOption);
+        history.setTicket(ticket);
+        return history;
+    }
+
+    public static History buildHistory(User user, HistoryCreationOption historyCreationOption) {
         String historyDescription = "Not defined";
         String historyAction = "Not defined";
         switch (historyCreationOption) {
@@ -28,7 +34,6 @@ public class HistoryBuilder {
                 .action(historyAction)
                 .date(LocalDateTime.now())
                 .user(user)
-                .ticket(ticket)
                 .build();
     }
 
