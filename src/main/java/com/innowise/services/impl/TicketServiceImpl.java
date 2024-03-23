@@ -2,8 +2,9 @@ package com.innowise.services.impl;
 
 import com.innowise.domain.Ticket;
 import com.innowise.domain.Attachment;
-import com.innowise.domain.Comment;
+import com.innowise.domain.Category;
 import com.innowise.domain.History;
+import com.innowise.domain.User;
 import com.innowise.dto.request.CreateTicketRequest;
 import com.innowise.util.mappers.TicketListMapper;
 import com.innowise.util.mappers.TicketMapper;
@@ -29,7 +30,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -50,9 +50,8 @@ public class TicketServiceImpl implements TicketService {
     @Override
     @Validated
     public TicketResponse save(CreateTicketRequest request) throws IOException {
-        var category = categoryService.findById(request.categoryId());
-        var owner = userService.findById(request.ownerId());
-        List<Comment> comments = new ArrayList<>();
+        Category category = categoryService.findById(request.categoryId());
+        User owner = userService.findById(request.ownerId());
         List<Attachment> content = new ArrayList<>();
         List<History> history = new ArrayList<>();
 
@@ -65,34 +64,29 @@ public class TicketServiceImpl implements TicketService {
                 .owner(owner)
                 .urgency(request.urgency())
                 .build();
-        Ticket persistedTicket = ticketRepository.save(ticket);
 
-        // This is the point when we can retrieve ticket ID from database and can proceed with other fields
-        if (request.comment() != null && !request.comment().isBlank()) {
-            Comment comment = Comment.builder()
-                    .date(LocalDateTime.now())
-                    .user(owner)
-                    .text(request.comment())
-                    .build();
-            comments.add(comment);
-        }
+        history.add(HistoryBuilder.buildHistory(owner, ticket, HistoryCreationOption.CREATE_TICKET));
         if (request.files() != null) {
             for (MultipartFile file : request.files()) {
-                Attachment attachment = new Attachment();
-                attachment.setTicketId(persistedTicket.getId());
-                attachment.setName(file.getOriginalFilename());
-                attachment.setBlob(file.getBytes());
-                content.add(attachment);
+                content.add(Attachment.builder()
+                        .name(file.getOriginalFilename())
+                        .blob(file.getBytes())
+                        .ticketId(ticket.getId())
+                        /*todo Here is the problem. ticket is not persisted at this moment, id == null.
+                         *  Possible solutions
+                         *  1) Make Ticket ticket field in Attachment entity, NOT Integer ticketId
+                         *  2) Duplicate ticketRepo.save() method before and after attachments creation
+                         *  3) Make UUID id in Ticket
+                         *  4) Or, you will find other solution
+                         */
+                        .build());
             }
         }
-        history.add(HistoryBuilder
-                .buildHistory(owner, persistedTicket, HistoryCreationOption.CREATE_TICKET));
 
-        persistedTicket.setComments(comments);
-        persistedTicket.setAttachments(content);
-        persistedTicket.setHistories(history);
+        ticket.setAttachments(content);
+        ticket.setHistories(history);
 
-        return ticketMapper.toTicketResponseDto(ticketRepository.save(persistedTicket));
+        return ticketMapper.toTicketResponseDto(ticketRepository.save(ticket));
     }
 
     @Override

@@ -52,10 +52,6 @@ public record CreateTicketRequest(
          “The size of attached file should not be greater than 5 Mb. Please select another file.”
          */
         @Nullable
-        MultipartFile[] files,
-
-        @Nullable
-        @Size(max = 500)
-        @Pattern(regexp = "([aA-zZ]|[0-9]|~|\\.|\"|\\(|\\)|:|;|\\||<|>|@|\\[|]|!|#|\\$|%|&|'|\\*|\\+|-|/|=|\\?|\\^|_|`|\\{|}| )*")
-        String comment) {
+        MultipartFile[] files
+) {
 }
