@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.24.xsd"
+        objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+    <changeSet id="1711128211119-1" author="coovs (generated)">
+        <dropColumn columnName="created_on" tableName="tickets"/>
+
+        <dropColumn columnName="desired_resolution_date" tableName="tickets"/>
+    </changeSet>
+    <changeSet id="1711128211119-2" author="coovs (generated)">
+        <addColumn tableName="tickets">
+            <column name="created_on" type="DATE"/>
+        </addColumn>
+    </changeSet>
+    <changeSet id="1711128211119-3" author="coovs (generated)">
+        <dropColumn columnName="date" tableName="comments"/>
+    </changeSet>
+    <changeSet id="1711128211119-4" author="coovs (generated)">
+        <addColumn tableName="comments">
+            <column name="date" type="DATETIME"/>
+        </addColumn>
+    </changeSet>
+    <changeSet id="1711128211119-5" author="coovs (generated)">
+        <dropColumn columnName="date" tableName="histories"/>
+    </changeSet>
+    <changeSet id="1711128211119-6" author="coovs (generated)">
+        <addColumn tableName="histories">
+            <column name="date" type="DATETIME"/>
+        </addColumn>
+    </changeSet>
+    <changeSet id="1711128211119-8" author="coovs (generated)">
+        <addColumn tableName="tickets">
+            <column name="desired_resolution_date" type="DATE"/>
+        </addColumn>
+    </changeSet>
+    <changeSet id="1711128211119-9" author="coovs (generated)">
+        <addAutoIncrement columnDataType="int" columnName="id" tableName="attachment"/>
+    </changeSet>
+    <changeSet id="1711128211119-10" author="coovs (generated)">
+        <addAutoIncrement columnDataType="int" columnName="id" tableName="categories"/>
+    </changeSet>
+    <changeSet id="1711128211119-11" author="coovs (generated)">
+        <addAutoIncrement columnDataType="int" columnName="id" tableName="comments"/>
+    </changeSet>
+    <changeSet id="1711128211119-12" author="coovs (generated)">
+        <addAutoIncrement columnDataType="int" columnName="id" tableName="feedbacks"/>
+    </changeSet>
+    <changeSet id="1711128211119-13" author="coovs (generated)">
+        <addAutoIncrement columnDataType="int" columnName="id" tableName="histories"/>
+    </changeSet>
+    <changeSet id="1711128211119-14" author="coovs (generated)">
+        <addAutoIncrement columnDataType="int" columnName="id" tableName="tickets"/>
+    </changeSet>
+    <changeSet id="1711128211119-15" author="coovs (generated)">
+        <addAutoIncrement columnDataType="int" columnName="id" tableName="user_role"/>
+    </changeSet>
+    <changeSet id="1711128211119-16" author="coovs (generated)">
+        <addAutoIncrement columnDataType="int" columnName="id" tableName="users"/>
+    </changeSet>
+
+</databaseChangeLog>

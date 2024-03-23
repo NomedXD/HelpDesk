@@ -12,11 +12,13 @@ import com.innowise.repositories.CommentRepository;
 import com.innowise.services.CommentService;
 import com.innowise.services.TicketService;
 import com.innowise.services.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -24,6 +26,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Service
 @Transactional
+@Validated
 public class CommentServiceImpl implements CommentService {
     private final CommentRepository commentRepository;
     private final CommentMapper commentMapper;
@@ -32,7 +35,8 @@ public class CommentServiceImpl implements CommentService {
     private TicketService ticketService;
 
     @Override
-    public CommentResponse save(CommentRequest commentRequest) {
+    @Validated
+    public CommentResponse save(@Valid CommentRequest commentRequest) {
         Comment comment = commentMapper.toComment(commentRequest);
 
         comment.setUser(userService.findById(commentRequest.userId()));
@@ -51,7 +55,8 @@ public class CommentServiceImpl implements CommentService {
 
     // User can't edit comments
     @Override
-    public CommentResponse update(CommentRequest commentRequest) {
+    @Validated
+    public CommentResponse update(@Valid CommentRequest commentRequest) {
         return commentMapper.toCommentResponseDto(commentRepository.update(commentMapper.toComment(commentRequest)));
     }
 

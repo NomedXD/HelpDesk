@@ -16,11 +16,13 @@ import com.innowise.repositories.FeedbackRepository;
 import com.innowise.services.FeedbackService;
 import com.innowise.services.TicketService;
 import com.innowise.services.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -28,6 +30,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Service
 @Transactional
+@Validated
 public class FeedbackServiceImpl implements FeedbackService {
     private final FeedbackRepository feedbackRepository;
     private final FeedbackMapper feedbackMapper;
@@ -36,7 +39,8 @@ public class FeedbackServiceImpl implements FeedbackService {
     private TicketService ticketService;
 
     @Override
-    public FeedbackResponse save(FeedbackRequest feedbackRequest) {
+    @Validated
+    public FeedbackResponse save(@Valid FeedbackRequest feedbackRequest) {
         Feedback feedback = feedbackMapper.toFeedback(feedbackRequest);
 
         Ticket ticket = ticketService.findByIdService(feedbackRequest.ticketId()).orElseThrow(() -> new NoSuchTicketException(feedbackRequest.ticketId()));

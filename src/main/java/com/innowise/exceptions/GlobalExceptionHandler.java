@@ -1,5 +1,6 @@
 package com.innowise.exceptions;
 
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -55,4 +56,10 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleTicketNotDoneException(TicketNotDoneException exception) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exception.getMessage());
     }
+
+    @ResponseBody
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<String> handleConstraintViolationException(ConstraintViolationException exception) {
+        return new ResponseEntity<>(exception.getConstraintViolations().toString(), HttpStatus.BAD_REQUEST);
+    } //TODO подумать, как лучше возвращать ошибку при валидации, когда будет готов фронт
 }

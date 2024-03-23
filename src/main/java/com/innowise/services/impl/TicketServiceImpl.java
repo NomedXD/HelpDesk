@@ -18,9 +18,11 @@ import com.innowise.services.TicketService;
 import com.innowise.services.UserService;
 import com.innowise.util.HistoryBuilder;
 import com.innowise.util.HistoryCreationOption;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -33,6 +35,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Service
 @Transactional
+@Validated
 public class TicketServiceImpl implements TicketService {
     private final TicketRepository ticketRepository;
     private final TicketMapper ticketMapper;
@@ -43,7 +46,8 @@ public class TicketServiceImpl implements TicketService {
     private final CategoryService categoryService;
 
     @Override
-    public TicketResponse save(CreateTicketRequest request) throws IOException {
+    @Validated
+    public TicketResponse save(@Valid CreateTicketRequest request) throws IOException {
         var category = categoryService.findById(request.categoryId());
         var owner = userService.findById(request.ownerId());
         List<Comment> comments = new ArrayList<>();
@@ -101,7 +105,8 @@ public class TicketServiceImpl implements TicketService {
     }
 
     @Override
-    public TicketResponse update(UpdateTicketRequest updateTicketRequest) {
+    @Validated
+    public TicketResponse update(@Valid UpdateTicketRequest updateTicketRequest) {
         Ticket ticket = ticketRepository.findById(updateTicketRequest.id()).orElseThrow(() -> new NoSuchTicketException(updateTicketRequest.id()));
 
         if (!ticket.getState().equals(TicketState.DRAFT)) {
@@ -130,7 +135,8 @@ public class TicketServiceImpl implements TicketService {
     }
 
     @Override
-    public TicketResponse updateStatus(ChangeTicketStatusRequest changeTicketStatusRequest) {
+    @Validated
+    public TicketResponse updateStatus(@Valid ChangeTicketStatusRequest changeTicketStatusRequest) {
         Ticket ticket = ticketRepository.findById(changeTicketStatusRequest.ticketId()).orElseThrow(
                 () -> new NoSuchTicketException(changeTicketStatusRequest.ticketId()));
         History history = HistoryBuilder.buildHistory(ticket.getOwner(), ticket, ticket.getState(), changeTicketStatusRequest.state());
