@@ -10,6 +10,7 @@ public record ChangeTicketStatusRequest(
         @NotNull
         @Min(1)
         Integer ticketId,
+
         @NotNull
         //TODO Проверить работоспособность этой аннотации :)
         @TicketStateValidation(anyOf = {TicketState.NEW, TicketState.APPROVED,
