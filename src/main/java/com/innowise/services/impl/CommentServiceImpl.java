@@ -14,6 +14,8 @@ import com.innowise.services.TicketService;
 import com.innowise.services.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
@@ -29,8 +31,8 @@ public class CommentServiceImpl implements CommentService {
     private final CommentRepository commentRepository;
     private final CommentMapper commentMapper;
     private final CommentListMapper commentListMapper;
-    private final TicketService ticketService;
     private final UserService userService;
+    private TicketService ticketService;
 
     @Override
     @Validated
@@ -95,5 +97,11 @@ public class CommentServiceImpl implements CommentService {
     public Comment saveByTicket(User user, String commentText, Integer ticketId) {
         Comment comment = Comment.builder().date(LocalDateTime.now()).user(user).text(commentText).ticketId(ticketId).build();
         return commentRepository.save(comment);
+    }
+
+    @Autowired
+    @Lazy
+    public void setTicketService(TicketService ticketService) {
+        this.ticketService = ticketService;
     }
 }

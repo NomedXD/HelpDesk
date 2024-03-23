@@ -10,6 +10,8 @@ import com.innowise.repositories.HistoryRepository;
 import com.innowise.services.HistoryService;
 import com.innowise.services.TicketService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,7 +24,8 @@ public class HistoryServiceImpl implements HistoryService {
     private final HistoryRepository historyRepository;
     private final HistoryMapper historyMapper;
     private final HistoryListMapper historyListMapper;
-    private final TicketService ticketService;
+
+    private TicketService ticketService;
 
     @Override
     public History saveService(History history) {
@@ -55,5 +58,11 @@ public class HistoryServiceImpl implements HistoryService {
         } else {
             throw new NoSuchTicketException(ticketId);
         }
+    }
+
+    @Autowired
+    @Lazy
+    public void setTicketService(TicketService ticketService) {
+        this.ticketService = ticketService;
     }
 }

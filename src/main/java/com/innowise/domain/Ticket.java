@@ -2,6 +2,7 @@ package com.innowise.domain;
 
 import com.innowise.domain.enums.TicketState;
 import com.innowise.domain.enums.TicketUrgency;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -76,19 +77,19 @@ public class Ticket {
     @JoinColumn(name = "category_id")
     private Category category;
 
-    @OneToMany(mappedBy = "ticketId")
+    @OneToMany(mappedBy = "ticketId", cascade = CascadeType.ALL)
     @ToString.Exclude
     private List<Attachment> attachments;
 
-    @OneToMany(mappedBy = "ticketId")
+    @OneToMany(mappedBy = "ticketId", cascade = CascadeType.ALL)
     @ToString.Exclude
     private List<Comment> comments;
 
-    @OneToMany(mappedBy = "ticket")
+    @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL)
     @ToString.Exclude
     private List<History> histories;
 
-    @OneToOne(mappedBy = "ticket")
+    @OneToOne(mappedBy = "ticket", cascade = CascadeType.ALL)
     private Feedback feedback;
 
     @Override
