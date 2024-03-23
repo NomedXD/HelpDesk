@@ -2,19 +2,7 @@ package com.innowise.domain;
 
 import com.innowise.domain.enums.TicketState;
 import com.innowise.domain.enums.TicketUrgency;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -76,19 +64,19 @@ public class Ticket {
     @JoinColumn(name = "category_id")
     private Category category;
 
-    @OneToMany(mappedBy = "ticketId")
+    @OneToMany(mappedBy = "ticketId", cascade = CascadeType.ALL)
     @ToString.Exclude
     private List<Attachment> attachments;
 
-    @OneToMany(mappedBy = "ticketId")
+    @OneToMany(mappedBy = "ticketId", cascade = CascadeType.ALL)
     @ToString.Exclude
     private List<Comment> comments;
 
-    @OneToMany(mappedBy = "ticket")
+    @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL)
     @ToString.Exclude
     private List<History> histories;
 
-    @OneToOne(mappedBy = "ticket")
+    @OneToOne(mappedBy = "ticket", cascade = CascadeType.ALL)
     private Feedback feedback;
 
     @Override

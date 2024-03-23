@@ -8,9 +8,7 @@ import com.innowise.dto.request.ChangeTicketStatusRequest;
 import com.innowise.dto.request.UpdateTicketRequest;
 import com.innowise.dto.response.TicketResponse;
 import com.innowise.domain.enums.TicketState;
-import com.innowise.exceptions.NoSuchCategoryException;
 import com.innowise.exceptions.NoSuchTicketException;
-import com.innowise.exceptions.NoSuchUserIdException;
 import com.innowise.exceptions.TicketNotDraftException;
 import com.innowise.repositories.TicketRepository;
 import com.innowise.services.CategoryService;
@@ -27,8 +25,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -62,20 +60,28 @@ public class TicketServiceImpl implements TicketService {
                 .urgency(request.urgency())
                 .build();
         Ticket persistedTicket = ticketRepository.save(ticket);
+
         // This is the point when we can retrieve ticket ID from database and can proceed with other fields
         if (request.comment() != null && !request.comment().isBlank()) {
-             comments = List.of(commentService.saveByTicket
-                    (owner, request.comment(), persistedTicket.getId()));
+            Comment comment = Comment.builder()
+                    .date(LocalDateTime.now())
+                    .user(owner)
+                    .text(request.comment())
+                    .build();
+            comments.add(comment);
         }
-        for (MultipartFile file : request.files()) {
-            Attachment attachment = new Attachment();
-            attachment.setTicketId(persistedTicket.getId());
-            attachment.setName(file.getOriginalFilename());
-            attachment.setBlob(file.getBytes());
-            content.add(attachment);
+        if (request.files() != null) {
+            for (MultipartFile file : request.files()) {
+                Attachment attachment = new Attachment();
+                attachment.setTicketId(persistedTicket.getId());
+                attachment.setName(file.getOriginalFilename());
+                attachment.setBlob(file.getBytes());
+                content.add(attachment);
+            }
         }
-        history = List.of(historyService.saveService(HistoryBuilder
-                        .buildHistory(owner, persistedTicket, HistoryCreationOption.CREATE_TICKET)));
+        history.add(HistoryBuilder
+                .buildHistory(owner, persistedTicket, HistoryCreationOption.CREATE_TICKET));
+
         persistedTicket.setComments(comments);
         persistedTicket.setAttachments(content);
         persistedTicket.setHistories(history);
