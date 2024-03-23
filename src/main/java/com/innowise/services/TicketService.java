@@ -5,23 +5,24 @@ import com.innowise.dto.request.CreateTicketRequest;
 import com.innowise.dto.request.UpdateTicketRequest;
 import com.innowise.dto.response.TicketResponse;
 import com.innowise.domain.Ticket;
+import jakarta.validation.Valid;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
 public interface TicketService {
-    TicketResponse save(CreateTicketRequest request) throws IOException;
+    TicketResponse save(@Valid CreateTicketRequest request) throws IOException;
 
     List<TicketResponse> findAll();
 
-    TicketResponse update(UpdateTicketRequest request);
+    TicketResponse update(@Valid UpdateTicketRequest request);
 
     void delete(Integer id);
 
     TicketResponse findById(Integer id);
 
-    TicketResponse updateStatus(ChangeTicketStatusRequest request);
+    TicketResponse updateStatus(@Valid ChangeTicketStatusRequest request);
 
     Optional<Ticket> findByIdService(Integer id);
 

@@ -12,7 +12,6 @@ import com.innowise.repositories.CommentRepository;
 import com.innowise.services.CommentService;
 import com.innowise.services.TicketService;
 import com.innowise.services.UserService;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -36,7 +35,7 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Validated
-    public CommentResponse save(@Valid CommentRequest commentRequest) {
+    public CommentResponse save(CommentRequest commentRequest) {
         Comment comment = commentMapper.toComment(commentRequest);
 
         comment.setUser(userService.findById(commentRequest.userId()));
@@ -56,7 +55,7 @@ public class CommentServiceImpl implements CommentService {
     // User can't edit comments
     @Override
     @Validated
-    public CommentResponse update(@Valid CommentRequest commentRequest) {
+    public CommentResponse update(CommentRequest commentRequest) {
         return commentMapper.toCommentResponseDto(commentRepository.update(commentMapper.toComment(commentRequest)));
     }
 

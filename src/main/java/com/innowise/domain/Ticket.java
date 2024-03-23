@@ -16,7 +16,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import lombok.Data;
+import jakarta.persistence.CascadeType;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
