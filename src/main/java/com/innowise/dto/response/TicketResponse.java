@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 public record TicketResponse(
+        Integer id,
         LocalDate createdOn,
         TicketState state,
         TicketUrgency urgency,
