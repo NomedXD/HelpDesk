@@ -36,14 +36,14 @@ public class CommentRepositoryImpl implements CommentRepository {
 
     @Override
     public void delete(Integer id) {
-        session.createQuery("DELETE Comment WHERE id = :id", Comment.class)
-                .setParameter("id", id)
-                .executeUpdate();
+        session.remove(session.find(Comment.class, id));
     }
 
     @Override
     public boolean existsById(Integer id) {
-        return findById(id).isPresent();
+        return session.createNativeQuery("SELECT COUNT(*) FROM comments WHERE id = :id", Integer.class)
+                .setParameter("id", id)
+                .getSingleResult() == 1;
     }
 
     @Override

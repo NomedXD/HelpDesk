@@ -31,14 +31,14 @@ public class UserRoleRepositoryImpl implements UserRoleRepository {
 
     @Override
     public void delete(Integer id) {
-        session.createQuery("DELETE UserRole WHERE id = :id", UserRole.class)
-                .setParameter("id", id)
-                .executeUpdate();
+        session.remove(session.find(UserRole.class, id));
     }
 
     @Override
     public boolean existsById(Integer id) {
-        return findById(id).isPresent();
+        return session.createNativeQuery("SELECT COUNT(*) FROM user_role WHERE id = :id", Integer.class)
+                .setParameter("id", id)
+                .getSingleResult() == 1;
     }
 
     @Override

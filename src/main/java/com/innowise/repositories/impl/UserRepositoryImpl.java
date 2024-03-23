@@ -31,14 +31,14 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public void delete(Integer id) {
-        session.createQuery("DELETE User WHERE id = :id", User.class)
-                .setParameter("id", id)
-                .executeUpdate();
+        session.remove(session.find(User.class, id));
     }
 
     @Override
     public boolean existsById(Integer id) {
-        return findById(id).isPresent();
+        return session.createNativeQuery("SELECT COUNT(*) FROM users WHERE id = :id", Integer.class)
+                .setParameter("id", id)
+                .getSingleResult() == 1;
     }
 
     @Override

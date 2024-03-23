@@ -31,14 +31,14 @@ public class TicketRepositoryImpl implements TicketRepository {
 
     @Override
     public void delete(Integer id) {
-        session.createQuery("DELETE Ticket WHERE id = :id", Ticket.class)
-                .setParameter("id", id)
-                .executeUpdate();
+        session.remove(session.find(Ticket.class, id));
     }
 
     @Override
     public boolean existsById(Integer id) {
-        return findById(id).isPresent();
+        return session.createNativeQuery("SELECT COUNT(*) FROM tickets WHERE id = :id", Integer.class)
+                .setParameter("id", id)
+                .getSingleResult() == 1;
     }
 
     @Override

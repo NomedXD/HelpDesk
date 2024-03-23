@@ -31,9 +31,7 @@ public class HistoryRepositoryImpl implements HistoryRepository {
 
     @Override
     public void delete(Integer id) {
-        session.createQuery("DELETE History WHERE id = :id", History.class)
-                .setParameter("id", id)
-                .executeUpdate();
+        session.remove(session.find(History.class, id));
     }
 
     @Override
@@ -43,7 +41,9 @@ public class HistoryRepositoryImpl implements HistoryRepository {
 
     @Override
     public boolean existsById(Integer id) {
-        return findById(id).isPresent();
+        return session.createNativeQuery("SELECT COUNT(*) FROM histories WHERE id = :id", Integer.class)
+                .setParameter("id", id)
+                .getSingleResult() == 1;
     }
 
     @Override

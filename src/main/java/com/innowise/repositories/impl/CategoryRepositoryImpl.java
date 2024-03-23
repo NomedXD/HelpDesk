@@ -31,14 +31,14 @@ public class CategoryRepositoryImpl implements CategoryRepository {
 
     @Override
     public void delete(Integer id) {
-        session.createQuery("DELETE Category WHERE id = :id", Category.class)
-                .setParameter("id", id)
-                .executeUpdate();
+        session.remove(session.find(Category.class, id));
     }
 
     @Override
     public boolean existsById(Integer id) {
-        return findById(id).isPresent();
+        return session.createNativeQuery("SELECT COUNT(*) FROM categories WHERE id = :id", Integer.class)
+                .setParameter("id", id)
+                .getSingleResult() == 1;
     }
 
     @Override
