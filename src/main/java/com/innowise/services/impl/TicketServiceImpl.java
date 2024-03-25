@@ -8,7 +8,7 @@ import com.innowise.domain.User;
 import com.innowise.dto.request.CreateTicketRequest;
 import com.innowise.util.mappers.TicketListMapper;
 import com.innowise.util.mappers.TicketMapper;
-import com.innowise.dto.request.ChangeTicketStatusRequest;
+import com.innowise.dto.request.UpdateTicketStatusRequest;
 import com.innowise.dto.request.UpdateTicketRequest;
 import com.innowise.dto.response.TicketResponse;
 import com.innowise.domain.enums.TicketState;
@@ -16,7 +16,6 @@ import com.innowise.exceptions.NoSuchTicketException;
 import com.innowise.exceptions.TicketNotDraftException;
 import com.innowise.repositories.TicketRepository;
 import com.innowise.services.CategoryService;
-import com.innowise.services.CommentService;
 import com.innowise.services.HistoryService;
 import com.innowise.services.TicketService;
 import com.innowise.services.UserService;
@@ -28,6 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -44,7 +44,6 @@ public class TicketServiceImpl implements TicketService {
     private final TicketRepository ticketRepository;
     private final TicketMapper ticketMapper;
     private final TicketListMapper ticketListMapper;
-    private final CommentService commentService;
     private final HistoryService historyService;
     private final UserService userService;
     private final CategoryService categoryService;
@@ -53,7 +52,7 @@ public class TicketServiceImpl implements TicketService {
     @Validated
     public TicketResponse save(CreateTicketRequest request) {
         Category category = categoryService.findById(request.categoryId());
-        User owner = userService.findById(request.ownerId());
+        User owner = userService.getUserFromPrincipal();
         List<Attachment> content = new ArrayList<>();
         List<History> history = new ArrayList<>();
 
@@ -91,8 +90,8 @@ public class TicketServiceImpl implements TicketService {
 
     @Override
     public TicketResponse findById(Integer id) {
-        return ticketMapper.toTicketResponseDto(
-                ticketRepository.findById(id).orElseThrow(() -> new NoSuchTicketException(id)));
+        return ticketMapper.toTicketResponseDto(ticketRepository.findById(id)
+                .orElseThrow(() -> new NoSuchTicketException(id)));
     }
 
     @Override
@@ -103,7 +102,8 @@ public class TicketServiceImpl implements TicketService {
     @Override
     @Validated
     public TicketResponse update(UpdateTicketRequest updateTicketRequest) {
-        Ticket ticket = ticketRepository.findById(updateTicketRequest.id()).orElseThrow(() -> new NoSuchTicketException(updateTicketRequest.id()));
+        Ticket ticket = ticketRepository.findById(updateTicketRequest.id())
+                .orElseThrow(() -> new NoSuchTicketException(updateTicketRequest.id()));
 
         if (!ticket.getState().equals(TicketState.DRAFT)) {
             throw new TicketNotDraftException(updateTicketRequest.id());
@@ -113,30 +113,24 @@ public class TicketServiceImpl implements TicketService {
         ticket.setDescription(updateTicketRequest.description());
         ticket.setUrgency(updateTicketRequest.urgency());
         ticket.setDesiredResolutionDate(updateTicketRequest.desiredResolutionDate());
-
         ticket.setCategory(categoryService.findById(updateTicketRequest.categoryId()));
 
-//        User owner = userService.findByIdService(updateTicketRequest.ownerId()).orElseThrow(() -> new NoSuchUserIdException(updateTicketRequest.ownerId()));
-//        if (!owner.getId().equals(ticket.getOwner().getId())) {
-//            throw new NotOwnerTicketException(owner.getId(), ticket.getId());
-//        }
-//        ticket.setOwner(owner);
-        // TODO ^ strange approach (IMHO ycovich) ^
-        // TODO anyway owner will be retrieved from principal/authentication
-
-        // Задел на будущее, если все таки будут каскады
-        //ticket.getHistories().add(historyService.saveService(HistoryBuilder.buildHistory(owner, ticket, HistoryCreationOption.EDIT_TICKET)));
+        User user = userService.getUserFromPrincipal();
+        ticket.getHistories().add(historyService
+                .saveService(HistoryBuilder.buildHistory(user, ticket, HistoryCreationOption.EDIT_TICKET)));
 
         return ticketMapper.toTicketResponseDto(ticketRepository.update(ticket));
     }
 
     @Override
     @Validated
-    public TicketResponse updateStatus(ChangeTicketStatusRequest changeTicketStatusRequest) {
-        Ticket ticket = ticketRepository.findById(changeTicketStatusRequest.ticketId()).orElseThrow(
-                () -> new NoSuchTicketException(changeTicketStatusRequest.ticketId()));
-        History history = HistoryBuilder.buildHistory(ticket.getOwner(), ticket, ticket.getState(), changeTicketStatusRequest.state());
-        ticket.setState(changeTicketStatusRequest.state());
+    public TicketResponse updateStatus(UpdateTicketStatusRequest updateTicketStatusRequest) {
+        Ticket ticket = ticketRepository.findById(updateTicketStatusRequest.ticketId()).orElseThrow(
+                () -> new NoSuchTicketException(updateTicketStatusRequest.ticketId()));
+        User editor = userService.getUserFromPrincipal();
+        History history = HistoryBuilder
+                .buildHistory(editor, ticket, ticket.getState(), updateTicketStatusRequest.state());
+        ticket.setState(updateTicketStatusRequest.state());
         ticket.getHistories().add(historyService.saveService(history));
 
         return ticketMapper.toTicketResponseDto(ticketRepository.update(ticket));

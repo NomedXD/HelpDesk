@@ -8,7 +8,6 @@ import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface CommentMapper {
-    @Mapping(source = "userId", target = "user.id")
     Comment toComment(CommentRequest commentRequest);
 
     @Mapping(source = "user.firstName", target = "userName")

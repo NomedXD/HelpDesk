@@ -12,10 +12,14 @@ public interface UserRepository {
 
     User update(User user);
 
-    void delete(Integer id);
+    void delete(String email);
 
     boolean existsById(Integer id);
 
+    boolean existsByEmail(String email);
+
     Optional<User> findById(Integer id);
+
+    Optional<User> findByEmail(String email);
 
 }

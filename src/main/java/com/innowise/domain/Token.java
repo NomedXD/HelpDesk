@@ -1,38 +1,42 @@
 package com.innowise.domain;
 
+import com.innowise.domain.enums.TokenType;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
-import lombok.experimental.SuperBuilder;
+import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
 
 import java.util.Objects;
+
 
 @Getter
 @Setter
 @ToString
 @RequiredArgsConstructor
-@SuperBuilder
+@Builder
+@AllArgsConstructor
 @Entity
-@Table(name = "attachments")
-public class Attachment {
+@Table(name = "tokens")
+public class Token {
     @Id
-    @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "name")
-    private String name;
+    @Column(name = "token")
+    private String token;
 
-    @Basic
-    @Column(name = "blob")
-    private byte[] blob;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "type")
+    private TokenType tokenType;
 
-    @JoinColumn(name = "ticket_id")
+    @Column(name = "expired")
+    private boolean expired;
+
+    @Column(name = "revoked")
+    private boolean revoked;
+
     @ManyToOne
-    private Ticket ticket;
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @Override
     public final boolean equals(Object o) {
@@ -41,8 +45,8 @@ public class Attachment {
         Class<?> oEffectiveClass = o instanceof HibernateProxy ? ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass() : o.getClass();
         Class<?> thisEffectiveClass = this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass() : this.getClass();
         if (thisEffectiveClass != oEffectiveClass) return false;
-        Attachment that = (Attachment) o;
-        return getId() != null && Objects.equals(getId(), that.getId());
+        Token token = (Token) o;
+        return getId() != null && Objects.equals(getId(), token.getId());
     }
 
     @Override

@@ -10,10 +10,6 @@ import jakarta.validation.constraints.Size;
 public record FeedbackRequest(
         @NotNull
         @Min(1)
-        Integer userId,
-
-        @NotNull
-        @Min(1)
         @Max(5)
         Byte rate,
 

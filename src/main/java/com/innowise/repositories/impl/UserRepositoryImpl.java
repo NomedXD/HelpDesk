@@ -30,8 +30,8 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public void delete(Integer id) {
-        session.remove(session.find(User.class, id));
+    public void delete(String email) {
+        session.remove(session.find(User.class, email));
     }
 
     @Override
@@ -42,7 +42,22 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
+    public boolean existsByEmail(String email) {
+        Integer count = (Integer) session.createNativeQuery("SELECT COUNT(*) FROM users WHERE email = :email")
+                .setParameter("email", email)
+                .getSingleResult();
+        return count == 1;
+        // refactor later
+    }
+
+    @Override
     public Optional<User> findById(Integer id) {
         return Optional.ofNullable(session.find(User.class, id));
+    }
+
+    @Override
+    public Optional<User> findByEmail(String email) {
+        return Optional.ofNullable(session.createQuery("FROM User WHERE email = :email", User.class)
+                .setParameter("email", email).getSingleResult());
     }
 }

@@ -1,6 +1,6 @@
 package com.innowise.services;
 
-import com.innowise.dto.request.ChangeTicketStatusRequest;
+import com.innowise.dto.request.UpdateTicketStatusRequest;
 import com.innowise.dto.request.CreateTicketRequest;
 import com.innowise.dto.request.UpdateTicketRequest;
 import com.innowise.dto.response.TicketResponse;
@@ -22,7 +22,7 @@ public interface TicketService {
 
     TicketResponse findById(Integer id);
 
-    TicketResponse updateStatus(@Valid ChangeTicketStatusRequest request);
+    TicketResponse updateStatus(@Valid UpdateTicketStatusRequest request);
 
     Optional<Ticket> findByIdService(Integer id);
 
