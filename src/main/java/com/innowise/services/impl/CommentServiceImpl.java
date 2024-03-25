@@ -1,5 +1,6 @@
 package com.innowise.services.impl;
 
+import com.innowise.domain.Ticket;
 import com.innowise.util.mappers.CommentListMapper;
 import com.innowise.util.mappers.CommentMapper;
 import com.innowise.dto.request.CommentRequest;
@@ -39,7 +40,7 @@ public class CommentServiceImpl implements CommentService {
         Comment comment = commentMapper.toComment(commentRequest);
 
         comment.setUser(userService.findById(commentRequest.userId()));
-        comment.setTicketId(ticketService.findByIdService(commentRequest.userId()).orElseThrow(() -> new NoSuchTicketException(commentRequest.ticketId())).getId());
+        comment.setTicket(ticketService.findByIdService(commentRequest.userId()).orElseThrow(() -> new NoSuchTicketException(commentRequest.ticketId())));
         comment.setDate(LocalDateTime.now());
 
         return commentMapper.toCommentResponseDto(commentRepository.save(comment));
@@ -93,8 +94,8 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public Comment saveByTicket(User user, String commentText, Integer ticketId) {
-        Comment comment = Comment.builder().date(LocalDateTime.now()).user(user).text(commentText).ticketId(ticketId).build();
+    public Comment saveByTicket(User user, String commentText, Ticket ticket) {
+        Comment comment = Comment.builder().date(LocalDateTime.now()).user(user).text(commentText).ticket(ticket).build();
         return commentRepository.save(comment);
     }
 

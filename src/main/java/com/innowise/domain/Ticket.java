@@ -77,19 +77,19 @@ public class Ticket {
     @JoinColumn(name = "category_id")
     private Category category;
 
-    @OneToMany(mappedBy = "ticketId", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "ticket", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @ToString.Exclude
     private List<Attachment> attachments;
 
-    @OneToMany(mappedBy = "ticketId", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "ticket", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @ToString.Exclude
     private List<Comment> comments;
 
-    @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "ticket", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @ToString.Exclude
     private List<History> histories;
 
-    @OneToOne(mappedBy = "ticket", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "ticket", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private Feedback feedback;
 
     @Override
