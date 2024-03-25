@@ -16,7 +16,6 @@ import com.innowise.repositories.FeedbackRepository;
 import com.innowise.services.FeedbackService;
 import com.innowise.services.TicketService;
 import com.innowise.services.UserService;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -40,7 +39,7 @@ public class FeedbackServiceImpl implements FeedbackService {
 
     @Override
     @Validated
-    public FeedbackResponse save(@Valid FeedbackRequest feedbackRequest) {
+    public FeedbackResponse save(FeedbackRequest feedbackRequest) {
         Feedback feedback = feedbackMapper.toFeedback(feedbackRequest);
 
         Ticket ticket = ticketService.findByIdService(feedbackRequest.ticketId()).orElseThrow(() -> new NoSuchTicketException(feedbackRequest.ticketId()));

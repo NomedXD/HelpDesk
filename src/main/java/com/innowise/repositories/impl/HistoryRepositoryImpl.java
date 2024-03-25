@@ -41,7 +41,9 @@ public class HistoryRepositoryImpl implements HistoryRepository {
 
     @Override
     public boolean existsById(Integer id) {
-        return findById(id).isPresent();
+        return session.createNativeQuery("SELECT COUNT(*) FROM histories WHERE id = :id", Integer.class)
+                .setParameter("id", id)
+                .getSingleResult() == 1;
     }
 
     @Override

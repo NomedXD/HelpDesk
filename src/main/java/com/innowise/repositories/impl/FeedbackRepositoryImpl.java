@@ -36,7 +36,9 @@ public class FeedbackRepositoryImpl implements FeedbackRepository {
 
     @Override
     public boolean existsById(Integer id) {
-        return findById(id).isPresent();
+        return session.createNativeQuery("SELECT COUNT(*) FROM feedbacks WHERE id = :id", Integer.class)
+                .setParameter("id", id)
+                .getSingleResult() == 1;
     }
 
     @Override

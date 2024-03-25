@@ -10,6 +10,7 @@ public record LoginRequest(
         @Email
         @Size(max = 100)
         String email,
+
         @NotBlank
         @Pattern(regexp = "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$ %^&*-])$")
         @Size(min = 6, max = 20)

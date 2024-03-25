@@ -36,7 +36,9 @@ public class AttachmentRepositoryImpl implements AttachmentRepository {
 
     @Override
     public boolean existsById(Integer id) {
-        return findById(id).isPresent();
+        return session.createNativeQuery("SELECT COUNT(*) FROM attachment WHERE id = :id", Integer.class)
+                .setParameter("id", id)
+                .getSingleResult() == 1;
     }
 
     @Override

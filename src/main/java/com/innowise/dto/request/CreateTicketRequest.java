@@ -17,22 +17,27 @@ public record CreateTicketRequest(
         @NotNull
         @Min(1)
         Integer categoryId,
+
         @NotNull
         @Min(1)
         Integer ownerId,
+
         @NotNull
         @Size(min = 1, max = 100)
-        @Pattern(regexp = "[.]+")
+        @Pattern(regexp = "([a-z]|[0-9]|~|\\.|\"|\\(|\\)|:|;|\\||<|>|@|\\[|]|!|#|\\$|%|&|'|\\*|\\+|-|/|=|\\?|\\^|_|`|\\{|}| )*")
         String name,
+
         @Nullable
         @Size(max = 500)
-        @Pattern(regexp = "[.]+")
+        @Pattern(regexp = "([aA-zZ]|[0-9]|~|\\.|\"|\\(|\\)|:|;|\\||<|>|@|\\[|]|!|#|\\$|%|&|'|\\*|\\+|-|/|=|\\?|\\^|_|`|\\{|}| )*")
         String description,
+
         @NotNull
         //TODO Проверить работоспособность этой аннотации :)
         @TicketUrgencyValidation(anyOf = {TicketUrgency.CRITICAL, TicketUrgency.HIGH,
                 TicketUrgency.MEDIUM, TicketUrgency.LOW})
         TicketUrgency urgency,
+
         @NotNull
         @Future
         LocalDate desiredResolutionDate,
@@ -47,10 +52,6 @@ public record CreateTicketRequest(
          “The size of attached file should not be greater than 5 Mb. Please select another file.”
          */
         @Nullable
-        MultipartFile[] files,
-
-        @Nullable
-        @Size(max = 500)
-        @Pattern(regexp = "[.]+")
-        String comment) {
+        MultipartFile[] files
+) {
 }

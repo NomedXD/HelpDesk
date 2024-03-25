@@ -34,8 +34,6 @@ public class CommentRepositoryImpl implements CommentRepository {
         return Optional.ofNullable(session.find(Comment.class, id));
     }
 
-
-
     @Override
     public void delete(Integer id) {
         session.remove(session.find(Comment.class, id));
@@ -43,7 +41,9 @@ public class CommentRepositoryImpl implements CommentRepository {
 
     @Override
     public boolean existsById(Integer id) {
-        return findById(id).isPresent();
+        return session.createNativeQuery("SELECT COUNT(*) FROM comments WHERE id = :id", Integer.class)
+                .setParameter("id", id)
+                .getSingleResult() == 1;
     }
 
     @Override

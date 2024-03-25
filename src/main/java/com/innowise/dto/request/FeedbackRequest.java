@@ -11,14 +11,17 @@ public record FeedbackRequest(
         @NotNull
         @Min(1)
         Integer userId,
+
         @NotNull
         @Min(1)
         @Max(5)
         Byte rate,
+
         @Nullable
         @Size(max = 500)
-        @Pattern(regexp = "[.]+")
+        @Pattern(regexp = "([aA-zZ]|[0-9]|~|\\.|\"|\\(|\\)|:|;|\\||<|>|@|\\[|]|!|#|\\$|%|&|'|\\*|\\+|-|/|=|\\?|\\^|_|`|\\{|}| )*")
         String text,
+
         @NotNull
         @Min(1)
         Integer ticketId) {

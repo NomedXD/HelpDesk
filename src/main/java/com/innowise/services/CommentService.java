@@ -4,16 +4,17 @@ import com.innowise.dto.request.CommentRequest;
 import com.innowise.dto.response.CommentResponse;
 import com.innowise.domain.Comment;
 import com.innowise.domain.User;
+import jakarta.validation.Valid;
 
 import java.util.List;
 
 public interface CommentService {
 
-    CommentResponse save(CommentRequest commentRequest);
+    CommentResponse save(@Valid CommentRequest commentRequest);
 
     List<CommentResponse> findAll();
 
-    CommentResponse update(CommentRequest commentRequest);
+    CommentResponse update(@Valid CommentRequest commentRequest);
 
     void delete(Integer id);
 
