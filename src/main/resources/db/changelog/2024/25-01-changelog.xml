@@ -49,13 +49,13 @@
 
     <changeSet id="1711354319455-7" author="vlad">
         <preConditions onFail="MARK_RAN">
-            <foreignKeyConstraintExists foreignKeyName="fk_attachments_on_ticket"/>
+            <foreignKeyConstraintExists foreignKeyName="fk_histories_on_ticket"/>
         </preConditions>
-        <dropForeignKeyConstraint baseTableName="attachment" constraintName="fk_attachments_on_ticket"/>
+        <dropForeignKeyConstraint baseTableName="histories" constraintName="fk_histories_on_ticket"/>
     </changeSet>
     <changeSet id="1711354319455-8" author="vlad">
-        <addForeignKeyConstraint baseTableName="attachment" baseColumnNames="ticket_id"
-                                 constraintName="fk_attachments_on_ticket"
+        <addForeignKeyConstraint baseTableName="histories" baseColumnNames="ticket_id"
+                                 constraintName="fk_histories_on_ticket"
                                  onDelete="CASCADE"
                                  referencedTableName="tickets" referencedColumnNames="id"
                                  />
