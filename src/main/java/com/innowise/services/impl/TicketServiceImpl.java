@@ -6,6 +6,7 @@ import com.innowise.domain.Category;
 import com.innowise.domain.History;
 import com.innowise.domain.User;
 import com.innowise.dto.request.CreateTicketRequest;
+import com.innowise.exceptions.NotOwnerTicketException;
 import com.innowise.util.mappers.TicketListMapper;
 import com.innowise.util.mappers.TicketMapper;
 import com.innowise.dto.request.UpdateTicketStatusRequest;
@@ -19,15 +20,12 @@ import com.innowise.services.CategoryService;
 import com.innowise.services.HistoryService;
 import com.innowise.services.TicketService;
 import com.innowise.services.UserService;
-import com.innowise.util.HistoryBuilder;
-import com.innowise.util.HistoryCreationOption;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -66,7 +64,7 @@ public class TicketServiceImpl implements TicketService {
                 .urgency(request.urgency())
                 .build();
 
-        history.add(HistoryBuilder.buildHistory(owner, ticket, HistoryCreationOption.CREATE_TICKET));
+        history.add(History.ofCreate(owner, ticket));
         if (request.files() != null) {
             for (MultipartFile file : request.files()) {
                 try {
@@ -109,15 +107,18 @@ public class TicketServiceImpl implements TicketService {
             throw new TicketNotDraftException(updateTicketRequest.id());
         }
 
+        User updatedBy = userService.getUserFromPrincipal();
+        if(!ticket.getOwner().equals(updatedBy)){
+            throw new NotOwnerTicketException(updatedBy.getId(), ticket.getId());
+        }
+
         ticket.setName(updateTicketRequest.name());
         ticket.setDescription(updateTicketRequest.description());
         ticket.setUrgency(updateTicketRequest.urgency());
         ticket.setDesiredResolutionDate(updateTicketRequest.desiredResolutionDate());
         ticket.setCategory(categoryService.findById(updateTicketRequest.categoryId()));
-
-        User user = userService.getUserFromPrincipal();
-        ticket.getHistories().add(historyService
-                .saveService(HistoryBuilder.buildHistory(user, ticket, HistoryCreationOption.EDIT_TICKET)));
+        ticket.getHistories().add(History.ofUpdate(updatedBy, ticket));
+        //todo test this method
 
         return ticketMapper.toTicketResponseDto(ticketRepository.update(ticket));
     }
@@ -127,11 +128,11 @@ public class TicketServiceImpl implements TicketService {
     public TicketResponse updateStatus(UpdateTicketStatusRequest updateTicketStatusRequest) {
         Ticket ticket = ticketRepository.findById(updateTicketStatusRequest.ticketId()).orElseThrow(
                 () -> new NoSuchTicketException(updateTicketStatusRequest.ticketId()));
-        User editor = userService.getUserFromPrincipal();
-        History history = HistoryBuilder
-                .buildHistory(editor, ticket, ticket.getState(), updateTicketStatusRequest.state());
+
+        User editor = userService.getUserFromPrincipal();//todo check who can update status
+
         ticket.setState(updateTicketStatusRequest.state());
-        ticket.getHistories().add(historyService.saveService(history));
+        ticket.getHistories().add(History.ofStatusChange(ticket.getState(), updateTicketStatusRequest.state(), editor, ticket));
 
         return ticketMapper.toTicketResponseDto(ticketRepository.update(ticket));
     }
