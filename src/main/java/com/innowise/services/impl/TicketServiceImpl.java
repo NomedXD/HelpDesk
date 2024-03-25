@@ -23,6 +23,7 @@ import com.innowise.services.UserService;
 import com.innowise.util.HistoryBuilder;
 import com.innowise.util.HistoryCreationOption;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
@@ -35,6 +36,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
+@Slf4j
 @Service
 @Transactional
 @Validated
@@ -49,7 +51,7 @@ public class TicketServiceImpl implements TicketService {
 
     @Override
     @Validated
-    public TicketResponse save(CreateTicketRequest request) throws IOException {
+    public TicketResponse save(CreateTicketRequest request) {
         Category category = categoryService.findById(request.categoryId());
         User owner = userService.findById(request.ownerId());
         List<Attachment> content = new ArrayList<>();
@@ -68,18 +70,16 @@ public class TicketServiceImpl implements TicketService {
         history.add(HistoryBuilder.buildHistory(owner, ticket, HistoryCreationOption.CREATE_TICKET));
         if (request.files() != null) {
             for (MultipartFile file : request.files()) {
-                content.add(Attachment.builder()
-                        .name(file.getOriginalFilename())
-                        .blob(file.getBytes())
-                        .ticketId(ticket.getId())
-                        /*todo Here is the problem. ticket is not persisted at this moment, id == null.
-                         *  Possible solutions
-                         *  1) Make Ticket ticket field in Attachment entity, NOT Integer ticketId
-                         *  2) Duplicate ticketRepo.save() method before and after attachments creation
-                         *  3) Make UUID id in Ticket
-                         *  4) Or, you will find other solution
-                         */
-                        .build());
+                try {
+                    content.add(Attachment.builder()
+                            .name(file.getOriginalFilename())
+                            .blob(file.getBytes())
+                            .ticket(ticket)
+                            .build());
+                } catch (IOException e) {
+                    log.error(e.getMessage(), e);
+                    throw new RuntimeException("Error while reading file " + file.getOriginalFilename(), e);//todo create exception for 500 internal error
+                }
             }
         }
 

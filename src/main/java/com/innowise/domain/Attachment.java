@@ -1,14 +1,6 @@
 package com.innowise.domain;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Basic;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -38,8 +30,9 @@ public class Attachment {
     @Column(name = "blob")
     private byte[] blob;
 
-    @Column(name = "ticket_id")
-    private Integer ticketId;
+    @JoinColumn(name = "ticket_id")
+    @ManyToOne
+    private Ticket ticket;
 
     @Override
     public final boolean equals(Object o) {

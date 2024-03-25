@@ -31,7 +31,9 @@ public class TicketRepositoryImpl implements TicketRepository {
 
     @Override
     public void delete(Integer id) {
-        session.remove(session.find(Ticket.class, id));
+        session.createMutationQuery("DELETE FROM Ticket WHERE id = :id")
+                .setParameter("id", id)
+                .executeUpdate();
     }
 
     @Override

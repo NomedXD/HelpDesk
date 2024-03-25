@@ -1,5 +1,6 @@
 package com.innowise.services;
 
+import com.innowise.domain.Ticket;
 import com.innowise.dto.request.CommentRequest;
 import com.innowise.dto.response.CommentResponse;
 import com.innowise.domain.Comment;
@@ -24,5 +25,5 @@ public interface CommentService {
 
     List<CommentResponse> findPaginatedByTicketId(Integer page, Integer pageSize, Integer ticketId);
 
-    Comment saveByTicket(User user, String commentText, Integer ticketId);
+    Comment saveByTicket(User user, String commentText, Ticket ticket);
 }
