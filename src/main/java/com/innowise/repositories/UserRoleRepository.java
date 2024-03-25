@@ -18,4 +18,6 @@ public interface UserRoleRepository {
 
     Optional<UserRole> findById(Integer id);
 
+    Optional<UserRole> findByName(String roleName);
+
 }

@@ -19,10 +19,6 @@ public record CreateTicketRequest(
         Integer categoryId,
 
         @NotNull
-        @Min(1)
-        Integer ownerId,
-
-        @NotNull
         @Size(min = 1, max = 100)
         @Pattern(regexp = "([a-z]|[0-9]|~|\\.|\"|\\(|\\)|:|;|\\||<|>|@|\\[|]|!|#|\\$|%|&|'|\\*|\\+|-|/|=|\\?|\\^|_|`|\\{|}| )*")
         String name,

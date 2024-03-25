@@ -6,7 +6,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 
 // For different status changes
-public record ChangeTicketStatusRequest(
+public record UpdateTicketStatusRequest(
         @NotNull
         @Min(1)
         Integer ticketId,

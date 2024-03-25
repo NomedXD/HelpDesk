@@ -43,7 +43,7 @@ public class FeedbackServiceImpl implements FeedbackService {
         Feedback feedback = feedbackMapper.toFeedback(feedbackRequest);
 
         Ticket ticket = ticketService.findByIdService(feedbackRequest.ticketId()).orElseThrow(() -> new NoSuchTicketException(feedbackRequest.ticketId()));
-        User owner = userService.findById(feedbackRequest.userId());
+        User owner = userService.getUserFromPrincipal();
 
         // todo На фронте тоже отключить кнопку для не DONE тикетов
         if (!ticket.getState().equals(TicketState.DONE)) {

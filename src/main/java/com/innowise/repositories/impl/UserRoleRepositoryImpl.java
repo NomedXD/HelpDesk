@@ -46,4 +46,9 @@ public class UserRoleRepositoryImpl implements UserRoleRepository {
     public Optional<UserRole> findById(Integer id) {
         return Optional.ofNullable(session.find(UserRole.class, id));
     }
+
+    @Override
+    public Optional<UserRole> findByName(String roleName) {
+        return Optional.ofNullable(session.find(UserRole.class, roleName));
+    }
 }

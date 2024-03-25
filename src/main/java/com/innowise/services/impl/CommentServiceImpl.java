@@ -38,9 +38,10 @@ public class CommentServiceImpl implements CommentService {
     @Validated
     public CommentResponse save(CommentRequest commentRequest) {
         Comment comment = commentMapper.toComment(commentRequest);
-
-        comment.setUser(userService.findById(commentRequest.userId()));
-        comment.setTicket(ticketService.findByIdService(commentRequest.userId()).orElseThrow(() -> new NoSuchTicketException(commentRequest.ticketId())));
+        User creator = userService.getUserFromPrincipal();
+        comment.setUser(creator);
+        comment.setTicket(ticketService.findByIdService(creator.getId())
+                .orElseThrow(() -> new NoSuchTicketException(commentRequest.ticketId())));
         comment.setDate(LocalDateTime.now());
 
         return commentMapper.toCommentResponseDto(commentRepository.save(comment));

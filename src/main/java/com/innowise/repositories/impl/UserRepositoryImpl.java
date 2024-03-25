@@ -33,7 +33,8 @@ public class UserRepositoryImpl implements UserRepository {
     public void delete(Integer id) {
         session.createMutationQuery("DELETE FROM User WHERE id = :id")
                 .setParameter("id", id)
-                .executeUpdate();    }
+                .executeUpdate();    
+    }
 
     @Override
     public boolean existsById(Integer id) {
@@ -43,7 +44,22 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
+    public boolean existsByEmail(String email) {
+        Integer count = (Integer) session.createNativeQuery("SELECT COUNT(*) FROM users WHERE email = :email")
+                .setParameter("email", email)
+                .getSingleResult();
+        return count == 1;
+        // refactor later
+    }
+
+    @Override
     public Optional<User> findById(Integer id) {
         return Optional.ofNullable(session.find(User.class, id));
+    }
+
+    @Override
+    public Optional<User> findByEmail(String email) {
+        return Optional.ofNullable(session.createQuery("FROM User WHERE email = :email", User.class)
+                .setParameter("email", email).getSingleResult());
     }
 }

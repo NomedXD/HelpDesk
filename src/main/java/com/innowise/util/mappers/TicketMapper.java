@@ -9,7 +9,6 @@ import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring", uses = {HistoryListMapper.class, CommentListMapper.class, AttachmentListMapper.class})
 public interface TicketMapper {
-    @Mapping(source = "ownerId", target = "owner.id")
     @Mapping(source = "categoryId", target = "category.id")
     Ticket toTicket(CreateTicketRequest request);
 

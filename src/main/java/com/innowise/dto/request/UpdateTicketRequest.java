@@ -33,8 +33,11 @@ public record UpdateTicketRequest(
 
         @NotNull
         //TODO Проверить работоспособность этой аннотации :)
-        @TicketUrgencyValidation(anyOf = {TicketUrgency.CRITICAL, TicketUrgency.HIGH,
-                TicketUrgency.MEDIUM, TicketUrgency.LOW})
+        @TicketUrgencyValidation(anyOf = {
+                TicketUrgency.CRITICAL,
+                TicketUrgency.HIGH,
+                TicketUrgency.MEDIUM,
+                TicketUrgency.LOW})
         TicketUrgency urgency,
 
         @NotNull
