@@ -31,8 +31,9 @@ public class UserRoleRepositoryImpl implements UserRoleRepository {
 
     @Override
     public void delete(Integer id) {
-        session.remove(session.find(UserRole.class, id));
-    }
+        session.createMutationQuery("DELETE FROM UserRole WHERE id = :id")
+                .setParameter("id", id)
+                .executeUpdate();    }
 
     @Override
     public boolean existsById(Integer id) {
