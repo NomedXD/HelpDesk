@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.24.xsd"
+        objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+    <changeSet id="1711372040904-5" author="vlad (generated)">
+        <dropForeignKeyConstraint baseTableName="attachment" constraintName="fk_attachments_on_ticket"/>
+    </changeSet>
+    <changeSet id="1711372040904-1" author="vlad (generated)">
+        <createTable tableName="attachments">
+            <column autoIncrement="true" name="id" type="INT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_attachments"/>
+            </column>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="blob" type="bytea"/>
+            <column name="ticket_id" type="INT"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1711372040904-4" author="vlad (generated)">
+        <addForeignKeyConstraint baseColumnNames="ticket_id" baseTableName="attachments"
+                                 onDelete="CASCADE"
+                                 constraintName="fk_attachments_on_tickets" referencedColumnNames="id"
+                                 referencedTableName="tickets"/>
+    </changeSet>
+    <changeSet id="1711372040904-6" author="vlad (generated)">
+        <dropTable cascadeConstraints="true" tableName="attachment"/>
+    </changeSet>
+
+</databaseChangeLog>
