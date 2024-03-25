@@ -16,7 +16,7 @@ import java.util.Objects;
 @RequiredArgsConstructor
 @SuperBuilder
 @Entity
-@Table(name = "attachment")
+@Table(name = "attachments")
 public class Attachment {
     @Id
     @Column(name = "id")
