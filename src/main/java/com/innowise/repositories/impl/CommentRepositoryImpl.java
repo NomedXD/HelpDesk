@@ -36,7 +36,9 @@ public class CommentRepositoryImpl implements CommentRepository {
 
     @Override
     public void delete(Integer id) {
-        session.remove(session.find(Comment.class, id));
+        session.createMutationQuery("DELETE FROM Comment WHERE id = :id")
+                .setParameter("id", id)
+                .executeUpdate();
     }
 
     @Override
@@ -48,14 +50,14 @@ public class CommentRepositoryImpl implements CommentRepository {
 
     @Override
     public List<Comment> findAllByTicketId(Integer ticketId) {
-        return session.createQuery("FROM Comment WHERE ticketId = :id ORDER BY date DESC ", Comment.class)
+        return session.createQuery("FROM Comment WHERE ticket.id = :id ORDER BY date DESC ", Comment.class)
                 .setParameter("id", ticketId)
                 .list();
     }
 
     @Override
     public List<Comment> findPaginatedByTicketId(Integer page, Integer pageSize, Integer ticketId) {
-        return session.createQuery("FROM Comment WHERE ticketId = :id ORDER BY date DESC ", Comment.class)
+        return session.createQuery("FROM Comment WHERE ticket.id = :id ORDER BY date DESC ", Comment.class)
                 .setParameter("id", ticketId)
                 .setFirstResult((page - 1) * pageSize)
                 .setMaxResults(pageSize)

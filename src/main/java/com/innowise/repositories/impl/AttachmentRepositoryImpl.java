@@ -31,12 +31,14 @@ public class AttachmentRepositoryImpl implements AttachmentRepository {
 
     @Override
     public void delete(Integer id) {
-        session.remove(session.find(Attachment.class, id));
+        session.createMutationQuery("DELETE FROM Attachment WHERE id = :id")
+                .setParameter("id", id)
+                .executeUpdate();
     }
 
     @Override
     public boolean existsById(Integer id) {
-        return session.createNativeQuery("SELECT COUNT(*) FROM attachment WHERE id = :id", Integer.class)
+        return session.createNativeQuery("SELECT COUNT(*) FROM attachments WHERE id = :id", Integer.class)
                 .setParameter("id", id)
                 .getSingleResult() == 1;
     }

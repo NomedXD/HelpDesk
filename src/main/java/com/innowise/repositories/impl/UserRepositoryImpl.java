@@ -30,8 +30,10 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public void delete(String email) {
-        session.remove(session.find(User.class, email));
+    public void delete(Integer id) {
+        session.createMutationQuery("DELETE FROM User WHERE id = :id")
+                .setParameter("id", id)
+                .executeUpdate();    
     }
 
     @Override

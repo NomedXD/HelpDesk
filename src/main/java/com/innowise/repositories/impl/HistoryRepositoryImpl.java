@@ -31,8 +31,9 @@ public class HistoryRepositoryImpl implements HistoryRepository {
 
     @Override
     public void delete(Integer id) {
-        session.remove(session.find(History.class, id));
-    }
+        session.createMutationQuery("DELETE FROM History WHERE id = :id")
+                .setParameter("id", id)
+                .executeUpdate();    }
 
     @Override
     public Optional<History> findById(Integer id) {

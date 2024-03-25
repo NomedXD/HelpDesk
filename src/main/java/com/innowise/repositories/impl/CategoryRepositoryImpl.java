@@ -31,7 +31,9 @@ public class CategoryRepositoryImpl implements CategoryRepository {
 
     @Override
     public void delete(Integer id) {
-        session.remove(session.find(Category.class, id));
+        session.createMutationQuery("DELETE FROM Category WHERE id = :id")
+                .setParameter("id", id)
+                .executeUpdate();
     }
 
     @Override
