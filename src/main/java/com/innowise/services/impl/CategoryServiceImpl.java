@@ -1,16 +1,15 @@
 package com.innowise.services.impl;
 
 import com.innowise.domain.Category;
-import com.innowise.exceptions.NoSuchCategoryException;
+import com.innowise.exceptions.EntityTypeMessages;
+import com.innowise.exceptions.NoSuchEntityIdException;
 import com.innowise.repositories.CategoryRepository;
 import com.innowise.services.CategoryService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -19,9 +18,9 @@ public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository categoryRepository;
 
     @Override
-    public Category findById(Integer id) throws NoSuchCategoryException{
+    public Category findById(Integer id) {
         return categoryRepository.findById(id)
-                .orElseThrow(() -> new NoSuchCategoryException(id));
+                .orElseThrow(() -> new NoSuchEntityIdException(EntityTypeMessages.CATEGORY_MESSAGE, id));
     }
 
     @Override

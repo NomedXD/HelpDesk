@@ -1,8 +1,11 @@
 package com.innowise.exceptions;
 
-import org.hibernate.boot.model.naming.IllegalIdentifierException;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
-public class TicketNotDraftException extends IllegalIdentifierException {
+@EqualsAndHashCode(callSuper = true)
+@Data
+public class TicketNotDraftException extends IllegalArgumentException {
     private final Integer ticketId;
 
     public TicketNotDraftException(Integer ticketId) {

@@ -8,6 +8,8 @@ import com.innowise.dto.request.LoginRequest;
 import com.innowise.dto.request.RegistrationRequest;
 import com.innowise.dto.response.LoginResponse;
 import com.innowise.dto.response.UserResponse;
+import com.innowise.exceptions.NoSuchRoleNameException;
+import com.innowise.exceptions.UserAlreadyExistsException;
 import com.innowise.repositories.UserRoleRepository;
 import com.innowise.services.AuthenticationService;
 import com.innowise.services.JwtService;
@@ -36,10 +38,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public ResponseEntity<?> register(RegistrationRequest request) {
         if (userService.existsByEmail(request.email())) {
-            return ResponseEntity
-                    .badRequest()
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .body("email is already taken");
+            throw new UserAlreadyExistsException(request.email());
         }
         String encodedPassword = passwordEncoder.encode(request.password());
         User user = User.builder()
@@ -48,17 +47,17 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .lastName(request.lastName())
                 .password(encodedPassword)
                 .build();
-
-        UserRole role = roleRepository.findByName("ROLE_EMPLOYEE").get();
+        // TODO Заменить roleName на enum и искать по id(ну либо повесить индекс по имя)
+        UserRole role = roleRepository.findByName("ROLE_EMPLOYEE").
+                orElseThrow(() -> new NoSuchRoleNameException("ROLE_EMPLOYEE"));
         user.setRole(role);
         User savedUser = userService.save(user);
         String jwtToken = jwtService.generateToken(savedUser.getId(), savedUser.getUsername());
 
         saveToken(savedUser, jwtToken);
-
-        return ResponseEntity
-                .ok()
-                .contentType(MediaType.APPLICATION_JSON)
+        // TODO убрать <?> и возвращать просто строку. Убрать MediaType
+        // TODO из этих сервисов тоже возвращать только dto, Response entity формировать в контроллере
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON)
                 .body("[successful registration]\n" + new LoginResponse(jwtToken));
     }
 

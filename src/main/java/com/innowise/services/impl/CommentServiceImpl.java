@@ -1,14 +1,14 @@
 package com.innowise.services.impl;
 
 import com.innowise.domain.Ticket;
+import com.innowise.exceptions.EntityTypeMessages;
+import com.innowise.exceptions.NoSuchEntityIdException;
 import com.innowise.util.mappers.CommentListMapper;
 import com.innowise.util.mappers.CommentMapper;
 import com.innowise.dto.request.CommentRequest;
 import com.innowise.dto.response.CommentResponse;
 import com.innowise.domain.Comment;
 import com.innowise.domain.User;
-import com.innowise.exceptions.NoSuchCommentException;
-import com.innowise.exceptions.NoSuchTicketException;
 import com.innowise.repositories.CommentRepository;
 import com.innowise.services.CommentService;
 import com.innowise.services.TicketService;
@@ -41,7 +41,8 @@ public class CommentServiceImpl implements CommentService {
         User creator = userService.getUserFromPrincipal();
         comment.setUser(creator);
         comment.setTicket(ticketService.findByIdService(creator.getId())
-                .orElseThrow(() -> new NoSuchTicketException(commentRequest.ticketId())));
+                .orElseThrow(() ->
+                        new NoSuchEntityIdException(EntityTypeMessages.TICKET_MESSAGE, commentRequest.ticketId())));
         comment.setDate(LocalDateTime.now());
 
         return commentMapper.toCommentResponseDto(commentRepository.save(comment));
@@ -66,14 +67,15 @@ public class CommentServiceImpl implements CommentService {
         if (commentRepository.existsById(id)) {
             commentRepository.delete(id);
         } else {
-            throw new NoSuchCommentException(id);
+            throw new NoSuchEntityIdException(EntityTypeMessages.COMMENT_MESSAGE, id);
         }
     }
 
     @Override
     public CommentResponse findById(Integer id) {
         return commentMapper.toCommentResponseDto(
-                commentRepository.findById(id).orElseThrow(() -> new NoSuchCommentException(id)));
+                commentRepository.findById(id).orElseThrow(() ->
+                        new NoSuchEntityIdException(EntityTypeMessages.COMMENT_MESSAGE, id)));
     }
 
     @Override
@@ -81,7 +83,7 @@ public class CommentServiceImpl implements CommentService {
         if (ticketService.existsByIdService(ticketId)) {
             return commentListMapper.toCommentResponseDtoList(commentRepository.findAllByTicketId(ticketId));
         } else {
-            throw new NoSuchTicketException(ticketId);
+            throw new NoSuchEntityIdException(EntityTypeMessages.TICKET_MESSAGE, ticketId);
         }
     }
 
@@ -90,7 +92,7 @@ public class CommentServiceImpl implements CommentService {
         if (ticketService.existsByIdService(ticketId)) {
             return commentListMapper.toCommentResponseDtoList(commentRepository.findPaginatedByTicketId(page, pageSize, ticketId));
         } else {
-            throw new NoSuchTicketException(ticketId);
+            throw new NoSuchEntityIdException(EntityTypeMessages.TICKET_MESSAGE, ticketId);
         }
     }
 

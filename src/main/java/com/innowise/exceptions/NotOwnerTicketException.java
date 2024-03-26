@@ -1,5 +1,10 @@
 package com.innowise.exceptions;
 
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+@EqualsAndHashCode(callSuper = true)
+@Data
 public class NotOwnerTicketException extends IllegalArgumentException {
     private final Integer ownerId;
     private final Integer ticketId;

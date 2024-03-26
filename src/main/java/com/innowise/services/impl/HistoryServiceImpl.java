@@ -1,11 +1,11 @@
 package com.innowise.services.impl;
 
+import com.innowise.exceptions.EntityTypeMessages;
+import com.innowise.exceptions.NoSuchEntityIdException;
 import com.innowise.util.mappers.HistoryListMapper;
 import com.innowise.util.mappers.HistoryMapper;
 import com.innowise.dto.response.HistoryResponse;
 import com.innowise.domain.History;
-import com.innowise.exceptions.NoSuchHistoryException;
-import com.innowise.exceptions.NoSuchTicketException;
 import com.innowise.repositories.HistoryRepository;
 import com.innowise.services.HistoryService;
 import com.innowise.services.TicketService;
@@ -42,13 +42,14 @@ public class HistoryServiceImpl implements HistoryService {
         if (historyRepository.existsById(id)) {
             historyRepository.delete(id);
         } else {
-            throw new NoSuchHistoryException(id);
+            throw new NoSuchEntityIdException(EntityTypeMessages.HISTORY_MESSAGE, id);
         }
     }
 
     @Override
     public HistoryResponse findById(Integer id) {
-        return historyMapper.toHistoryResponseDto(historyRepository.findById(id).orElseThrow(() -> new NoSuchHistoryException(id)));
+        return historyMapper.toHistoryResponseDto(historyRepository.findById(id).orElseThrow(() ->
+                new NoSuchEntityIdException(EntityTypeMessages.HISTORY_MESSAGE, id)));
     }
 
     @Override
@@ -56,7 +57,7 @@ public class HistoryServiceImpl implements HistoryService {
         if (ticketService.existsByIdService(ticketId)) {
             return historyListMapper.toHistoryResponseDtoList(historyRepository.findAllByTicketId(ticketId));
         } else {
-            throw new NoSuchTicketException(ticketId);
+            throw new NoSuchEntityIdException(EntityTypeMessages.TICKET_MESSAGE, ticketId);
         }
     }
 

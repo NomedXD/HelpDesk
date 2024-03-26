@@ -6,6 +6,9 @@ import com.innowise.domain.Category;
 import com.innowise.domain.History;
 import com.innowise.domain.User;
 import com.innowise.dto.request.CreateTicketRequest;
+import com.innowise.exceptions.AttachedFileReadException;
+import com.innowise.exceptions.EntityTypeMessages;
+import com.innowise.exceptions.NoSuchEntityIdException;
 import com.innowise.exceptions.NotOwnerTicketException;
 import com.innowise.util.mappers.TicketListMapper;
 import com.innowise.util.mappers.TicketMapper;
@@ -13,11 +16,9 @@ import com.innowise.dto.request.UpdateTicketStatusRequest;
 import com.innowise.dto.request.UpdateTicketRequest;
 import com.innowise.dto.response.TicketResponse;
 import com.innowise.domain.enums.TicketState;
-import com.innowise.exceptions.NoSuchTicketException;
 import com.innowise.exceptions.TicketNotDraftException;
 import com.innowise.repositories.TicketRepository;
 import com.innowise.services.CategoryService;
-import com.innowise.services.HistoryService;
 import com.innowise.services.TicketService;
 import com.innowise.services.UserService;
 import lombok.RequiredArgsConstructor;
@@ -42,7 +43,6 @@ public class TicketServiceImpl implements TicketService {
     private final TicketRepository ticketRepository;
     private final TicketMapper ticketMapper;
     private final TicketListMapper ticketListMapper;
-    private final HistoryService historyService;
     private final UserService userService;
     private final CategoryService categoryService;
 
@@ -75,7 +75,7 @@ public class TicketServiceImpl implements TicketService {
                             .build());
                 } catch (IOException e) {
                     log.error(e.getMessage(), e);
-                    throw new RuntimeException("Error while reading file " + file.getOriginalFilename(), e);//todo create exception for 500 internal error
+                    throw new AttachedFileReadException(file.getOriginalFilename(), e.getMessage());
                 }
             }
         }
@@ -89,7 +89,7 @@ public class TicketServiceImpl implements TicketService {
     @Override
     public TicketResponse findById(Integer id) {
         return ticketMapper.toTicketResponseDto(ticketRepository.findById(id)
-                .orElseThrow(() -> new NoSuchTicketException(id)));
+                .orElseThrow(() -> new NoSuchEntityIdException(EntityTypeMessages.TICKET_MESSAGE, id)));
     }
 
     @Override
@@ -101,14 +101,14 @@ public class TicketServiceImpl implements TicketService {
     @Validated
     public TicketResponse update(UpdateTicketRequest updateTicketRequest) {
         Ticket ticket = ticketRepository.findById(updateTicketRequest.id())
-                .orElseThrow(() -> new NoSuchTicketException(updateTicketRequest.id()));
+                .orElseThrow(() -> new NoSuchEntityIdException(EntityTypeMessages.TICKET_MESSAGE, updateTicketRequest.id()));
 
         if (!ticket.getState().equals(TicketState.DRAFT)) {
             throw new TicketNotDraftException(updateTicketRequest.id());
         }
 
         User updatedBy = userService.getUserFromPrincipal();
-        if(!ticket.getOwner().equals(updatedBy)){
+        if (!ticket.getOwner().equals(updatedBy)) {
             throw new NotOwnerTicketException(updatedBy.getId(), ticket.getId());
         }
 
@@ -127,7 +127,7 @@ public class TicketServiceImpl implements TicketService {
     @Validated
     public TicketResponse updateStatus(UpdateTicketStatusRequest updateTicketStatusRequest) {
         Ticket ticket = ticketRepository.findById(updateTicketStatusRequest.ticketId()).orElseThrow(
-                () -> new NoSuchTicketException(updateTicketStatusRequest.ticketId()));
+                () -> new NoSuchEntityIdException(EntityTypeMessages.TICKET_MESSAGE, updateTicketStatusRequest.ticketId()));
 
         User editor = userService.getUserFromPrincipal();//todo check who can update status
 
@@ -142,7 +142,7 @@ public class TicketServiceImpl implements TicketService {
         if (ticketRepository.existsById(id)) {
             ticketRepository.delete(id);
         } else {
-            throw new NoSuchTicketException(id);
+            throw new NoSuchEntityIdException(EntityTypeMessages.TICKET_MESSAGE, id);
         }
     }
 
