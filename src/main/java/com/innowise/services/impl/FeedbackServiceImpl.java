@@ -19,6 +19,7 @@ import com.innowise.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
@@ -38,6 +39,7 @@ public class FeedbackServiceImpl implements FeedbackService {
     private TicketService ticketService;
 
     @Override
+    @PreAuthorize(value = "hasAnyRole('ROLE_MANAGER', 'ROLE_EMPLOYEE')")
     @Validated
     public FeedbackResponse save(FeedbackRequest feedbackRequest) {
         Feedback feedback = feedbackMapper.toFeedback(feedbackRequest);

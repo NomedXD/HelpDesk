@@ -22,6 +22,7 @@ import com.innowise.services.TicketService;
 import com.innowise.services.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
@@ -47,6 +48,7 @@ public class TicketServiceImpl implements TicketService {
     private final CategoryService categoryService;
 
     @Override
+    @PreAuthorize(value = "hasAnyRole('ROLE_EMPLOYEE', 'ROLE_MANAGER')")
     @Validated
     public TicketResponse save(CreateTicketRequest request) {
         Category category = categoryService.findById(request.categoryId());
@@ -62,6 +64,7 @@ public class TicketServiceImpl implements TicketService {
                 .category(category)
                 .owner(owner)
                 .urgency(request.urgency())
+                .state(TicketState.NEW)
                 .build();
 
         history.add(History.ofCreate(owner, ticket));
@@ -98,6 +101,7 @@ public class TicketServiceImpl implements TicketService {
     }
 
     @Override
+    @PreAuthorize(value = "hasAnyRole('ROLE_MANAGER', 'ROLE_EMPLOYEE')")
     @Validated
     public TicketResponse update(UpdateTicketRequest updateTicketRequest) {
         Ticket ticket = ticketRepository.findById(updateTicketRequest.id())
@@ -129,7 +133,7 @@ public class TicketServiceImpl implements TicketService {
         Ticket ticket = ticketRepository.findById(updateTicketStatusRequest.ticketId()).orElseThrow(
                 () -> new NoSuchTicketException(updateTicketStatusRequest.ticketId()));
 
-        User editor = userService.getUserFromPrincipal();//todo check who can update status
+        User editor = userService.getUserFromPrincipal();
 
         ticket.setState(updateTicketStatusRequest.state());
         ticket.getHistories().add(History.ofStatusChange(ticket.getState(), updateTicketStatusRequest.state(), editor, ticket));

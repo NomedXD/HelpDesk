@@ -7,12 +7,11 @@ import com.innowise.dto.response.TicketResponse;
 import com.innowise.domain.Ticket;
 import jakarta.validation.Valid;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
 public interface TicketService {
-    TicketResponse save(@Valid CreateTicketRequest request) throws IOException;
+    TicketResponse save(@Valid CreateTicketRequest request);
 
     List<TicketResponse> findAll();
 
