@@ -1,5 +1,6 @@
 package com.innowise.repositories;
 
+import com.innowise.domain.Attachment;
 import com.innowise.domain.Ticket;
 
 import java.util.List;
@@ -18,4 +19,5 @@ public interface TicketRepository {
 
     Optional<Ticket> findById(Integer id);
 
+    void saveAttachmetsToTicket(List<Attachment> attachmentList);
 }

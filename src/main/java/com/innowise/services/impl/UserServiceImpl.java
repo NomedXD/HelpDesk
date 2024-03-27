@@ -1,6 +1,7 @@
 package com.innowise.services.impl;
 
 import com.innowise.domain.User;
+import com.innowise.dto.request.ChangeEmailRequest;
 import com.innowise.dto.request.ChangePasswordRequest;
 import com.innowise.dto.request.UpdateUserRequest;
 import com.innowise.dto.response.UserResponse;
@@ -10,9 +11,14 @@ import com.innowise.exceptions.UserNotFoundException;
 import com.innowise.exceptions.WrongConfirmedPasswordException;
 import com.innowise.exceptions.WrongCurrentPasswordException;
 import com.innowise.repositories.UserRepository;
+import com.innowise.services.AuthenticationService;
+import com.innowise.services.JwtService;
 import com.innowise.services.UserService;
 import com.innowise.util.mappers.UserMapper;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -26,6 +32,14 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder encoder;
+    private final JwtService jwtService;
+    private AuthenticationService authenticationService;
+
+    @Lazy
+    @Autowired
+    public void setAuthenticationService(AuthenticationService authenticationService) {
+        this.authenticationService = authenticationService;
+    }
 
     @Override
     public UserResponse findById(Integer id) {
@@ -67,7 +81,6 @@ public class UserServiceImpl implements UserService {
         User userToBeUpdated = userRepository
                 .findById(id)
                 .orElseThrow(() -> new NoSuchEntityIdException(EntityTypeMessages.USER_MESSAGE, id));
-        userToBeUpdated.setEmail(request.email());
         userToBeUpdated.setFirstName(request.firstName());
         userToBeUpdated.setLastName(request.lastName());
         return userRepository.save(userToBeUpdated);
@@ -86,6 +99,19 @@ public class UserServiceImpl implements UserService {
         user.setPassword(encoder.encode(request.newPassword()));
         userRepository.save(user);
     }
+
+    @Override
+    public String changeEmail(ChangeEmailRequest request, HttpServletRequest httpRequest) {
+        User user = getUserFromPrincipal();
+        user.setEmail(request.email());
+        String token = jwtService.getTokenFromRequest(httpRequest);
+        Integer userId = jwtService.getUserIdFromToken(token);
+        String newToken = jwtService.generateToken(userId, request.email());
+        authenticationService.saveToken(user, newToken);
+        save(user);
+        return newToken;
+    }
+    // a little bit messy, maybe refactor later
 
     @Override
     public void delete(String email) {

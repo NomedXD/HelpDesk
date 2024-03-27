@@ -6,6 +6,7 @@ import com.innowise.dto.request.UpdateTicketRequest;
 import com.innowise.dto.response.TicketResponse;
 import com.innowise.domain.Ticket;
 import jakarta.validation.Valid;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
@@ -26,4 +27,6 @@ public interface TicketService {
     Optional<Ticket> findByIdService(Integer id);
 
     boolean existsByIdService(Integer id);
+
+    TicketResponse saveTicketWithAttachments(CreateTicketRequest ticketRequest, MultipartFile[] files);
 }

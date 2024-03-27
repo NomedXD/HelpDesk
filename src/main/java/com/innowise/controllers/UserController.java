@@ -1,11 +1,12 @@
 package com.innowise.controllers;
 
-import com.innowise.domain.UserRole;
+import com.innowise.dto.request.ChangeEmailRequest;
 import com.innowise.dto.request.ChangePasswordRequest;
 import com.innowise.dto.request.UpdateUserRequest;
 import com.innowise.dto.response.UserResponse;
 import com.innowise.services.UserService;
 import com.innowise.util.mappers.UserMapper;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -42,17 +43,23 @@ public class UserController {
     }
 
     @PatchMapping("/edit")
-    public ResponseEntity<UserResponse> editProfile(
-            @RequestBody UpdateUserRequest request) {
+    public ResponseEntity<UserResponse> editProfile(@RequestBody UpdateUserRequest request) {
         UserResponse response = userMapper
                 .toUserResponse(userService.update(request));
         return ResponseEntity.accepted()
                 .body(response);
     }
 
+    @PatchMapping("/edit/email")
+    public ResponseEntity<String> changeEmail(@RequestBody ChangeEmailRequest request,
+                                              HttpServletRequest httpRequest) {
+        String token = userService.changeEmail(request, httpRequest);
+        return ResponseEntity.accepted()
+                .body(token);
+    }
+
     @PatchMapping("/edit/password")
-    public ResponseEntity<String> changePassword(
-            @RequestBody ChangePasswordRequest request) {
+    public ResponseEntity<String> changePassword(@RequestBody ChangePasswordRequest request) {
         userService.changePassword(request);
         return ResponseEntity.accepted()
                 .body("password changed successfully");

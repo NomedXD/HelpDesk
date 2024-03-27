@@ -32,6 +32,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -67,7 +68,6 @@ public class TicketServiceImpl implements TicketService {
                 .state(TicketState.NEW)
                 .build();
 
-        history.add(History.ofCreate(owner, ticket));
         if (request.files() != null) {
             for (MultipartFile file : request.files()) {
                 try {
@@ -84,10 +84,38 @@ public class TicketServiceImpl implements TicketService {
         }
 
         ticket.setAttachments(content);
+        history.add(History.ofCreate(owner, ticket));
         ticket.setHistories(history);
 
         return ticketMapper.toTicketResponseDto(ticketRepository.save(ticket));
     }
+
+    public void setAttachmentsToCreatedTicket(MultipartFile[] files,
+                                              Integer ticketId) {
+        Ticket ticketReference = Ticket.builder().id(ticketId).build();
+        ticketRepository.saveAttachmetsToTicket(
+                (List<Attachment>) Arrays.stream(files)
+                        .map(file ->
+                        {
+                            try {
+                                return Attachment.builder()
+                                        .ticket(ticketReference)
+                                        .name(file.getOriginalFilename())
+                                        .blob(file.getBytes())
+                                        .build();
+                            } catch (IOException e) {
+                                log.error(e.getMessage(), e);
+                                throw new AttachedFileReadException(file.getOriginalFilename(), "File can' be read");
+                            }
+                        })
+                        .toList()
+        );
+
+    }
+
+
+
+    //
 
     @Override
     public TicketResponse findById(Integer id) {
@@ -158,5 +186,12 @@ public class TicketServiceImpl implements TicketService {
     @Override
     public boolean existsByIdService(Integer id) {
         return ticketRepository.existsById(id);
+    }
+
+    @Override
+    public TicketResponse saveTicketWithAttachments(CreateTicketRequest ticketRequest, MultipartFile[] files) {
+        TicketResponse response = save(ticketRequest);
+        setAttachmentsToCreatedTicket(files, response.id());
+        return response;
     }
 }
