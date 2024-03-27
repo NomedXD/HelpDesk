@@ -1,11 +1,7 @@
 package com.innowise.domain;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import com.innowise.domain.enums.RoleName;
+import jakarta.persistence.*;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import lombok.Getter;
@@ -13,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.proxy.HibernateProxy;
-
 import java.util.Objects;
 
 @Getter
@@ -27,6 +22,8 @@ public class UserRole {
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
+//    @Enumerated(EnumType.ORDINAL)
     @Column(name = "name", unique = true)
     private String name;
 

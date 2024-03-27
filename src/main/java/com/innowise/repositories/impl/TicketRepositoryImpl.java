@@ -1,5 +1,6 @@
 package com.innowise.repositories.impl;
 
+import com.innowise.domain.Attachment;
 import com.innowise.domain.Ticket;
 import com.innowise.repositories.TicketRepository;
 import jakarta.persistence.PersistenceContext;
@@ -46,5 +47,12 @@ public class TicketRepositoryImpl implements TicketRepository {
     @Override
     public Optional<Ticket> findById(Integer id) {
         return Optional.ofNullable(session.find(Ticket.class, id));
+    }
+
+    @Override
+    public void saveAttachmetsToTicket(List<Attachment> attachmentList) {
+        for(Attachment attachment: attachmentList) {
+            session.persist(attachment);
+        }
     }
 }

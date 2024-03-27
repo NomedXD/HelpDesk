@@ -17,7 +17,7 @@ public record TicketResponse(
         String approverName,
         String assigneeName,
         // TODO Multiple files problem (ycovich)
-        List<AttachmentResponse> attachments,
+        //List<AttachmentResponse> attachments,
         String description,
         List<HistoryResponse> historyResponseList,
         List<CommentResponse> commentResponseList) {

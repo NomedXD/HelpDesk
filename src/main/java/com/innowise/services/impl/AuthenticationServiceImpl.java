@@ -15,8 +15,6 @@ import com.innowise.services.AuthenticationService;
 import com.innowise.services.JwtService;
 import com.innowise.services.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -36,7 +34,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final JwtService jwtService;
 
     @Override
-    public ResponseEntity<?> register(RegistrationRequest request) {
+    public LoginResponse register(RegistrationRequest request) {
         if (userService.existsByEmail(request.email())) {
             throw new UserAlreadyExistsException(request.email());
         }
@@ -57,12 +55,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         saveToken(savedUser, jwtToken);
         // TODO убрать <?> и возвращать просто строку. Убрать MediaType
         // TODO из этих сервисов тоже возвращать только dto, Response entity формировать в контроллере
-        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON)
-                .body("[successful registration]\n" + new LoginResponse(jwtToken));
+        return new LoginResponse(jwtToken);
     }
 
     @Override
-    public ResponseEntity<LoginResponse> login(LoginRequest loginRequest) {
+    public LoginResponse login(LoginRequest loginRequest) {
         Authentication authentication = authenticationManager
                 .authenticate(new UsernamePasswordAuthenticationToken(
                         loginRequest.email(),
@@ -74,9 +71,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         revokeAllUserTokens(authentication);
         saveToken(authentication, token);
 
-        return ResponseEntity.ok()
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(new LoginResponse(token));
+        return new LoginResponse(token);
     }
 
     @Override

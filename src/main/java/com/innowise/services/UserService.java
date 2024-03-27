@@ -1,9 +1,11 @@
 package com.innowise.services;
 
 import com.innowise.domain.User;
+import com.innowise.dto.request.ChangeEmailRequest;
 import com.innowise.dto.request.ChangePasswordRequest;
 import com.innowise.dto.request.UpdateUserRequest;
 import com.innowise.dto.response.UserResponse;
+import jakarta.servlet.http.HttpServletRequest;
 
 public interface UserService {
     User save(User user);
@@ -19,6 +21,8 @@ public interface UserService {
     User update(UpdateUserRequest request);
 
     void changePassword(ChangePasswordRequest request);
+
+    String changeEmail(ChangeEmailRequest request, HttpServletRequest httpRequest);
 
     void delete(String email);
 
