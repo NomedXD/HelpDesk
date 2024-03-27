@@ -10,38 +10,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @ControllerAdvice
 public class GlobalExceptionHandler {
     @ResponseBody
-    @ExceptionHandler(NoSuchCategoryException.class)
-    public ResponseEntity<String> handleNoSuchCategoryException(NoSuchCategoryException exception) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exception.getMessage());
-    }
-
-    @ResponseBody
-    @ExceptionHandler(NoSuchCommentException.class)
-    public ResponseEntity<String> handleNoSuchCommentException(NoSuchCommentException exception) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exception.getMessage());
-    }
-
-    @ResponseBody
-    @ExceptionHandler(NoSuchAttachmentException.class)
-    public ResponseEntity<String> handleNoSuchAttachmentFoundException(NoSuchAttachmentException exception) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exception.getMessage());
-    }
-
-    @ResponseBody
-    @ExceptionHandler(NoSuchHistoryException.class)
-    public ResponseEntity<String> handleNoSuchHistoryFoundException(NoSuchHistoryException exception) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exception.getMessage());
-    }
-
-    @ResponseBody
-    @ExceptionHandler(NoSuchUserIdException.class)
-    public ResponseEntity<String> handleNoSuchUserIdException(NoSuchUserIdException exception) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exception.getMessage());
-    }
-
-    @ResponseBody
-    @ExceptionHandler(NoSuchTicketException.class)
-    public ResponseEntity<String> handleNoSuchTicketException(NoSuchTicketException exception) {
+    @ExceptionHandler(NoSuchEntityIdException.class)
+    public ResponseEntity<String> handleNoSuchEntityException(NoSuchEntityIdException exception) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exception.getMessage());
     }
 
@@ -62,4 +32,34 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleConstraintViolationException(ConstraintViolationException exception) {
         return new ResponseEntity<>(exception.getConstraintViolations().toString(), HttpStatus.BAD_REQUEST);
     } //TODO подумать, как лучше возвращать ошибку при валидации, когда будет готов фронт
+
+    @ResponseBody
+    @ExceptionHandler(UserAlreadyExistsException.class)
+    public ResponseEntity<String> handleUserAlreadyExistsException(UserAlreadyExistsException exception) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exception.getMessage());
+    }
+
+    @ResponseBody
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<String> handleUserNotFoundException(UserNotFoundException exception) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exception.getMessage());
+    }
+
+    @ResponseBody
+    @ExceptionHandler(NoSuchRoleNameException.class)
+    public ResponseEntity<String> handleNoSuchRoleNameException(NoSuchRoleNameException exception) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exception.getMessage());
+    }
+
+    @ResponseBody
+    @ExceptionHandler(AttachedFileReadException.class)
+    public ResponseEntity<String> handleAttachedFileReadException(AttachedFileReadException exception) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(exception.getMessage());
+    }
+
+    @ResponseBody
+    @ExceptionHandler(WrongCurrentPasswordException.class)
+    public ResponseEntity<String> handleWrongCurrentPasswordException(WrongCurrentPasswordException exception) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exception.getMessage());
+    }
 }

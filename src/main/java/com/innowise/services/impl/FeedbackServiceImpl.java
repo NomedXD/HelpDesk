@@ -1,5 +1,7 @@
 package com.innowise.services.impl;
 
+import com.innowise.exceptions.EntityTypeMessages;
+import com.innowise.exceptions.NoSuchEntityIdException;
 import com.innowise.util.mappers.FeedbackListMapper;
 import com.innowise.util.mappers.FeedbackMapper;
 import com.innowise.dto.request.FeedbackRequest;
@@ -8,8 +10,6 @@ import com.innowise.domain.Feedback;
 import com.innowise.domain.Ticket;
 import com.innowise.domain.User;
 import com.innowise.domain.enums.TicketState;
-import com.innowise.exceptions.NoSuchFeedbackException;
-import com.innowise.exceptions.NoSuchTicketException;
 import com.innowise.exceptions.NotOwnerTicketException;
 import com.innowise.exceptions.TicketNotDoneException;
 import com.innowise.repositories.FeedbackRepository;
@@ -42,7 +42,8 @@ public class FeedbackServiceImpl implements FeedbackService {
     public FeedbackResponse save(FeedbackRequest feedbackRequest) {
         Feedback feedback = feedbackMapper.toFeedback(feedbackRequest);
 
-        Ticket ticket = ticketService.findByIdService(feedbackRequest.ticketId()).orElseThrow(() -> new NoSuchTicketException(feedbackRequest.ticketId()));
+        Ticket ticket = ticketService.findByIdService(feedbackRequest.ticketId()).orElseThrow(() ->
+                new NoSuchEntityIdException(EntityTypeMessages.TICKET_MESSAGE, feedbackRequest.ticketId()));
         User owner = userService.getUserFromPrincipal();
 
         // todo На фронте тоже отключить кнопку для не DONE тикетов
@@ -70,13 +71,14 @@ public class FeedbackServiceImpl implements FeedbackService {
         if (feedbackRepository.existsById(id)) {
             feedbackRepository.delete(id);
         } else {
-            throw new NoSuchFeedbackException(id);
+            throw new NoSuchEntityIdException(EntityTypeMessages.FEEDBACK_MESSAGE, id);
         }
     }
 
     @Override
     public FeedbackResponse findById(Integer id) {
-        return feedbackMapper.toFeedbackResponseDto(feedbackRepository.findById(id).orElseThrow(() -> new NoSuchFeedbackException(id)));
+        return feedbackMapper.toFeedbackResponseDto(feedbackRepository.findById(id).orElseThrow(() ->
+                new NoSuchEntityIdException(EntityTypeMessages.FEEDBACK_MESSAGE, id)));
     }
 
     @Override
@@ -84,7 +86,7 @@ public class FeedbackServiceImpl implements FeedbackService {
         if (ticketService.existsByIdService(ticketId)) {
             return feedbackListMapper.toFeedbackResponseDtoList(feedbackRepository.findAllByTicketId(ticketId));
         } else {
-            throw new NoSuchTicketException(ticketId);
+            throw new NoSuchEntityIdException(EntityTypeMessages.TICKET_MESSAGE, ticketId);
         }
     }
 
