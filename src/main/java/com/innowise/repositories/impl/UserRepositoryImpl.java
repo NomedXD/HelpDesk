@@ -45,11 +45,9 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public boolean existsByEmail(String email) {
-        Integer count = (Integer) session.createNativeQuery("SELECT COUNT(*) FROM users WHERE email = :email")
+        return session.createNativeQuery("SELECT COUNT(*) FROM users WHERE email = :email", Integer.class)
                 .setParameter("email", email)
-                .getSingleResult();
-        return count == 1;
-        // refactor later
+                .getSingleResult() == 1;
     }
 
     @Override
@@ -59,7 +57,8 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public Optional<User> findByEmail(String email) {
-        return Optional.ofNullable(session.createQuery("FROM User WHERE email = :email", User.class)
-                .setParameter("email", email).getSingleResult());
+       return Optional.ofNullable(session.createQuery("FROM User WHERE email = :email", User.class)
+               .setParameter("email", email)
+               .getSingleResult());
     }
 }
