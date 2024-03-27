@@ -129,6 +129,11 @@ public class TicketServiceImpl implements TicketService {
     }
 
     @Override
+    public List<TicketResponse> findAllByAssigneeEmail(String email) {
+        return ticketListMapper.toTicketResponseDtoList(ticketRepository.findAllByAssigneeId(userService.findByEmail(email).id()));
+    }
+
+    @Override
     @PreAuthorize(value = "hasAnyRole('MANAGER', 'EMPLOYEE')")
     @Validated
     public TicketResponse update(UpdateTicketRequest updateTicketRequest) {

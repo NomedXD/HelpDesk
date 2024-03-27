@@ -1,13 +1,16 @@
 package com.innowise.controllers;
 
-import com.innowise.domain.enums.TicketUrgency;
 import com.innowise.dto.request.CreateTicketRequest;
 import com.innowise.dto.response.TicketResponse;
 import com.innowise.services.TicketService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -35,4 +38,12 @@ public class TicketController {
     // TODO single file download
     // TODO to ycovich
 
+    @GetMapping("/all")
+    public ResponseEntity<List<TicketResponse>> getAllTickets() {
+        return ResponseEntity.status(HttpStatus.OK).body(ticketService.findAll());
+    }
+    @GetMapping("/personal")
+    public ResponseEntity<List<TicketResponse>> getPersonalTickets(@AuthenticationPrincipal UserDetails userDetails) {
+        return ResponseEntity.status(HttpStatus.OK).body(ticketService.findAllByAssigneeEmail(userDetails.getUsername()));
+    }
 }

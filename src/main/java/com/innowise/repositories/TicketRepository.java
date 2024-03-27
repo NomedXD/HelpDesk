@@ -11,6 +11,8 @@ public interface TicketRepository {
 
     List<Ticket> findAll();
 
+    List<Ticket> findAllByAssigneeId(Integer id);
+
     Ticket update(Ticket ticket);
 
     void delete(Integer id);

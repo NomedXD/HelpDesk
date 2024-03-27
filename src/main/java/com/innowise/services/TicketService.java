@@ -16,6 +16,8 @@ public interface TicketService {
 
     List<TicketResponse> findAll();
 
+    List<TicketResponse> findAllByAssigneeEmail(String email);
+
     TicketResponse update(@Valid UpdateTicketRequest request);
 
     void delete(Integer id);

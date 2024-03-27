@@ -8,6 +8,7 @@ import java.util.List;
 
 public record TicketResponse(
         Integer id,
+        String name,
         LocalDate createdOn,
         TicketState state,
         TicketUrgency urgency,
