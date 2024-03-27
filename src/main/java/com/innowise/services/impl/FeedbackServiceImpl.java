@@ -39,7 +39,7 @@ public class FeedbackServiceImpl implements FeedbackService {
     private TicketService ticketService;
 
     @Override
-    @PreAuthorize(value = "hasAnyRole('ROLE_MANAGER', 'ROLE_EMPLOYEE')")
+    @PreAuthorize(value = "hasAnyRole('MANAGER', 'EMPLOYEE')")
     @Validated
     public FeedbackResponse save(FeedbackRequest feedbackRequest) {
         Feedback feedback = feedbackMapper.toFeedback(feedbackRequest);

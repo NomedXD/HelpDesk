@@ -48,7 +48,7 @@ public class TicketServiceImpl implements TicketService {
     private final CategoryService categoryService;
 
     @Override
-    @PreAuthorize(value = "hasAnyRole('ROLE_EMPLOYEE', 'ROLE_MANAGER')")
+    @PreAuthorize(value = "hasAnyRole('MANAGER', 'EMPLOYEE')")
     @Validated
     public TicketResponse save(CreateTicketRequest request) {
         Category category = categoryService.findById(request.categoryId());
@@ -101,7 +101,7 @@ public class TicketServiceImpl implements TicketService {
     }
 
     @Override
-    @PreAuthorize(value = "hasAnyRole('ROLE_MANAGER', 'ROLE_EMPLOYEE')")
+    @PreAuthorize(value = "hasAnyRole('MANAGER', 'EMPLOYEE')")
     @Validated
     public TicketResponse update(UpdateTicketRequest updateTicketRequest) {
         Ticket ticket = ticketRepository.findById(updateTicketRequest.id())
