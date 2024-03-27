@@ -3,63 +3,81 @@ package com.innowise.exceptions;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseBody;
 
-@ControllerAdvice
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.time.LocalDateTime;
+
+@RestControllerAdvice
 public class GlobalExceptionHandler {
-    @ResponseBody
+
     @ExceptionHandler(NoSuchEntityIdException.class)
-    public ResponseEntity<String> handleNoSuchEntityException(NoSuchEntityIdException exception) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exception.getMessage());
+    public ResponseEntity<ApiErrorResponse> handleNoSuchEntityException(NoSuchEntityIdException exception) {
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(new ApiErrorResponse(HttpStatus.NOT_FOUND, LocalDateTime.now(), exception.getMessage()));
     }
 
-    @ResponseBody
     @ExceptionHandler(NotOwnerTicketException.class)
-    public ResponseEntity<String> handleNotOwnerTicketException(NotOwnerTicketException exception) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exception.getMessage());
-    }
+    public ResponseEntity<ApiErrorResponse> handleNotOwnerTicketException(NotOwnerTicketException exception) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(new ApiErrorResponse(HttpStatus.BAD_REQUEST, LocalDateTime.now(), exception.getMessage()));    }
 
-    @ResponseBody
     @ExceptionHandler(TicketNotDoneException.class)
-    public ResponseEntity<String> handleTicketNotDoneException(TicketNotDoneException exception) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exception.getMessage());
+    public ResponseEntity<ApiErrorResponse> handleTicketNotDoneException(TicketNotDoneException exception) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(new ApiErrorResponse(HttpStatus.BAD_REQUEST, LocalDateTime.now(), exception.getMessage()));
     }
 
-    @ResponseBody
     @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<String> handleConstraintViolationException(ConstraintViolationException exception) {
-        return new ResponseEntity<>(exception.getConstraintViolations().toString(), HttpStatus.BAD_REQUEST);
+    public ResponseEntity<ApiErrorResponse> handleConstraintViolationException(ConstraintViolationException exception) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(new ApiErrorResponse(HttpStatus.BAD_REQUEST, LocalDateTime.now(), exception.getConstraintViolations().toString()));
     } //TODO подумать, как лучше возвращать ошибку при валидации, когда будет готов фронт
 
-    @ResponseBody
     @ExceptionHandler(UserAlreadyExistsException.class)
-    public ResponseEntity<String> handleUserAlreadyExistsException(UserAlreadyExistsException exception) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exception.getMessage());
-    }
+    public ResponseEntity<ApiErrorResponse> handleUserAlreadyExistsException(UserAlreadyExistsException exception) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(new ApiErrorResponse(HttpStatus.BAD_REQUEST, LocalDateTime.now(), exception.getMessage()));    }
 
-    @ResponseBody
     @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<String> handleUserNotFoundException(UserNotFoundException exception) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exception.getMessage());
+    public ResponseEntity<ApiErrorResponse> handleUserNotFoundException(UserNotFoundException exception) {
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(new ApiErrorResponse(HttpStatus.NOT_FOUND, LocalDateTime.now(), exception.getMessage()));
     }
 
-    @ResponseBody
     @ExceptionHandler(NoSuchRoleNameException.class)
-    public ResponseEntity<String> handleNoSuchRoleNameException(NoSuchRoleNameException exception) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exception.getMessage());
+    public ResponseEntity<ApiErrorResponse> handleNoSuchRoleNameException(NoSuchRoleNameException exception) {
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(new ApiErrorResponse(HttpStatus.NOT_FOUND, LocalDateTime.now(), exception.getMessage()));
     }
 
-    @ResponseBody
     @ExceptionHandler(AttachedFileReadException.class)
-    public ResponseEntity<String> handleAttachedFileReadException(AttachedFileReadException exception) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(exception.getMessage());
+    public ResponseEntity<ApiErrorResponse> handleAttachedFileReadException(AttachedFileReadException exception) {
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ApiErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, LocalDateTime.now(), exception.getMessage()));
     }
 
-    @ResponseBody
     @ExceptionHandler(WrongCurrentPasswordException.class)
-    public ResponseEntity<String> handleWrongCurrentPasswordException(WrongCurrentPasswordException exception) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exception.getMessage());
+    public ResponseEntity<ApiErrorResponse> handleWrongCurrentPasswordException(WrongCurrentPasswordException exception) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(new ApiErrorResponse(HttpStatus.BAD_REQUEST, LocalDateTime.now(), exception.getMessage()));
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ApiErrorResponse> handleAccessDeniedException(AccessDeniedException exception) {
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
+                .body(new ApiErrorResponse(HttpStatus.FORBIDDEN, LocalDateTime.now(), exception.getMessage()));
     }
 }
