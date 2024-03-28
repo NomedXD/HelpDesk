@@ -19,14 +19,14 @@ public class TokenRepositoryImpl implements TokenRepository {
 
     @Override
     public boolean isAvailable(UUID tokenId) {
-        return session.createNativeQuery("SELECT COUNT(*) FROM tokens WHERE id = :id", Integer.class)
+        return session.createNativeQuery("SELECT COUNT(*) FROM blocked_tokens WHERE id = :id", Integer.class)
                 .setParameter("id", tokenId)
                 .getSingleResult() == 0;
     }
 
     @Override
     public void blockToken(Token token) {
-        session.createNativeQuery("INSERT INTO tokens (id, expires_at) VALUES (:id, :expiresAt)")
+        session.createNativeQuery("INSERT INTO blocked_tokens (id, expires_at) VALUES (:id, :expiresAt)")
                 .setParameter("id", token.id())
                 .setParameter("expiresAt", Date.from(token.expiresAt()))
                 .executeUpdate();
