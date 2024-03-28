@@ -4,12 +4,16 @@ import com.innowise.dto.request.CreateTicketRequest;
 import com.innowise.dto.response.TicketResponse;
 import com.innowise.services.TicketService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -19,15 +23,8 @@ public class TicketController {
     private final TicketService ticketService;
 
     @PostMapping
-    public ResponseEntity<?> uploadEntityWithFiles(@ModelAttribute CreateTicketRequest request) {
-        try {
-            TicketResponse response = ticketService.save(request);
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Failed to upload entity");
-        }
+    public ResponseEntity<TicketResponse> uploadEntityWithFiles(@ModelAttribute CreateTicketRequest request) {
+        return ResponseEntity.ok(ticketService.save(request));
     }
 
     // TODO retrieve a Page maybe, not a List
