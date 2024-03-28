@@ -1,16 +1,10 @@
 package com.innowise.repositories;
 
-import com.innowise.domain.Token;
+import com.innowise.security.entities.Token;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.UUID;
 
 public interface TokenRepository {
-    List<Token> findAllValidTokensByUserId(Integer userId);
-
-    Optional<Token> findByToken(String token);
-
-    void save(Token token);
-
-    void saveAll(List<Token> tokens);
+    boolean isAvailable(UUID tokenId);
+    void blockToken(Token token);
 }

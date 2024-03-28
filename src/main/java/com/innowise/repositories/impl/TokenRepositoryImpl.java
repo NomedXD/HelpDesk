@@ -1,45 +1,34 @@
 package com.innowise.repositories.impl;
 
-import com.innowise.domain.Token;
+import com.innowise.security.entities.Token;
 import com.innowise.repositories.TokenRepository;
 import jakarta.persistence.PersistenceContext;
 import org.hibernate.Session;
 import org.hibernate.query.NativeQuery;
 import org.springframework.stereotype.Repository;
+
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
 public class TokenRepositoryImpl implements TokenRepository {
     @PersistenceContext
     private Session session;
 
-    public List<Token> findAllValidTokensByUserId(Integer userId) {
-        String sql = "SELECT t.* FROM tokens t INNER JOIN users u ON t.user_id = u.id " +
-                "WHERE u.id = :userId AND (t.expired = false OR t.revoked = false)";
-        NativeQuery<Token> query = session.createNativeQuery(sql, Token.class);
-        query.setParameter("userId", userId);
-        return query.getResultList();
-    }
-
-    public Optional<Token> findByToken(String token) {
-        String sql = "SELECT t.* FROM tokens t WHERE t.token = :token";
-        NativeQuery<Token> query = session.createNativeQuery(sql, Token.class);
-        query.setParameter("token", token);
-        return Optional.ofNullable(query.uniqueResult());
+    @Override
+    public boolean isAvailable(UUID tokenId) {
+        return session.createNativeQuery("SELECT COUNT(*) FROM tokens WHERE id = :id", Integer.class)
+                .setParameter("id", tokenId)
+                .getSingleResult() == 0;
     }
 
     @Override
-    public void save(Token token) {
-        session.merge(token);
+    public void blockToken(Token token) {
+        session.createNativeQuery("INSERT INTO tokens (id, expires_at) VALUES (:id, :expiresAt)")
+                .setParameter("id", token.id())
+                .setParameter("expiresAt", Date.from(token.expiresAt()))
+                .executeUpdate();
     }
-
-    @Override
-    public void saveAll(List<Token> tokens) {
-        for (Token token : tokens) {
-            session.merge(token);
-        }
-    }
-
-
 }
