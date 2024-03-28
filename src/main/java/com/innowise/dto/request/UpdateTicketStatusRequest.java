@@ -11,7 +11,5 @@ public record UpdateTicketStatusRequest(
         Integer ticketId,
 
         @NotNull
-        //TODO Проверить работоспособность этой аннотации :)
-
         TicketState state) {
 }

@@ -33,12 +33,14 @@ public class GlobalExceptionHandler {
                 .body(new ApiErrorResponse(HttpStatus.BAD_REQUEST, LocalDateTime.now(), exception.getMessage()));
     }
 
+    // TODO забыли про handleTicketNotDraftException *URGENT*
+
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<ApiErrorResponse> handleConstraintViolationException(ConstraintViolationException exception) {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(new ApiErrorResponse(HttpStatus.BAD_REQUEST, LocalDateTime.now(), exception.getConstraintViolations().toString()));
-    } //TODO подумать, как лучше возвращать ошибку при валидации, когда будет готов фронт
+    } // TODO подумать, как лучше возвращать ошибку при валидации, когда будет готов фронт (NomedXD) *NOT URGENT*
 
     @ExceptionHandler(UserAlreadyExistsException.class)
     public ResponseEntity<ApiErrorResponse> handleUserAlreadyExistsException(UserAlreadyExistsException exception) {

@@ -33,6 +33,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
 
+    // TODO НАПИСАТЬ ЖЕНЕ ПО ПОВОДУ НАЗНАЧЕНИЯ РОЛЕЙ ПРИ РЕГИСТРАЦИИ
     @Override
     public LoginResponse register(RegistrationRequest request) {
         if (userService.existsByEmail(request.email())) {
@@ -45,7 +46,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .lastName(request.lastName())
                 .password(encodedPassword)
                 .build();
-        // TODO Заменить roleName на enum и искать по id(ну либо повесить индекс по имя)
         UserRole role = roleRepository.findByName("ROLE_EMPLOYEE").
                 orElseThrow(() -> new NoSuchRoleNameException("ROLE_EMPLOYEE"));
         user.setRole(role);
@@ -53,8 +53,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         String jwtToken = jwtService.generateToken(savedUser.getId(), savedUser.getUsername());
 
         saveToken(savedUser, jwtToken);
-        // TODO убрать <?> и возвращать просто строку. Убрать MediaType
-        // TODO из этих сервисов тоже возвращать только dto, Response entity формировать в контроллере
         return new LoginResponse(jwtToken);
     }
 

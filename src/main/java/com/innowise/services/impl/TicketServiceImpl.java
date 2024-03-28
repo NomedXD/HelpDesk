@@ -23,6 +23,7 @@ import com.innowise.repositories.TicketRepository;
 import com.innowise.services.CategoryService;
 import com.innowise.services.TicketService;
 import com.innowise.services.UserService;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -111,8 +112,6 @@ public class TicketServiceImpl implements TicketService {
                 .orElseThrow(() -> new NoSuchEntityIdException(EntityTypeMessages.TICKET_MESSAGE, id));
         return toTicketResponse(ticket);
     }
-    // TODO maybe "/attachments" and all other base request mappings
-    //  should be constants defined in properties too?
 
     @Override
     public List<TicketResponse> findAll() {
@@ -131,7 +130,7 @@ public class TicketServiceImpl implements TicketService {
     @Override
     @PreAuthorize(value = "hasAnyRole('MANAGER', 'EMPLOYEE')")
     @Validated
-    public TicketResponse update(UpdateTicketRequest updateTicketRequest) {
+    public TicketResponse update(@Valid UpdateTicketRequest updateTicketRequest) {
         Ticket ticket = ticketRepository.findById(updateTicketRequest.id())
                 .orElseThrow(() ->
                         new NoSuchEntityIdException(EntityTypeMessages.TICKET_MESSAGE, updateTicketRequest.id()));
@@ -149,14 +148,15 @@ public class TicketServiceImpl implements TicketService {
         ticket.setDesiredResolutionDate(updateTicketRequest.desiredResolutionDate());
         ticket.setCategory(categoryService.findById(updateTicketRequest.categoryId()));
         ticket.getHistories().add(History.ofUpdate(updatedBy, ticket));
-        //todo test this method
-        return ticketMapper.toTicketResponseDto(ticketRepository.update(ticket));
+        Ticket savedTicket = ticketRepository.update(ticket);
+        return toTicketResponse(savedTicket);
     }
 
-    // TODO     @PreAuthorize(value = "hasRole('ENGINEER')") ???
+
+    // TODO add checks of editor role for possible status transition
     @Override
     @Validated
-    public TicketResponse updateStatus(UpdateTicketStatusRequest updateTicketStatusRequest) {
+    public TicketResponse updateStatus(@Valid UpdateTicketStatusRequest updateTicketStatusRequest) {
         Ticket ticket = ticketRepository.findById(updateTicketStatusRequest.ticketId()).orElseThrow(
                 () -> new NoSuchEntityIdException(
                         EntityTypeMessages.TICKET_MESSAGE,
@@ -170,10 +170,10 @@ public class TicketServiceImpl implements TicketService {
                         updateTicketStatusRequest.state(),
                         editor,
                         ticket));
-        return ticketMapper.toTicketResponseDto(ticketRepository.update(ticket));
+        Ticket savedTicket = ticketRepository.update(ticket);
+        return toTicketResponse(savedTicket);
     }
 
-    // TODO     @PreAuthorize(value = "hasAnyRole('MANAGER', 'EMPLOYEE')") ???
     @Override
     public void delete(Integer id) {
         if (ticketRepository.existsById(id)) {
@@ -193,7 +193,7 @@ public class TicketServiceImpl implements TicketService {
         return ticketRepository.existsById(id);
     }
 
-    // TODO maybe more suitable name for method
+    // TODO make this a separate class and move to util package *NOT URGENT*
     private TicketResponse toTicketResponse(Ticket ticket) {
         TicketResponse response = ticketMapper.toTicketResponseDto(ticket);
         List<Attachment> attachments = ticket.getAttachments();
