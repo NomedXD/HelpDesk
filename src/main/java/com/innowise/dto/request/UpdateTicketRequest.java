@@ -31,8 +31,6 @@ public record UpdateTicketRequest(
         String description,
 
         @NotNull
-        //TODO Проверить работоспособность этой аннотации :)
-
         TicketUrgency urgency,
 
         @NotNull

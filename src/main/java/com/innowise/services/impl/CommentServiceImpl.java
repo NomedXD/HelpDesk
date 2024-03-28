@@ -13,6 +13,7 @@ import com.innowise.repositories.CommentRepository;
 import com.innowise.services.CommentService;
 import com.innowise.services.TicketService;
 import com.innowise.services.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -36,11 +37,11 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Validated
-    public CommentResponse save(CommentRequest commentRequest) {
+    public CommentResponse save(@Valid CommentRequest commentRequest) {
         Comment comment = commentMapper.toComment(commentRequest);
         User creator = userService.getUserFromPrincipal();
         comment.setUser(creator);
-        comment.setTicket(ticketService.findByIdService(creator.getId())
+        comment.setTicket(ticketService.findByIdService(commentRequest.ticketId())
                 .orElseThrow(() ->
                         new NoSuchEntityIdException(EntityTypeMessages.TICKET_MESSAGE, commentRequest.ticketId())));
         comment.setDate(LocalDateTime.now());

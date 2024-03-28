@@ -16,6 +16,7 @@ import com.innowise.repositories.FeedbackRepository;
 import com.innowise.services.FeedbackService;
 import com.innowise.services.TicketService;
 import com.innowise.services.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -41,14 +42,14 @@ public class FeedbackServiceImpl implements FeedbackService {
     @Override
     @PreAuthorize(value = "hasAnyRole('MANAGER', 'EMPLOYEE')")
     @Validated
-    public FeedbackResponse save(FeedbackRequest feedbackRequest) {
+    public FeedbackResponse save(@Valid FeedbackRequest feedbackRequest) {
         Feedback feedback = feedbackMapper.toFeedback(feedbackRequest);
 
         Ticket ticket = ticketService.findByIdService(feedbackRequest.ticketId()).orElseThrow(() ->
                 new NoSuchEntityIdException(EntityTypeMessages.TICKET_MESSAGE, feedbackRequest.ticketId()));
         User owner = userService.getUserFromPrincipal();
 
-        // todo На фронте тоже отключить кнопку для не DONE тикетов
+        // todo DISABLE FEEDBACK ON NON-DONE TICKETS ON FRONT *NOT URGENT*
         if (!ticket.getState().equals(TicketState.DONE)) {
             throw new TicketNotDoneException(ticket.getId());
         }

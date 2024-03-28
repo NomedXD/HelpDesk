@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -17,7 +18,8 @@ public class FeedbackController {
     private final FeedbackService feedbackService;
 
     @PostMapping
-    public ResponseEntity<FeedbackResponse> createFeedback(FeedbackRequest feedbackRequest) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(feedbackService.save(feedbackRequest));
+    public ResponseEntity<FeedbackResponse> createFeedback(@RequestBody FeedbackRequest feedbackRequest) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(feedbackService.save(feedbackRequest));
     }
 }

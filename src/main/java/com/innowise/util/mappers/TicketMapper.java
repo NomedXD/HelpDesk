@@ -12,9 +12,12 @@ public interface TicketMapper {
     @Mapping(source = "categoryId", target = "category.id")
     Ticket toTicket(CreateTicketRequest request);
 
+
     @Mapping(source = "category.name", target = "categoryName")
     @Mapping(source = "owner.firstName", target = "ownerName")
     @Mapping(source = "approver.firstName", target = "approverName")
     @Mapping(source = "assignee.firstName", target = "assigneeName")
+    @Mapping(source = "histories", target = "historyResponseList")
+    @Mapping(source = "comments", target = "commentResponseList")
     TicketResponse toTicketResponseDto(Ticket ticket);
 }
