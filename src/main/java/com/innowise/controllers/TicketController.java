@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -22,8 +21,9 @@ import java.util.List;
 public class TicketController {
     private final TicketService ticketService;
 
+    // TODO add flag to CreateTicketRequest to determine if draft or not
     @PostMapping
-    public ResponseEntity<TicketResponse> uploadEntityWithFiles(@ModelAttribute CreateTicketRequest request) {
+    public ResponseEntity<TicketResponse> createTicket(@ModelAttribute CreateTicketRequest request) {
         return ResponseEntity.ok(ticketService.save(request));
     }
 
