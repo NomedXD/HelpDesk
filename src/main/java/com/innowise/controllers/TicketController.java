@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
-
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -30,20 +30,24 @@ public class TicketController {
         }
     }
 
-
-    // TODO COMING IN HOT TRY RETRIEVE MODEL (IT WILL BIND EVERYTHING)
-    // TODO think about form-data and DTO construction problem
-
-    // TODO zip download
-    // TODO single file download
-    // TODO to ycovich
-
-    @GetMapping("/all")
+    // TODO retrieve a Page maybe, not a List
+    @GetMapping
     public ResponseEntity<List<TicketResponse>> getAllTickets() {
-        return ResponseEntity.status(HttpStatus.OK).body(ticketService.findAll());
+        return ResponseEntity.ok()
+                .body(ticketService.findAll());
     }
+
+    // TODO security annotation for role MANAGER
+    @GetMapping("/{id}")
+    public ResponseEntity<TicketResponse> getTicket(@PathVariable("id") Integer id) {
+        return ResponseEntity.ok()
+                .body(ticketService.findById(id));
+    }
+
+
     @GetMapping("/personal")
     public ResponseEntity<List<TicketResponse>> getPersonalTickets(@AuthenticationPrincipal UserDetails userDetails) {
-        return ResponseEntity.status(HttpStatus.OK).body(ticketService.findAllByAssigneeEmail(userDetails.getUsername()));
+        return ResponseEntity.ok()
+                .body(ticketService.findAllByAssigneeEmail(userDetails.getUsername()));
     }
 }

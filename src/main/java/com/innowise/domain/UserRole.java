@@ -26,6 +26,7 @@ public class UserRole {
 //    @Enumerated(EnumType.ORDINAL)
     @Column(name = "name", unique = true)
     private String name;
+    // TODO implement enum RoleName
 
     @Override
     public final boolean equals(Object o) {
