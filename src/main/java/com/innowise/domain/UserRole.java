@@ -1,6 +1,5 @@
 package com.innowise.domain;
 
-import com.innowise.domain.enums.RoleName;
 import jakarta.persistence.*;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -23,10 +22,8 @@ public class UserRole {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-//    @Enumerated(EnumType.ORDINAL)
     @Column(name = "name", unique = true)
     private String name;
-    // TODO implement enum RoleName
 
     @Override
     public final boolean equals(Object o) {

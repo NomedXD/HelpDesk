@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -18,8 +18,9 @@ import java.util.List;
 public class TicketController {
     private final TicketService ticketService;
 
+    // TODO add flag to CreateTicketRequest to determine if draft or not
     @PostMapping
-    public ResponseEntity<?> uploadEntityWithFiles(@ModelAttribute CreateTicketRequest request) {
+    public ResponseEntity<?> createTicket(@ModelAttribute CreateTicketRequest request) {
         try {
             TicketResponse response = ticketService.save(request);
             return ResponseEntity.ok(response);

@@ -1,7 +1,6 @@
 package com.innowise.dto.request;
 
 import com.innowise.domain.enums.TicketUrgency;
-import com.innowise.util.validation.TicketUrgencyValidation;
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.Min;
@@ -33,11 +32,7 @@ public record UpdateTicketRequest(
 
         @NotNull
         //TODO Проверить работоспособность этой аннотации :)
-        @TicketUrgencyValidation(anyOf = {
-                TicketUrgency.CRITICAL,
-                TicketUrgency.HIGH,
-                TicketUrgency.MEDIUM,
-                TicketUrgency.LOW})
+
         TicketUrgency urgency,
 
         @NotNull
