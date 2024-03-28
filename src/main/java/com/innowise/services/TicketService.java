@@ -29,6 +29,4 @@ public interface TicketService {
     Optional<Ticket> findByIdService(Integer id);
 
     boolean existsByIdService(Integer id);
-
-    TicketResponse saveTicketWithAttachments(CreateTicketRequest ticketRequest, MultipartFile[] files);
 }

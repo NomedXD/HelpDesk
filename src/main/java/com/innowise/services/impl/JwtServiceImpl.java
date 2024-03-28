@@ -1,6 +1,5 @@
 package com.innowise.services.impl;
 
-
 import com.innowise.domain.Token;
 import com.innowise.repositories.TokenRepository;
 import com.innowise.services.JwtService;
@@ -9,11 +8,11 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.java.Log;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
-
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
@@ -21,24 +20,20 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+
 @Log
 @Service
 @Transactional
 public class JwtServiceImpl implements JwtService {
     private final TokenRepository tokenRepository;
-
-    public JwtServiceImpl(TokenRepository tokenRepository, @Value("${jwt.secret}") String keyString) {
-        this.tokenRepository = tokenRepository;
-        this.key = generateSigningKey(keyString);
-    }
-
-    private Key generateSigningKey(String keyString) {
+    private final Key key;
+    @Autowired
+    public JwtServiceImpl(TokenRepository tokenRepository,
+                          @Value("${jwt.secret}") String keyString) {
         byte[] keyBytes = keyString.getBytes(StandardCharsets.UTF_8);
         this.key = new SecretKeySpec(keyBytes, "HmacSHA512");
-        return key;
+        this.tokenRepository = tokenRepository;
     }
-
-    private Key key;
 
     @Override
     public String generateToken(int id, String username) {
