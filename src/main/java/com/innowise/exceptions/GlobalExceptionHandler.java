@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.LocalDateTime;
 
-// TODO refactor this ultra-default handlers to be more specific (to Vlad)
+// TODO refactor this ultra-default handlers to be more specific (to Vlad) *URGENT*
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 

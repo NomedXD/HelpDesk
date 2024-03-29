@@ -154,7 +154,7 @@ public class TicketServiceImpl implements TicketService {
     }
 
 
-    // TODO add checks of editor role for possible status transition
+    // TODO add checks (switch-case please) of editor role for possible status transition (NomedXD) *URGENT*
     @Override
     @Validated
     public TicketResponse updateStatus(@Valid UpdateTicketStatusRequest updateTicketStatusRequest) {
