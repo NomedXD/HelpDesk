@@ -9,20 +9,16 @@ import com.innowise.security.filters.GetCsrfTokenFilter;
 import com.nimbusds.jose.crypto.DirectDecrypter;
 import com.nimbusds.jose.crypto.DirectEncrypter;
 import com.nimbusds.jose.jwk.OctetSequenceKey;
-import org.springframework.beans.factory.annotation.Qualifier;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -69,14 +65,18 @@ public class SecurityConfig {
                 .setTokenStringSerializer(tokenCookieJweStringSerializer);
 
         http
-                .httpBasic(Customizer.withDefaults())
+                .httpBasic(basic ->
+                        basic.authenticationEntryPoint((request, response, authException) -> {
+                            if (request.getHeader(HttpHeaders.AUTHORIZATION) == null) {
+                                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
+                            } else {
+                                response.sendError(HttpServletResponse.SC_FORBIDDEN, "Forbidden");
+                            }
+                        }))
                 .authenticationProvider(authenticationProvider)
-                .formLogin(form ->
-                        form.loginPage("/index.html"))
                 .addFilterBefore(new GetCsrfTokenFilter(), ExceptionTranslationFilter.class)
                 .authorizeHttpRequests(authorizeHttpRequests ->
                         authorizeHttpRequests
-                                .requestMatchers("/manager.html", "/manager").hasRole("MANAGER")
                                 .requestMatchers("/error", "index.html").permitAll()
                                 .anyRequest().authenticated())
                 .sessionManagement(sessionManagement -> sessionManagement
