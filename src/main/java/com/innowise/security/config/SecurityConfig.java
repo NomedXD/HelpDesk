@@ -77,6 +77,7 @@ public class SecurityConfig {
                 .addFilterBefore(new GetCsrfTokenFilter(), ExceptionTranslationFilter.class)
                 .authorizeHttpRequests(authorizeHttpRequests ->
                         authorizeHttpRequests
+                                .requestMatchers("api/auth/register").permitAll()
                                 .requestMatchers("/error", "index.html").permitAll()
                                 .anyRequest().authenticated())
                 .sessionManagement(sessionManagement -> sessionManagement
