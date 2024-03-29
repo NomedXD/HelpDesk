@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.LocalDateTime;
 
+// TODO refactor this ultra-default handlers to be more specific (to Vlad)
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -33,7 +34,12 @@ public class GlobalExceptionHandler {
                 .body(new ApiErrorResponse(HttpStatus.BAD_REQUEST, LocalDateTime.now(), exception.getMessage()));
     }
 
-    // TODO забыли про handleTicketNotDraftException *URGENT*
+    @ExceptionHandler(TicketNotDraftException.class)
+    public ResponseEntity<ApiErrorResponse> handleTicketNotDraftException(TicketNotDraftException exception) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(new ApiErrorResponse(HttpStatus.BAD_REQUEST, LocalDateTime.now(), exception.getMessage()));
+    }
 
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<ApiErrorResponse> handleConstraintViolationException(ConstraintViolationException exception) {
