@@ -2,23 +2,21 @@ package com.innowise.security.config;
 
 import com.innowise.domain.User;
 import com.innowise.repositories.TokenRepository;
-import com.innowise.repositories.UserRepository;
 import com.innowise.security.CookieAuthenticationTokenConverter;
 import com.innowise.security.TokenAuthenticationUserDetailsService;
 import com.innowise.security.entities.Token;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.CredentialsExpiredException;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.web.authentication.AuthenticationEntryPointFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationFilter;
-import org.springframework.security.web.authentication.Http403ForbiddenEntryPoint;
 import org.springframework.security.web.authentication.logout.CookieClearingLogoutHandler;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationProvider;
 import org.springframework.security.web.csrf.CsrfFilter;
 
-import java.util.Date;
 import java.util.function.Function;
 
 public class TokenCookieAuthenticationConfigurer
@@ -42,15 +40,27 @@ public class TokenCookieAuthenticationConfigurer
     }
 
     @Override
-    public void configure(HttpSecurity builder) throws Exception {
+    public void configure(HttpSecurity builder) {
         AuthenticationFilter cookieAuthenticationFilter = new AuthenticationFilter(
                 builder.getSharedObject(AuthenticationManager.class),
                 new CookieAuthenticationTokenConverter(this.tokenCookieStringDeserializer));
-        cookieAuthenticationFilter.setSuccessHandler((request, response, authentication) -> {});
-        cookieAuthenticationFilter.setFailureHandler(
-                new AuthenticationEntryPointFailureHandler(
-                        new Http403ForbiddenEntryPoint()
-                )
+        cookieAuthenticationFilter.setSuccessHandler((request, response, authentication) -> {
+        });
+        cookieAuthenticationFilter.setFailureHandler((request, response, exception) -> {
+                    if (exception instanceof CredentialsExpiredException) {
+                        Cookie cookie = new Cookie("__Host-auth-token", null);
+                        cookie.setPath("/");
+                        cookie.setDomain(null);
+                        cookie.setSecure(true);
+                        cookie.setHttpOnly(true);
+                        cookie.setMaxAge(0);
+
+                        response.addCookie(cookie);
+                        throw exception;
+                    }
+
+                    throw new AccessDeniedException("Token is wrong", exception);
+                }
         );
 
         var authenticationProvider = new PreAuthenticatedAuthenticationProvider();

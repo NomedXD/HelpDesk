@@ -9,9 +9,7 @@ import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.proxy.HibernateProxy;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -73,16 +71,16 @@ public class User implements UserDetails {
     private Token token;
 
     @Transient
-    private Boolean isAccountNonExpired;
+    private Boolean isAccountNonExpired = true;
 
     @Transient
-    private Boolean isAccountNonLocked;
+    private Boolean isAccountNonLocked = true;
 
     @Transient
-    private Boolean isCredentialsNonExpired;
+    private Boolean isCredentialsNonExpired = true;
 
     @Transient
-    private Boolean isEnabled;
+    private Boolean isEnabled = true;
 
     @Override
     public final boolean equals(Object o) {
@@ -112,21 +110,21 @@ public class User implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        return true;
+        return isAccountNonExpired;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+        return isAccountNonLocked;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return true;
+        return isCredentialsNonExpired;
     }
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return isEnabled;
     }
 }
