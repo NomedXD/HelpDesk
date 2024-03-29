@@ -35,6 +35,9 @@ public record CreateTicketRequest(
         LocalDate desiredResolutionDate,
 
         @Nullable
-        MultipartFile[] files
+        MultipartFile[] files,
+
+        @Nullable
+        Boolean isDraft
 ) {
 }

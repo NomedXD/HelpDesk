@@ -72,7 +72,8 @@ public class TicketServiceImpl implements TicketService {
         User owner = userService.getUserFromPrincipal();
         List<Attachment> content = new ArrayList<>();
         List<History> history = new ArrayList<>();
-
+        TicketState state = (request.isDraft() != null && request.isDraft()) ?
+                TicketState.DRAFT : TicketState.NEW;
         Ticket ticket = Ticket.builder()
                 .name(request.name())
                 .createdOn(LocalDate.now())
@@ -81,7 +82,7 @@ public class TicketServiceImpl implements TicketService {
                 .category(category)
                 .owner(owner)
                 .urgency(request.urgency())
-                .state(TicketState.NEW)
+                .state(state)
                 .build();
 
         if (request.files() != null) {
