@@ -43,7 +43,7 @@ public class TokenCookieAuthenticationConfigurer
 
     @Override
     public void configure(HttpSecurity builder) throws Exception {
-        var cookieAuthenticationFilter = new AuthenticationFilter(
+        AuthenticationFilter cookieAuthenticationFilter = new AuthenticationFilter(
                 builder.getSharedObject(AuthenticationManager.class),
                 new CookieAuthenticationTokenConverter(this.tokenCookieStringDeserializer));
         cookieAuthenticationFilter.setSuccessHandler((request, response, authentication) -> {});

@@ -38,8 +38,8 @@ public class User implements UserDetails {
     @Column(name = "email", unique = true)
     private String email;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "role_id")
+    @Column(name = "user_role")
+    @Enumerated
     private UserRole role;
 
     @Column(name = "password")
@@ -72,6 +72,18 @@ public class User implements UserDetails {
     @Transient
     private Token token;
 
+    @Transient
+    private Boolean isAccountNonExpired;
+
+    @Transient
+    private Boolean isAccountNonLocked;
+
+    @Transient
+    private Boolean isCredentialsNonExpired;
+
+    @Transient
+    private Boolean isEnabled;
+
     @Override
     public final boolean equals(Object o) {
         if (this == o) return true;
@@ -90,9 +102,7 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(new SimpleGrantedAuthority(role.getName().toString()));
-        return authorities;
+        return List.of(role);
     }
 
     @Override

@@ -6,12 +6,14 @@ import jakarta.persistence.PersistenceContext;
 import org.hibernate.Session;
 import org.hibernate.query.NativeQuery;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+@Transactional
 @Repository
 public class TokenRepositoryImpl implements TokenRepository {
     @PersistenceContext

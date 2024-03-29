@@ -68,9 +68,12 @@ public class SecurityConfig {
         tokenCookieSessionAuthenticationStrategy
                 .setTokenStringSerializer(tokenCookieJweStringSerializer);
 
-        http.httpBasic(Customizer.withDefaults())
+        http
+                .httpBasic(Customizer.withDefaults())
                 .authenticationProvider(authenticationProvider)
-                .addFilterAfter(new GetCsrfTokenFilter(), ExceptionTranslationFilter.class)
+                .formLogin(form ->
+                        form.loginPage("/index.html"))
+                .addFilterBefore(new GetCsrfTokenFilter(), ExceptionTranslationFilter.class)
                 .authorizeHttpRequests(authorizeHttpRequests ->
                         authorizeHttpRequests
                                 .requestMatchers("/manager.html", "/manager").hasRole("MANAGER")

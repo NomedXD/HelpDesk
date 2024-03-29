@@ -20,7 +20,8 @@ public class DefaultTokenCookieFactory implements Function<Authentication, Token
     public Token apply(Authentication authentication) {
         User user = (User) authentication.getPrincipal();
         Instant now = Instant.now();
-        return new Token(UUID.randomUUID(),
+        return new Token(
+                UUID.randomUUID(),
                 user.getId(),
                 authentication.getName(),
                 authentication.getAuthorities().stream()
