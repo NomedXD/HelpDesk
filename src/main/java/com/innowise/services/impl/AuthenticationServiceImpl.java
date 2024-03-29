@@ -33,7 +33,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
 
-    // TODO НАПИСАТЬ ЖЕНЕ ПО ПОВОДУ НАЗНАЧЕНИЯ РОЛЕЙ ПРИ РЕГИСТРАЦИИ
     @Override
     public LoginResponse register(RegistrationRequest request) {
         if (userService.existsByEmail(request.email())) {

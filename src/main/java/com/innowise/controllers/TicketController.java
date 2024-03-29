@@ -18,7 +18,6 @@ import java.util.List;
 public class TicketController {
     private final TicketService ticketService;
 
-    // TODO add flag to CreateTicketRequest to determine if draft or not
     @PostMapping
     public ResponseEntity<TicketResponse> createTicket(@ModelAttribute CreateTicketRequest request) {
         return ResponseEntity.ok(ticketService.save(request));
