@@ -12,7 +12,6 @@ import com.innowise.exceptions.WrongConfirmedPasswordException;
 import com.innowise.exceptions.WrongCurrentPasswordException;
 import com.innowise.repositories.UserRepository;
 import com.innowise.services.AuthenticationService;
-import com.innowise.services.JwtService;
 import com.innowise.services.UserService;
 import com.innowise.util.mappers.UserMapper;
 import jakarta.servlet.http.HttpServletRequest;
@@ -32,14 +31,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder encoder;
-    private final JwtService jwtService;
     private AuthenticationService authenticationService;
-
-    @Lazy
-    @Autowired
-    public void setAuthenticationService(AuthenticationService authenticationService) {
-        this.authenticationService = authenticationService;
-    }
 
     @Override
     public UserResponse findById(Integer id) {
@@ -102,14 +94,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public String changeEmail(ChangeEmailRequest request, HttpServletRequest httpRequest) {
-        User user = getUserFromPrincipal();
+        return null;
+        /*User user = getUserFromPrincipal();
         user.setEmail(request.email());
         String token = jwtService.getTokenFromRequest(httpRequest);
         Integer userId = jwtService.getUserIdFromToken(token);
         String newToken = jwtService.generateToken(userId, request.email());
         authenticationService.saveToken(user, newToken);
         save(user);
-        return newToken;
+        return newToken;*/
     }
     // a little bit messy, maybe refactor later
 
