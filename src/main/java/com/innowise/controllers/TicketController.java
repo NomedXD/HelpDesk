@@ -2,6 +2,7 @@ package com.innowise.controllers;
 
 import com.innowise.dto.request.CreateTicketRequest;
 import com.innowise.dto.request.UpdateTicketRequest;
+import com.innowise.dto.request.UpdateTicketStatusRequest;
 import com.innowise.dto.response.TicketResponse;
 import com.innowise.services.TicketService;
 import lombok.RequiredArgsConstructor;
@@ -45,5 +46,10 @@ public class TicketController {
     public ResponseEntity<List<TicketResponse>> getPersonalTickets(@AuthenticationPrincipal UserDetails userDetails) {
         return ResponseEntity.ok()
                 .body(ticketService.findAllByAssigneeEmail(userDetails.getUsername()));
+    }
+
+    @PostMapping("/status")
+    public ResponseEntity<TicketResponse> updateTicketStatus(@RequestBody UpdateTicketStatusRequest updateTicketStatusRequest) {
+        return ResponseEntity.ok().body(ticketService.updateStatus(updateTicketStatusRequest));
     }
 }

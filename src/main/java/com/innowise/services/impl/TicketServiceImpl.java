@@ -5,12 +5,15 @@ import com.innowise.domain.Attachment;
 import com.innowise.domain.Category;
 import com.innowise.domain.History;
 import com.innowise.domain.User;
+import com.innowise.domain.enums.UserRole;
 import com.innowise.dto.request.CreateTicketRequest;
 import com.innowise.dto.response.AttachmentResponse;
 import com.innowise.exceptions.AttachedFileReadException;
 import com.innowise.exceptions.EntityTypeMessages;
 import com.innowise.exceptions.NoSuchEntityIdException;
 import com.innowise.exceptions.NotOwnerTicketException;
+import com.innowise.exceptions.TicketStateTransferException;
+import com.innowise.mails.EmailService;
 import com.innowise.util.MimeDetector;
 import com.innowise.util.mappers.TicketListMapper;
 import com.innowise.util.mappers.TicketMapper;
@@ -48,18 +51,20 @@ public class TicketServiceImpl implements TicketService {
     private final TicketListMapper ticketListMapper;
     private final UserService userService;
     private final CategoryService categoryService;
+    private final EmailService emailService;
     private final MimeDetector mimeDetector;
     private final String API_CONTEXT_PATH;
     @Autowired
     public TicketServiceImpl(TicketRepository ticketRepository, TicketMapper ticketMapper,
                              TicketListMapper ticketListMapper, UserService userService,
-                             CategoryService categoryService, MimeDetector mimeDetector,
+                             CategoryService categoryService, EmailService emailService, MimeDetector mimeDetector,
                              @Value("${api.context.path}") String API_CONTEXT_PATH) {
         this.ticketRepository = ticketRepository;
         this.ticketMapper = ticketMapper;
         this.ticketListMapper = ticketListMapper;
         this.userService = userService;
         this.categoryService = categoryService;
+        this.emailService = emailService;
         this.mimeDetector = mimeDetector;
         this.API_CONTEXT_PATH = API_CONTEXT_PATH;
     }
@@ -163,7 +168,10 @@ public class TicketServiceImpl implements TicketService {
                         EntityTypeMessages.TICKET_MESSAGE,
                         updateTicketStatusRequest.ticketId()));
         User editor = userService.getUserFromPrincipal();
-
+        if(!checkStatusChangeAuthorities(editor, ticket, updateTicketStatusRequest)) {
+            throw new TicketStateTransferException(ticket.getId(), editor.getRole(), ticket.getState());
+        }
+        emailService.notifyTicketStateTransfer(ticket, updateTicketStatusRequest.state());
         ticket.setState(updateTicketStatusRequest.state());
         ticket.getHistories()
                 .add(History.ofStatusChange(
@@ -173,6 +181,25 @@ public class TicketServiceImpl implements TicketService {
                         ticket));
         Ticket savedTicket = ticketRepository.update(ticket);
         return toTicketResponse(savedTicket);
+    }
+
+    private boolean checkStatusChangeAuthorities(User editor, Ticket ticket, UpdateTicketStatusRequest updateTicketStatusRequest) {
+        if(editor.getRole().getFromToStateAuthorities().containsKey(ticket.getState())) {
+            List<TicketState> ticketTransferStatesList = editor.getRole().getFromToStateAuthorities().get(ticket.getState());
+            if (editor.getRole().equals(UserRole.ROLE_MANAGER)) {
+                switch (ticket.getState()) {
+                    case DRAFT, DECLINED -> {
+                        return ticketTransferStatesList.contains(updateTicketStatusRequest.state()) && ticket.getOwner().getId().equals(editor.getId());
+                    }
+                    case NEW -> {
+                        return ticketTransferStatesList.contains(updateTicketStatusRequest.state()) && ticket.getOwner().getRole().equals(UserRole.ROLE_EMPLOYEE);
+                    }
+                }
+            } else {
+                return ticketTransferStatesList.contains(updateTicketStatusRequest.state());
+            }
+        }
+        return false;
     }
 
     @Override

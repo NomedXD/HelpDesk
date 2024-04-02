@@ -90,6 +90,7 @@ public class Ticket {
     private List<History> histories;
 
     @OneToOne(mappedBy = "ticket", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ToString.Exclude
     private Feedback feedback;
 
     @Override

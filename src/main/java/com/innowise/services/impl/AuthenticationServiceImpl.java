@@ -2,15 +2,13 @@ package com.innowise.services.impl;
 
 import com.innowise.domain.Token;
 import com.innowise.domain.User;
-import com.innowise.domain.UserRole;
 import com.innowise.domain.enums.TokenType;
+import com.innowise.domain.enums.UserRole;
 import com.innowise.dto.request.LoginRequest;
 import com.innowise.dto.request.RegistrationRequest;
 import com.innowise.dto.response.LoginResponse;
 import com.innowise.dto.response.UserResponse;
-import com.innowise.exceptions.NoSuchRoleNameException;
 import com.innowise.exceptions.UserAlreadyExistsException;
-import com.innowise.repositories.UserRoleRepository;
 import com.innowise.services.AuthenticationService;
 import com.innowise.services.JwtService;
 import com.innowise.services.UserService;
@@ -29,7 +27,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class AuthenticationServiceImpl implements AuthenticationService {
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
-    private final UserRoleRepository roleRepository;
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
 
@@ -43,11 +40,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .email(request.email())
                 .firstName(request.firstName())
                 .lastName(request.lastName())
-                .password(encodedPassword)
+                .password(encodedPassword).role(UserRole.ROLE_EMPLOYEE)
                 .build();
-        UserRole role = roleRepository.findByName("ROLE_EMPLOYEE").
-                orElseThrow(() -> new NoSuchRoleNameException("ROLE_EMPLOYEE"));
-        user.setRole(role);
         User savedUser = userService.save(user);
         String jwtToken = jwtService.generateToken(savedUser.getId(), savedUser.getUsername());
 

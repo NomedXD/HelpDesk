@@ -1,7 +1,9 @@
 package com.innowise.domain;
 
+import com.innowise.domain.enums.UserRole;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -46,8 +48,8 @@ public class User implements UserDetails {
     @Column(name = "email", unique = true)
     private String email;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "role_id")
+    @Column(name = "user_role")
+    @Enumerated
     private UserRole role;
 
     @Column(name = "password")
@@ -100,7 +102,7 @@ public class User implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(new SimpleGrantedAuthority(role.getName().toString()));
+        authorities.add(new SimpleGrantedAuthority(role.getAuthority()));
         return authorities;
     }
 
