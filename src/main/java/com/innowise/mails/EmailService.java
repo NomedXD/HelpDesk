@@ -8,5 +8,5 @@ public interface EmailService {
 
     void notifyFeedbackProvide(User assignee, Integer ticketId);
 
-    void notifyTicketStateTransfer(Ticket ticket, TicketState toTicketState);
+    void notifyTicketStateTransfer(TicketState currentState, Ticket ticket, TicketState toTicketState);
 }

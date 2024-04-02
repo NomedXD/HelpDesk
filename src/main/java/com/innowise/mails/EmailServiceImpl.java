@@ -45,8 +45,8 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
-    public void notifyTicketStateTransfer(Ticket ticket, TicketState toTicketState) {
-        TicketState currentState = ticket.getState();
+    @Async
+    public void notifyTicketStateTransfer(TicketState currentState, Ticket ticket, TicketState toTicketState) {
         if ((currentState.equals(TicketState.DRAFT) || currentState.equals(TicketState.DECLINED)) && toTicketState.equals(TicketState.NEW)) {
             List<User> managerList = userService.findAll().stream().filter(user -> user.getRole().equals(UserRole.ROLE_MANAGER)).toList();
             notifyFromDraftDeclinedToNew(managerList, ticket.getId());
@@ -69,8 +69,8 @@ public class EmailServiceImpl implements EmailService {
             notifyFromInProgressToDone(ticket.getOwner(), ticket.getId());
         }
     }
-    @Async
-    protected void notifyFromDraftDeclinedToNew(List<User> managerList, Integer ticketId) {
+
+    private void notifyFromDraftDeclinedToNew(List<User> managerList, Integer ticketId) {
         for (User user : managerList) {
             SimpleMailMessage message = new SimpleMailMessage();
             message.setFrom(sender);
@@ -83,8 +83,8 @@ public class EmailServiceImpl implements EmailService {
             emailSender.send(message);
         }
     }
-    @Async
-    protected void notifyFromNewToApproved(List<User> creatorEngineerList, Integer ticketId) {
+
+    private void notifyFromNewToApproved(List<User> creatorEngineerList, Integer ticketId) {
         for (User user : creatorEngineerList) {
             SimpleMailMessage message = new SimpleMailMessage();
             message.setFrom(sender);
@@ -97,8 +97,8 @@ public class EmailServiceImpl implements EmailService {
             emailSender.send(message);
         }
     }
-    @Async
-    protected void notifyFromNewToDeclined(User creator, Integer ticketId) {
+
+    private void notifyFromNewToDeclined(User creator, Integer ticketId) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom(sender);
         message.setTo(creator.getEmail());
@@ -109,8 +109,8 @@ public class EmailServiceImpl implements EmailService {
                 """, creator.getFirstName(), creator.getLastName(), ticketId));
         emailSender.send(message);
     }
-    @Async
-    protected void notifyFromNewToCancelled(User creator, Integer ticketId) {
+
+    private void notifyFromNewToCancelled(User creator, Integer ticketId) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom(sender);
         message.setTo(creator.getEmail());
@@ -121,8 +121,8 @@ public class EmailServiceImpl implements EmailService {
                 """, creator.getFirstName(), creator.getLastName(), ticketId));
         emailSender.send(message);
     }
-    @Async
-    protected void notifyFromApprovedToCancelled(List<User> creatorApproverList, Integer ticketId) {
+
+    private void notifyFromApprovedToCancelled(List<User> creatorApproverList, Integer ticketId) {
         for (User user : creatorApproverList) {
             SimpleMailMessage message = new SimpleMailMessage();
             message.setFrom(sender);
@@ -135,8 +135,8 @@ public class EmailServiceImpl implements EmailService {
             emailSender.send(message);
         }
     }
-    @Async
-    protected void notifyFromInProgressToDone(User creator, Integer ticketId) {
+
+    private void notifyFromInProgressToDone(User creator, Integer ticketId) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom(sender);
         message.setTo(creator.getEmail());

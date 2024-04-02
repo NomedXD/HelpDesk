@@ -171,7 +171,7 @@ public class TicketServiceImpl implements TicketService {
         if(!checkStatusChangeAuthorities(editor, ticket, updateTicketStatusRequest)) {
             throw new TicketStateTransferException(ticket.getId(), editor.getRole(), ticket.getState());
         }
-        emailService.notifyTicketStateTransfer(ticket, updateTicketStatusRequest.state());
+        emailService.notifyTicketStateTransfer(ticket.getState(), ticket, updateTicketStatusRequest.state());
         ticket.setState(updateTicketStatusRequest.state());
         ticket.getHistories()
                 .add(History.ofStatusChange(
