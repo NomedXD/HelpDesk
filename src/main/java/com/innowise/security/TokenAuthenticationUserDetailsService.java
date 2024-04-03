@@ -4,7 +4,6 @@ import com.innowise.domain.User;
 import com.innowise.domain.UserRole;
 import com.innowise.repositories.TokenRepository;
 import com.innowise.security.entities.Token;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.AuthenticationUserDetailsService;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -37,7 +36,7 @@ public class TokenAuthenticationUserDetailsService implements AuthenticationUser
                     .isEnabled(true)
                     .isAccountNonLocked(true)
                     .isCredentialsNonExpired(
-                            this.tokenRepository.isAvailable(token.id()) &&
+                            this.tokenRepository.isExists(token.id()) &&
                             token.expiresAt().isAfter(Instant.now())
                     ).build();
         }

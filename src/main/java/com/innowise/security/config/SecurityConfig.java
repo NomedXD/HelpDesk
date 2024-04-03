@@ -2,18 +2,16 @@ package com.innowise.security.config;
 
 import com.innowise.repositories.TokenRepository;
 import com.innowise.repositories.UserRepository;
-import com.innowise.security.TokenCookieJweStringDeserializer;
-import com.innowise.security.TokenCookieJweStringSerializer;
-import com.innowise.security.TokenCookieSessionAuthenticationStrategy;
+import com.innowise.security.*;
 import com.innowise.security.filters.GetCsrfTokenFilter;
-import com.nimbusds.jose.crypto.DirectDecrypter;
-import com.nimbusds.jose.crypto.DirectEncrypter;
+import com.nimbusds.jose.JWSAlgorithm;
+import com.nimbusds.jose.crypto.MACSigner;
+import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jose.jwk.OctetSequenceKey;
-import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
@@ -23,61 +21,58 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.ExceptionTranslationFilter;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
-import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
+import org.springframework.security.web.csrf.*;
 
 @Configuration
+@Slf4j
 public class SecurityConfig {
 
     @Bean
-    public TokenCookieJweStringSerializer tokenCookieJweStringSerializer(
-            @Value("${jwt.cookie-token-key}") String cookieTokenKey
+    public AccessTokenJwsStringSerializer accessTokenJwsStringSerializer(
+            @Value("${jwt.cookie-token-key}") String signKey
     ) throws Exception {
-        return new TokenCookieJweStringSerializer(new DirectEncrypter(
-                OctetSequenceKey.parse(cookieTokenKey)
-        ));
+        return new AccessTokenJwsStringSerializer(new MACSigner(OctetSequenceKey.parse(signKey)), JWSAlgorithm.HS256);
     }
 
     @Bean
-    public TokenCookieAuthenticationConfigurer tokenCookieAuthenticationConfigurer(
+    public TokenAuthenticationConfigurer tokenCookieAuthenticationConfigurer(
             @Value("${jwt.cookie-token-key}") String cookieTokenKey,
-            TokenRepository tokenRepository
+            TokenRepository tokenRepository,
+            UserRepository userRepository
     ) throws Exception {
-        return new TokenCookieAuthenticationConfigurer()
-                .tokenCookieStringDeserializer(new TokenCookieJweStringDeserializer(
-                        new DirectDecrypter(
-                                OctetSequenceKey.parse(cookieTokenKey)
-                        )
+        return new TokenAuthenticationConfigurer()
+                .accessTokenFactory(new UserAccessTokenFactory())
+                .refreshTokenFactory(new DefaultCookieTokenFactory())
+                .accessTokenSerializer(new AccessTokenJwsStringSerializer(
+                        new MACSigner(OctetSequenceKey.parse(cookieTokenKey))
                 ))
-                .tokenRepository(tokenRepository);
+                .userRepository(userRepository)
+                .tokenRepository(tokenRepository)
+                .accessTokenStringDeserializer(new AccessTokenJwsStringDeserializer(
+                        new MACVerifier(OctetSequenceKey.parse(cookieTokenKey))
+                ));
     }
 
     @Bean
     public SecurityFilterChain securityFilterChain(
             HttpSecurity http,
-            TokenCookieAuthenticationConfigurer tokenCookieAuthenticationConfigurer,
-            TokenCookieJweStringSerializer tokenCookieJweStringSerializer,
-            AuthenticationProvider authenticationProvider) throws Exception
+            TokenAuthenticationConfigurer tokenAuthenticationConfigurer,
+            AccessTokenJwsStringSerializer accessTokenJwsStringSerializer,
+            AuthenticationProvider authenticationProvider,
+            TokenRepository tokenRepository) throws Exception
     {
         TokenCookieSessionAuthenticationStrategy tokenCookieSessionAuthenticationStrategy =
-                new TokenCookieSessionAuthenticationStrategy();
+                new TokenCookieSessionAuthenticationStrategy(tokenRepository);
         tokenCookieSessionAuthenticationStrategy
-                .setTokenStringSerializer(tokenCookieJweStringSerializer);
+                .setAccessTokenStringSerializer(accessTokenJwsStringSerializer);
 
         http
-                .httpBasic(basic ->
-                        basic.authenticationEntryPoint((request, response, authException) -> {
-                            if (request.getHeader(HttpHeaders.AUTHORIZATION) == null) {
-                                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
-                            } else {
-                                response.sendError(HttpServletResponse.SC_FORBIDDEN, "Forbidden");
-                            }
-                        }))
+                .httpBasic(basic -> basic.disable())
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(new GetCsrfTokenFilter(), ExceptionTranslationFilter.class)
                 .authorizeHttpRequests(authorizeHttpRequests ->
                         authorizeHttpRequests
-                                .requestMatchers("api/auth/register").permitAll()
+                                .requestMatchers("/auth/**").permitAll()
                                 .requestMatchers("/error", "index.html").permitAll()
                                 .anyRequest().authenticated())
                 .sessionManagement(sessionManagement -> sessionManagement
@@ -87,7 +82,7 @@ public class SecurityConfig {
                         .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler())
                         .sessionAuthenticationStrategy((authentication, request, response) -> {}));
 
-        http.with(tokenCookieAuthenticationConfigurer, Customizer.withDefaults());
+        http.with(tokenAuthenticationConfigurer, Customizer.withDefaults());
 
         return http.build();
     }

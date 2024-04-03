@@ -1,7 +1,6 @@
 package com.innowise.util.mappers;
 
 import com.innowise.dto.request.CreateTicketRequest;
-import com.innowise.dto.request.UpdateTicketRequest;
 import com.innowise.dto.response.TicketResponse;
 import com.innowise.domain.Ticket;
 import org.mapstruct.Mapper;
