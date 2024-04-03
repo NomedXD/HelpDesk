@@ -88,4 +88,11 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.FORBIDDEN)
                 .body(new ApiErrorResponse(HttpStatus.FORBIDDEN, LocalDateTime.now(), exception.getMessage()));
     }
+
+    @ExceptionHandler(TicketStateTransferException.class)
+    public ResponseEntity<ApiErrorResponse> handleTicketStateTransferException(TicketStateTransferException exception) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(new ApiErrorResponse(HttpStatus.BAD_REQUEST, LocalDateTime.now(), exception.getMessage()));
+    }
 }

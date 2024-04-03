@@ -22,6 +22,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 @Service
 @Transactional
@@ -35,6 +37,11 @@ public class UserServiceImpl implements UserService {
     public UserResponse findById(Integer id) {
         return userMapper.toUserResponse(userRepository.findById(id)
                 .orElseThrow(() -> new NoSuchEntityIdException(EntityTypeMessages.USER_MESSAGE, id)));
+    }
+
+    @Override
+    public List<User> findAll() {
+        return userRepository.findAll();
     }
 
     @Override

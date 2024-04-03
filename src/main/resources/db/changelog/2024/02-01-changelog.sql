@@ -1,5 +1,6 @@
 -- liquibase formatted sql
 
+
 -- changeset vlad:1712066106624-1
 CREATE TABLE refresh_tokens
 (

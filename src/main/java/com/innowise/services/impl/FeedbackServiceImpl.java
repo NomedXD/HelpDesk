@@ -2,6 +2,7 @@ package com.innowise.services.impl;
 
 import com.innowise.exceptions.EntityTypeMessages;
 import com.innowise.exceptions.NoSuchEntityIdException;
+import com.innowise.mails.EmailService;
 import com.innowise.util.mappers.FeedbackListMapper;
 import com.innowise.util.mappers.FeedbackMapper;
 import com.innowise.dto.request.FeedbackRequest;
@@ -17,8 +18,6 @@ import com.innowise.services.FeedbackService;
 import com.innowise.services.TicketService;
 import com.innowise.services.UserService;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -28,7 +27,6 @@ import org.springframework.validation.annotation.Validated;
 import java.time.LocalDate;
 import java.util.List;
 
-@RequiredArgsConstructor
 @Service
 @Transactional
 @Validated
@@ -37,7 +35,19 @@ public class FeedbackServiceImpl implements FeedbackService {
     private final FeedbackMapper feedbackMapper;
     private final FeedbackListMapper feedbackListMapper;
     private final UserService userService;
-    private TicketService ticketService;
+    private final TicketService ticketService;
+    private final EmailService emailService;
+
+    public FeedbackServiceImpl(FeedbackRepository feedbackRepository, FeedbackMapper feedbackMapper,
+                               FeedbackListMapper feedbackListMapper, UserService userService,
+                               @Lazy TicketService ticketService, EmailService emailService) {
+        this.feedbackRepository = feedbackRepository;
+        this.feedbackMapper = feedbackMapper;
+        this.feedbackListMapper = feedbackListMapper;
+        this.userService = userService;
+        this.ticketService = ticketService;
+        this.emailService = emailService;
+    }
 
     @Override
     @PreAuthorize(value = "hasAnyRole('MANAGER', 'EMPLOYEE')")
@@ -56,7 +66,7 @@ public class FeedbackServiceImpl implements FeedbackService {
         if (!ticket.getOwner().getId().equals(owner.getId())) {
             throw new NotOwnerTicketException(owner.getId(), ticket.getId());
         }
-
+        emailService.notifyFeedbackProvide(ticket.getAssignee(), ticket.getId());
         feedback.setUser(owner);
         feedback.setTicket(ticket);
         feedback.setDate(LocalDate.now());
@@ -91,11 +101,5 @@ public class FeedbackServiceImpl implements FeedbackService {
         } else {
             throw new NoSuchEntityIdException(EntityTypeMessages.TICKET_MESSAGE, ticketId);
         }
-    }
-
-    @Autowired
-    @Lazy
-    public void setTicketService(TicketService ticketService) {
-        this.ticketService = ticketService;
     }
 }

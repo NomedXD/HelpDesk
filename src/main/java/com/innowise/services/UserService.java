@@ -7,12 +7,16 @@ import com.innowise.dto.request.UpdateUserRequest;
 import com.innowise.dto.response.UserResponse;
 import jakarta.servlet.http.HttpServletRequest;
 
+import java.util.List;
+
 public interface UserService {
     User save(User user);
 
     UserResponse findByEmail(String email);
 
     UserResponse findById(Integer id);
+
+    List<User> findAll();
 
     User getUserFromPrincipal();
 
