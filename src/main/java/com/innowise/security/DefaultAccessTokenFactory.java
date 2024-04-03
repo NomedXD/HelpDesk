@@ -15,6 +15,7 @@ import java.util.function.Function;
 @Setter
 public class DefaultAccessTokenFactory implements Function<Authentication, Token> {
     private Duration tokenTtl = Duration.ofMinutes(5);
+    //todo Duration.ofDays(5)
 
     public Token apply(Authentication authentication) {
         User user = (User) authentication.getPrincipal();

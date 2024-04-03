@@ -12,12 +12,14 @@ import com.innowise.security.filters.LoginFilter;
 import com.innowise.security.filters.TokenRefreshFilter;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.authentication.logout.CookieClearingLogoutHandler;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationProvider;
 import org.springframework.security.web.csrf.CsrfFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import java.util.Arrays;
 import java.util.UUID;
@@ -40,15 +42,16 @@ public class TokenAuthenticationConfigurer
         builder.logout(logout -> logout.addLogoutHandler(
                         new CookieClearingLogoutHandler("__Host-auth-token"))
                 .addLogoutHandler((request, response, authentication) -> {
-                    Cookie refreshCookie = Arrays.stream(request.getCookies())
+                    Arrays.stream(request.getCookies())
                             .filter(cookie -> cookie.getName().equals("__Host-auth-token"))
-                            .findFirst().orElse(null);
-                    if (refreshCookie != null) {
-                        this.tokenRepository.delete(UUID.fromString(refreshCookie.getValue()));
-
-                        response.setStatus(HttpServletResponse.SC_NO_CONTENT);
-                    }
-                }));
+                            .findFirst()
+                            .ifPresent(refreshCookie -> this.tokenRepository.delete(UUID.fromString(refreshCookie.getValue())));
+                })
+                .logoutRequestMatcher(new AntPathRequestMatcher("/auth/logout", HttpMethod.POST.name()))
+                .logoutSuccessHandler((request, response, authentication) -> {
+                    response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+                })
+        );
     }
 
     @Override
