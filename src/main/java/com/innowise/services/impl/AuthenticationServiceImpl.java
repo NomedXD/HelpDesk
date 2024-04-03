@@ -1,7 +1,7 @@
 package com.innowise.services.impl;
 
 import com.innowise.domain.User;
-import com.innowise.domain.UserRole;
+import com.innowise.domain.enums.UserRole;
 import com.innowise.dto.request.RegistrationRequest;
 import com.innowise.dto.response.UserResponse;
 import com.innowise.exceptions.UserAlreadyExistsException;

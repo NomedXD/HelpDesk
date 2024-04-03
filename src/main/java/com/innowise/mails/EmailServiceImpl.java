@@ -88,7 +88,7 @@ public class EmailServiceImpl implements EmailService {
         for (User user : creatorEngineerList) {
             SimpleMailMessage message = new SimpleMailMessage();
             message.setFrom(sender);
-            message.setTo("coovshow1@gmail.com"); // user.getEmail()
+            message.setTo(user.getEmail());
             message.setSubject("Ticket was approved");
             message.setText(String.format("""
                     Dear Users,

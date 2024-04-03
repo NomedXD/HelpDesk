@@ -1,7 +1,7 @@
 package com.innowise.security;
 
 import com.innowise.domain.User;
-import com.innowise.domain.UserRole;
+import com.innowise.domain.enums.UserRole;
 import com.innowise.repositories.TokenRepository;
 import com.innowise.security.entities.Token;
 import org.springframework.security.core.userdetails.AuthenticationUserDetailsService;
