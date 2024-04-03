@@ -72,9 +72,9 @@ public class TicketServiceImpl implements TicketService {
     @Override
     @PreAuthorize(value = "hasAnyRole('MANAGER', 'EMPLOYEE')")
     @Validated
-    public TicketResponse save(CreateTicketRequest request) {
+    public TicketResponse save(CreateTicketRequest request, String contextUserName) {
         Category category = categoryService.findById(request.categoryId());
-        User owner = userService.getUserFromPrincipal();
+        User owner = userService.findByEmailService(contextUserName);
         List<Attachment> content = new ArrayList<>();
         List<History> history = new ArrayList<>();
         TicketState state = (request.isDraft() != null && request.isDraft()) ?
@@ -136,14 +136,14 @@ public class TicketServiceImpl implements TicketService {
     @Override
     @PreAuthorize(value = "hasAnyRole('MANAGER', 'EMPLOYEE')")
     @Validated
-    public TicketResponse update(@Valid UpdateTicketRequest updateTicketRequest) {
+    public TicketResponse update(@Valid UpdateTicketRequest updateTicketRequest, String contextUserName) {
         Ticket ticket = ticketRepository.findById(updateTicketRequest.id())
                 .orElseThrow(() ->
                         new NoSuchEntityIdException(EntityTypeMessages.TICKET_MESSAGE, updateTicketRequest.id()));
         if (!ticket.getState().equals(TicketState.DRAFT)) {
             throw new TicketNotDraftException(updateTicketRequest.id());
         }
-        User updatedBy = userService.getUserFromPrincipal();
+        User updatedBy = userService.findByEmailService(contextUserName);
         if (!ticket.getOwner().equals(updatedBy)) {
             throw new NotOwnerTicketException(updatedBy.getId(), ticket.getId());
         }
@@ -162,12 +162,12 @@ public class TicketServiceImpl implements TicketService {
     // TODO add checks (switch-case please) of editor role for possible status transition (NomedXD) *URGENT*
     @Override
     @Validated
-    public TicketResponse updateStatus(@Valid UpdateTicketStatusRequest updateTicketStatusRequest) {
+    public TicketResponse updateStatus(@Valid UpdateTicketStatusRequest updateTicketStatusRequest, String contextUserName) {
         Ticket ticket = ticketRepository.findById(updateTicketStatusRequest.ticketId()).orElseThrow(
                 () -> new NoSuchEntityIdException(
                         EntityTypeMessages.TICKET_MESSAGE,
                         updateTicketStatusRequest.ticketId()));
-        User editor = userService.getUserFromPrincipal();
+        User editor = userService.findByEmailService(contextUserName);
         if(!checkStatusChangeAuthorities(editor, ticket, updateTicketStatusRequest)) {
             throw new TicketStateTransferException(ticket.getId(), editor.getRole(), ticket.getState());
         }

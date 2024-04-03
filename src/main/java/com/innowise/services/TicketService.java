@@ -11,19 +11,19 @@ import java.util.List;
 import java.util.Optional;
 
 public interface TicketService {
-    TicketResponse save(@Valid CreateTicketRequest request);
+    TicketResponse save(@Valid CreateTicketRequest request, String contextUserName);
 
     List<TicketResponse> findAll();
 
     List<TicketResponse> findAllByAssigneeEmail(String email);
 
-    TicketResponse update(@Valid UpdateTicketRequest request);
+    TicketResponse update(@Valid UpdateTicketRequest request, String contextUserName);
 
     void delete(Integer id);
 
     TicketResponse findById(Integer id);
 
-    TicketResponse updateStatus(@Valid UpdateTicketStatusRequest request);
+    TicketResponse updateStatus(@Valid UpdateTicketStatusRequest request, String contextUserName);
 
     Optional<Ticket> findByIdService(Integer id);
 

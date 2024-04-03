@@ -43,8 +43,9 @@ public class UserController {
     }
 
     @PatchMapping("/edit")
-    public ResponseEntity<UserResponse> editProfile(@RequestBody UpdateUserRequest request) {
-        UserResponse response = userMapper.toUserResponse(userService.update(request));
+    public ResponseEntity<UserResponse> editProfile(@RequestBody UpdateUserRequest request,
+                                                    @AuthenticationPrincipal UserDetails userDetails) {
+        UserResponse response = userMapper.toUserResponse(userService.update(request, userDetails.getUsername()));
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
     }
 
@@ -56,8 +57,9 @@ public class UserController {
     }
 
     @PatchMapping("/edit/password")
-    public ResponseEntity<String> changePassword(@RequestBody ChangePasswordRequest request) {
-        userService.changePassword(request);
+    public ResponseEntity<String> changePassword(@RequestBody ChangePasswordRequest request,
+                                                 @AuthenticationPrincipal UserDetails userDetails) {
+        userService.changePassword(request, userDetails.getUsername());
         return ResponseEntity.status(HttpStatus.ACCEPTED).body("password changed successfully");
     }
 

@@ -2,6 +2,7 @@ package com.innowise.services;
 
 import com.innowise.domain.User;
 import com.innowise.domain.enums.UserRole;
+import com.innowise.dto.request.ChangePasswordRequest;
 import com.innowise.dto.request.UpdateUserRequest;
 import com.innowise.dto.response.UserResponse;
 import com.innowise.exceptions.NoSuchEntityIdException;
@@ -100,7 +101,7 @@ class UserServiceTest {
 
     @Test
     public void findByEmail_withInvalidEmail_throwsUserNotFoundException() {
-        String invalidEmail = "invalid_email";
+        String invalidEmail = "invalidUser@example.com";
 
         Mockito.when(userRepository.findByEmail(invalidEmail)).thenReturn(Optional.empty());
 
@@ -108,26 +109,55 @@ class UserServiceTest {
         Mockito.verify(userRepository, Mockito.times(1)).findByEmail(invalidEmail);
     }
 
-    // Does not work. Cause: getUserFromPrincipal
     @Test
-    public void update_withValidUserId_returnsUpdatedUser() {
+    public void update_withValidUserName_returnsUpdatedUser() {
         Integer userId = 1;
+        String userEmail = "validUser@example.com";
+        String updatedFirstName = "Updated First Name";
+        String updatedLastName = "Updated Last Name";
+        UpdateUserRequest request = UpdateUserRequest.builder().firstName(updatedFirstName).lastName(updatedLastName).build();
+        User existingUser = User.builder().id(userId).firstName("Current first name").lastName("Current last name").build();
+        User updatedUser = User.builder().id(userId).firstName(updatedFirstName).lastName(updatedLastName).build();
+
+        Mockito.when(userRepository.findByEmail(userEmail)).thenReturn(Optional.of(existingUser));
+        Mockito.when(userRepository.save(updatedUser)).thenReturn(updatedUser);
+
+        User result = userService.update(request, userEmail);
+
+        Assertions.assertEquals(updatedUser, result);
+        Mockito.verify(userRepository, Mockito.times(1)).save(updatedUser);
+    }
+
+    @Test
+    public void update_withInvalidUserName_throwsUserNotFoundException() {
+        String invalidEmail = "invalidUser@example.com";
         String updatedFirstName = "Updated First Name";
         String updatedLastName = "Updated Last Name";
         UpdateUserRequest request = UpdateUserRequest.builder().firstName(updatedFirstName).lastName(updatedLastName).build();
 
-        User existingUser = User.builder().id(userId).firstName("Current first name").lastName("Current last name").build();
-        User updatedUser = User.builder().id(userId).firstName(updatedFirstName).lastName(updatedLastName).build();
+        Mockito.when(userRepository.findByEmail(invalidEmail)).thenReturn(Optional.empty());
 
-        Mockito.when(userRepository.findById(userId)).thenReturn(Optional.of(existingUser));
-        Mockito.when(userRepository.save(updatedUser)).thenReturn(updatedUser);
-
-        User result = userService.update(request);
-
-        Assertions.assertEquals(updatedUser, result);
-        Mockito.verify(userRepository, Mockito.times(1)).findById(userId);
-        Mockito.verify(userRepository, Mockito.times(1)).save(updatedUser);
+        Assertions.assertThrows(UserNotFoundException.class, () -> userService.update(request, invalidEmail));
+        Mockito.verify(userRepository, Mockito.times(0)).save(Mockito.any(User.class));
     }
+    @Test
+    public void changePassword_withValidUserNameAndRequest_notThrowsExceptions() {
+        String userEmail = "validUser@example.com";
+        String currentPassword = "currentPassword";
+        String newPassword = "newPassword";
+        String confirmationPassword = "newPassword";
+        User existingUser = User.builder().password(currentPassword).build();
+        ChangePasswordRequest changePasswordRequest = ChangePasswordRequest.builder().currentPassword(currentPassword).
+                newPassword(newPassword).confirmationPassword(confirmationPassword).build();
+
+        Mockito.when(userRepository.findByEmail(userEmail)).thenReturn(Optional.of(existingUser));
+
+        Assertions.assertThrows(UserNotFoundException.class, () -> userService.update(request, invalidEmail));
+        Mockito.verify(userRepository, Mockito.times(0)).save(Mockito.any(User.class));
+    }
+
+
+
 
     @Test
     public void delete_withValidUserEmail_deletesUser() {

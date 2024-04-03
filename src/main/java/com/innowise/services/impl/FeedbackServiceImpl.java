@@ -18,6 +18,7 @@ import com.innowise.services.FeedbackService;
 import com.innowise.services.TicketService;
 import com.innowise.services.UserService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -30,34 +31,24 @@ import java.util.List;
 @Service
 @Transactional
 @Validated
+@RequiredArgsConstructor
 public class FeedbackServiceImpl implements FeedbackService {
     private final FeedbackRepository feedbackRepository;
     private final FeedbackMapper feedbackMapper;
     private final FeedbackListMapper feedbackListMapper;
     private final UserService userService;
-    private final TicketService ticketService;
+    @Lazy private final TicketService ticketService;
     private final EmailService emailService;
-
-    public FeedbackServiceImpl(FeedbackRepository feedbackRepository, FeedbackMapper feedbackMapper,
-                               FeedbackListMapper feedbackListMapper, UserService userService,
-                               @Lazy TicketService ticketService, EmailService emailService) {
-        this.feedbackRepository = feedbackRepository;
-        this.feedbackMapper = feedbackMapper;
-        this.feedbackListMapper = feedbackListMapper;
-        this.userService = userService;
-        this.ticketService = ticketService;
-        this.emailService = emailService;
-    }
 
     @Override
     @PreAuthorize(value = "hasAnyRole('MANAGER', 'EMPLOYEE')")
     @Validated
-    public FeedbackResponse save(@Valid FeedbackRequest feedbackRequest) {
+    public FeedbackResponse save(@Valid FeedbackRequest feedbackRequest, String contextUserName) {
         Feedback feedback = feedbackMapper.toFeedback(feedbackRequest);
 
         Ticket ticket = ticketService.findByIdService(feedbackRequest.ticketId()).orElseThrow(() ->
                 new NoSuchEntityIdException(EntityTypeMessages.TICKET_MESSAGE, feedbackRequest.ticketId()));
-        User owner = userService.getUserFromPrincipal();
+        User owner = userService.findByEmailService(contextUserName);
 
         // todo DISABLE FEEDBACK ON NON-DONE TICKETS ON FRONT *NOT URGENT*
         if (!ticket.getState().equals(TicketState.DONE)) {

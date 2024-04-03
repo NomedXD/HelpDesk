@@ -7,7 +7,7 @@ import jakarta.validation.Valid;
 import java.util.List;
 
 public interface FeedbackService {
-    FeedbackResponse save(@Valid FeedbackRequest feedbackRequest);
+    FeedbackResponse save(@Valid FeedbackRequest feedbackRequest, String contextUserName);
 
     List<FeedbackResponse> findAll();
 
