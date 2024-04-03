@@ -69,9 +69,7 @@ class UserServiceTest {
         Mockito.when(userRepository.findById(Mockito.argThat(argument -> (argument != null) && (argument >= 1)))).
                 thenReturn(Optional.empty());
 
-        Assertions.assertThrows(NoSuchEntityIdException.class, () -> {
-            userService.findById(invalidUserId);
-        });
+        Assertions.assertThrows(NoSuchEntityIdException.class, () -> userService.findById(invalidUserId));
         Mockito.verify(userRepository, Mockito.times(1)).findById(invalidUserId);
     }
 
@@ -106,9 +104,7 @@ class UserServiceTest {
 
         Mockito.when(userRepository.findByEmail(invalidEmail)).thenReturn(Optional.empty());
 
-        Assertions.assertThrows(UserNotFoundException.class, () -> {
-            userService.findByEmail(invalidEmail);
-        });
+        Assertions.assertThrows(UserNotFoundException.class, () -> userService.findByEmail(invalidEmail));
         Mockito.verify(userRepository, Mockito.times(1)).findByEmail(invalidEmail);
     }
 
