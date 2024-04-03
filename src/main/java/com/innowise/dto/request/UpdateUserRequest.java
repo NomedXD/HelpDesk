@@ -3,7 +3,9 @@ package com.innowise.dto.request;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import lombok.Builder;
 
+@Builder
 public record UpdateUserRequest(
         @NotBlank
         @Pattern(regexp = "^(?=.*?[A-Z])(?=.*?[a-z])$")
