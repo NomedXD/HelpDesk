@@ -1,16 +1,18 @@
 package com.innowise.repositories;
 
-import com.innowise.domain.Token;
+import com.innowise.security.entities.RefreshToken;
 
-import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 public interface TokenRepository {
-    List<Token> findAllValidTokensByUserId(Integer userId);
+    boolean isExists(UUID tokenId);
+    void saveToken(RefreshToken refreshToken);
+    Optional<RefreshToken> findById(UUID id);
 
-    Optional<Token> findByToken(String token);
+    boolean isUserAvailable(Integer userId);
 
-    void save(Token token);
-
-    void saveAll(List<Token> tokens);
+    void delete(UUID tokenId);
+    void deleteByUserId(Integer userId);
+    void replace(RefreshToken newToken, Integer userId);
 }

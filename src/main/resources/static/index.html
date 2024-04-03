@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        body {
+            background: #464646;
+            color: white; /* Adjust text color for better readability */
+        }
+
+        form {
+            margin: 15px;
+            background: #363636;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        label {
+            color: white; /* Adjust label color for better visibility */
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            background: #555;
+            color: white;
+            border: 1px solid #333;
+            border-radius: 5px;
+            padding: 5px 10px;
+            margin-bottom: 10px;
+        }
+
+        button {
+            background: #425287;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 8px 15px;
+            cursor: pointer;
+        }
+    </style>
+
+</head>
+<body style="background: #464646">
+<!-- ВХОД -->
+<div style="display: flex; width: 30%; justify-content: space-between">
+    <form id="login-form">
+        <h1>Вход</h1>
+        <label>
+            Имя пользователя:<br>
+            <input type="text" id="input-username">
+        </label><br>
+        <label>
+            Пароль:<br>
+            <input type="password" id="input-password">
+        </label><br>
+        <button type="submit">Войти</button>
+    </form>
+    <!-- Регистрация -->
+    <form id="register-form">
+        <h1>Регистрация</h1>
+        <label>
+            Email:<br>
+            <input type="text" id="input-username-register">
+        </label><br>
+        <label>
+            Пароль:<br>
+            <input type="password" id="input-password-register">
+        </label><br>
+        <label>
+            Имя:<br>
+            <input type="text" id="input-firstName-register">
+        </label><br>
+        <label>
+            Фамилия:<br>
+            <input type="text" id="input-secondName-register">
+        </label><br>
+        <button type="submit">Регистрация</button>
+    </form>
+</div>
+
+<hr>
+<!-- CSRF -->
+<h1>CSRF</h1>
+<button id="get-csrf">Получить CSRF</button>
+<pre id="csrf"></pre>
+<hr>
+<!-- API -->
+<h1>Вызов API</h1>
+<button id="hello">Привет!</button>
+<br>
+<pre id="greeting"></pre>
+<hr>
+
+<!-- REFRESH -->
+<h1>Refresh</h1>
+<button id="refresh">Do refresh</button>
+<br>
+<pre id="access-token"></pre>
+<hr>
+<!-- ВЫХОД -->
+<h1>Выход</h1>
+<button id="logout">Выйти</button>
+
+
+<script>
+    let accessToken;
+    let csrfToken;
+
+    function fetchCsrf () {
+        fetch("/csrf").then(async response => {
+            if (response.status !== 200) {
+                throw new Error(`Unexpected status: ${response.status}`)
+            }
+
+            csrfToken = await response.json()
+            console.log(csrfToken);
+            document.querySelector("pre#csrf").innerText = JSON.stringify(csrfToken);
+        })
+    }
+
+    (async () =>{
+        await fetchCsrf();
+
+        document.querySelector("form#login-form").onsubmit = e => {
+            e.preventDefault();
+
+            const username = document.querySelector("input#input-username").value;
+            const password = document.querySelector("input#input-password").value;
+
+            fetch("/csrf").then(async response => {
+                if (response.status !== 200) {
+                    throw new Error(`Unexpected status: ${response.status}`)
+                }
+
+                const json = await response.json()
+                console.log(json)
+
+                await fetch(`/auth/login?${json.parameterName}=${json.token}`, {
+                    method: "POST",
+                    headers: {
+                        "Authorization": `Basic ${btoa(username + ":" + password)}`
+                    }
+                }).then(async response => {
+                        const jsonReponse = await response.json();
+                        console.log(jsonReponse)
+                        accessToken = jsonReponse.accessToken;
+                    }
+                )
+            })
+        }
+
+        document.querySelector("form#register-form").onsubmit = async e => {
+            e.preventDefault();
+
+            const email = document.querySelector("input#input-username-register").value;
+            const password = document.querySelector("input#input-password-register").value;
+            const firstName = document.querySelector("input#input-firstName-register").value;
+            const lastName = document.querySelector("input#input-secondName-register").value;
+
+            const userRegisterRequest = {
+                "email": email,
+                "password": password,
+                "firstName": firstName,
+                "lastName": lastName
+            }
+
+            console.log(userRegisterRequest)
+
+            await fetch(`/auth/register?${csrfToken.parameterName}=${csrfToken.token}`, {
+                method: "POST",
+                headers: {
+                    "Content-type": "application/json"
+                },
+                body: JSON.stringify(userRegisterRequest)
+            }).then(async response => {
+                    const jsonReponse = await response.json();
+                    console.log(jsonReponse)
+                    accessToken = jsonReponse.accessToken;
+                }
+            )
+        }
+
+
+        document.querySelector("button#get-csrf").onclick = _ => {
+            fetchCsrf();
+        }
+
+        document.querySelector("button#hello").onclick = _ => {
+            if(accessToken === undefined) {
+                document.querySelector("pre#greeting").innerText = "Please log in"
+                return;
+            }
+            fetch("/api/user/whoami", {
+                headers: {
+                    "Authorization": "Bearer " + accessToken
+                }
+            }).then(response => {
+                if (response.status !== 200) {
+                    throw new Error(`Unexpected status: ${response.status}`)
+                }
+                return response.text();
+            }).then(text => {
+                document.querySelector("pre#greeting").innerText = text
+            })
+        };
+
+        document.querySelector("button#logout").onclick = _ => {
+            if(csrfToken === undefined) {
+                fetchCsrf();
+            }
+            fetch(`/auth/logout?${csrfToken.parameterName}=${csrfToken.token}`, {
+                method: "POST"
+            }).then(_ => {
+                accessToken = undefined;
+                document.querySelector("pre#csrf").innerText = '';
+                document.querySelector("pre#greeting").innerText = '';
+            })
+        };
+
+        document.querySelector("button#refresh").onclick = _ => {
+            if(accessToken === undefined) {
+                document.querySelector("pre#access-token").innerText = "Please log in"
+                return;
+            }
+            if(csrfToken === undefined) {
+                fetchCsrf();
+            }
+
+            fetch(`/auth/refresh?${csrfToken.parameterName}=${csrfToken.token}`, {
+                method: "POST"
+            }).then(async response => {
+                const json = await response.json();
+                accessToken = json.accessToken;
+                document.querySelector("pre#access-token").innerText = accessToken;
+            })
+        };
+
+    })();
+</script>
+</body>
+</html>

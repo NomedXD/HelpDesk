@@ -1,45 +1,65 @@
 package com.innowise.repositories.impl;
 
-import com.innowise.domain.Token;
+import com.innowise.security.entities.RefreshToken;
 import com.innowise.repositories.TokenRepository;
 import jakarta.persistence.PersistenceContext;
 import org.hibernate.Session;
-import org.hibernate.query.NativeQuery;
 import org.springframework.stereotype.Repository;
-import java.util.List;
-import java.util.Optional;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+import java.util.UUID;
+
+@Transactional
 @Repository
 public class TokenRepositoryImpl implements TokenRepository {
     @PersistenceContext
     private Session session;
 
-    public List<Token> findAllValidTokensByUserId(Integer userId) {
-        String sql = "SELECT t.* FROM tokens t INNER JOIN users u ON t.user_id = u.id " +
-                "WHERE u.id = :userId AND (t.expired = false OR t.revoked = false)";
-        NativeQuery<Token> query = session.createNativeQuery(sql, Token.class);
-        query.setParameter("userId", userId);
-        return query.getResultList();
-    }
-
-    public Optional<Token> findByToken(String token) {
-        String sql = "SELECT t.* FROM tokens t WHERE t.token = :token";
-        NativeQuery<Token> query = session.createNativeQuery(sql, Token.class);
-        query.setParameter("token", token);
-        return Optional.ofNullable(query.uniqueResult());
+    @Override
+    public boolean isExists(UUID tokenId) {
+        return session.createNativeQuery("SELECT COUNT(*) FROM refresh_tokens WHERE id = :id", Integer.class)
+                .setParameter("id", tokenId)
+                .getSingleResult() == 1;
     }
 
     @Override
-    public void save(Token token) {
-        session.merge(token);
+    public boolean isUserAvailable(Integer userId) {
+        return session.createNativeQuery("SELECT COUNT(*) FROM refresh_tokens WHERE user_id = :userId", Integer.class)
+                .setParameter("userId", userId)
+                .getSingleResult() == 0;
     }
 
     @Override
-    public void saveAll(List<Token> tokens) {
-        for (Token token : tokens) {
-            session.merge(token);
-        }
+    public void saveToken(RefreshToken refreshToken) {
+        session.persist(refreshToken);
     }
 
+    @Override
+    public Optional<RefreshToken> findById(UUID id) {
+        return Optional.ofNullable(session.find(RefreshToken.class, id));
+    }
 
+    @Override
+    public void delete(UUID tokenId) {
+        session.createMutationQuery("DELETE FROM RefreshToken WHERE id = :id")
+                .setParameter("id", tokenId)
+                .executeUpdate();
+    }
+
+    @Override
+    public void deleteByUserId(Integer userId) {
+        session.createMutationQuery("DELETE FROM RefreshToken WHERE userId = :userId")
+                .setParameter("userId", userId)
+                .executeUpdate();
+    }
+
+    @Override
+    public void replace(RefreshToken newToken, Integer userId) {
+        session.createMutationQuery("DELETE FROM RefreshToken WHERE userId = :userId")
+                .setParameter("userId", userId)
+                .executeUpdate();
+
+        session.persist(newToken);
+    }
 }

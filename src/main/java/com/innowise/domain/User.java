@@ -1,15 +1,7 @@
 package com.innowise.domain;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToMany;
+import com.innowise.security.entities.Token;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -17,9 +9,7 @@ import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.proxy.HibernateProxy;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -46,8 +36,8 @@ public class User implements UserDetails {
     @Column(name = "email", unique = true)
     private String email;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "role_id")
+    @Column(name = "user_role")
+    @Enumerated
     private UserRole role;
 
     @Column(name = "password")
@@ -77,9 +67,20 @@ public class User implements UserDetails {
     @ToString.Exclude
     private List<Comment> comments;
 
-    @OneToMany(mappedBy = "user")
-    @ToString.Exclude
-    private List<Token> tokens;
+    @Transient
+    private Token token;
+
+    @Transient
+    private Boolean isAccountNonExpired = true;
+
+    @Transient
+    private Boolean isAccountNonLocked = true;
+
+    @Transient
+    private Boolean isCredentialsNonExpired = true;
+
+    @Transient
+    private Boolean isEnabled = true;
 
     @Override
     public final boolean equals(Object o) {
@@ -99,9 +100,7 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(new SimpleGrantedAuthority(role.getName().toString()));
-        return authorities;
+        return List.of(role);
     }
 
     @Override
@@ -111,21 +110,21 @@ public class User implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        return true;
+        return isAccountNonExpired;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+        return isAccountNonLocked;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return true;
+        return isCredentialsNonExpired;
     }
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return isEnabled;
     }
 }

@@ -35,7 +35,7 @@ public class UserController {
     @GetMapping("/{username}")
     public ResponseEntity<UserResponse> getProfile(@AuthenticationPrincipal UserDetails userDetails) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.findByEmail(userDetails.getUsername()));
-    }
+    } // todo what is this method for?
 
     @GetMapping("/whoami")
     public ResponseEntity<String> whoami(@AuthenticationPrincipal UserDetails userDetails) {
