@@ -7,6 +7,8 @@ import com.innowise.dto.request.UpdateUserRequest;
 import com.innowise.dto.response.UserResponse;
 import com.innowise.exceptions.NoSuchEntityIdException;
 import com.innowise.exceptions.UserNotFoundException;
+import com.innowise.exceptions.WrongConfirmedPasswordException;
+import com.innowise.exceptions.WrongCurrentPasswordException;
 import com.innowise.repositories.UserRepository;
 import com.innowise.services.impl.UserServiceImpl;
 import com.innowise.util.mappers.UserMapper;
@@ -19,6 +21,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
 import java.util.Optional;
@@ -31,6 +35,8 @@ class UserServiceTest {
     private UserRepository userRepository;
     @Spy
     private UserMapper userMapper = Mappers.getMapper(UserMapper.class);
+    @Spy
+    private PasswordEncoder encoder = new BCryptPasswordEncoder();
 
     @Test
     public void save_withValidUser_savesUser() {
@@ -150,13 +156,68 @@ class UserServiceTest {
         ChangePasswordRequest changePasswordRequest = ChangePasswordRequest.builder().currentPassword(currentPassword).
                 newPassword(newPassword).confirmationPassword(confirmationPassword).build();
 
+        Mockito.when(encoder.matches(currentPassword, currentPassword)).thenReturn(true);
         Mockito.when(userRepository.findByEmail(userEmail)).thenReturn(Optional.of(existingUser));
+        Mockito.when(userRepository.save(existingUser)).thenReturn(null);
 
-        Assertions.assertThrows(UserNotFoundException.class, () -> userService.update(request, invalidEmail));
-        Mockito.verify(userRepository, Mockito.times(0)).save(Mockito.any(User.class));
+        Assertions.assertDoesNotThrow(() -> userService.changePassword(changePasswordRequest, userEmail));
+        Mockito.verify(userRepository, Mockito.times(1)).findByEmail(userEmail);
+        Mockito.verify(userRepository, Mockito.times(1)).save(existingUser);
     }
 
+    @Test
+    public void changePassword_withInvalidUserName_throwsUserNotFoundException() {
+        String userEmail = "validUser@example.com";
+        String currentPassword = "currentPassword";
+        String newPassword = "newPassword";
+        String confirmationPassword = "newPassword";
+        User existingUser = User.builder().password(currentPassword).build();
+        ChangePasswordRequest changePasswordRequest = ChangePasswordRequest.builder().currentPassword(currentPassword).
+                newPassword(newPassword).confirmationPassword(confirmationPassword).build();
 
+        Mockito.when(userRepository.findByEmail(userEmail)).thenReturn(Optional.empty());
+
+        Assertions.assertThrows(UserNotFoundException.class, () -> userService.changePassword(changePasswordRequest, userEmail));
+        Mockito.verify(userRepository, Mockito.times(1)).findByEmail(userEmail);
+        Mockito.verify(userRepository, Mockito.times(0)).save(existingUser);
+    }
+
+    @Test
+    public void changePassword_withInvalidCurrentPassword_throwsWrongCurrentPasswordException() {
+        String userEmail = "validUser@example.com";
+        String currentPassword = "currentPassword";
+        String invalidCurrentPassword = "invalidCurrentPassword";
+        String newPassword = "newPassword";
+        String confirmationPassword = "newPassword";
+        User existingUser = User.builder().password(currentPassword).build();
+        ChangePasswordRequest changePasswordRequest = ChangePasswordRequest.builder().currentPassword(invalidCurrentPassword).
+                newPassword(newPassword).confirmationPassword(confirmationPassword).build();
+
+        Mockito.when(userRepository.findByEmail(userEmail)).thenReturn(Optional.of(existingUser));
+        Mockito.when(encoder.matches(changePasswordRequest.currentPassword(), existingUser.getPassword())).thenReturn(false);
+
+        Assertions.assertThrows(WrongCurrentPasswordException.class, () -> userService.changePassword(changePasswordRequest, userEmail));
+        Mockito.verify(userRepository, Mockito.times(1)).findByEmail(userEmail);
+        Mockito.verify(userRepository, Mockito.times(0)).save(existingUser);
+    }
+
+    @Test
+    public void changePassword_withInvalidConfirmedPassword_throwsWrongConfirmedPasswordException() {
+        String userEmail = "validUser@example.com";
+        String currentPassword = "currentPassword";
+        String newPassword = "newPassword";
+        String confirmationPassword = "newInvalidPassword";
+        User existingUser = User.builder().password(currentPassword).build();
+        ChangePasswordRequest changePasswordRequest = ChangePasswordRequest.builder().currentPassword(currentPassword).
+                newPassword(newPassword).confirmationPassword(confirmationPassword).build();
+
+        Mockito.when(userRepository.findByEmail(userEmail)).thenReturn(Optional.of(existingUser));
+        Mockito.when(encoder.matches(changePasswordRequest.currentPassword(), existingUser.getPassword())).thenReturn(true);
+
+        Assertions.assertThrows(WrongConfirmedPasswordException.class, () -> userService.changePassword(changePasswordRequest, userEmail));
+        Mockito.verify(userRepository, Mockito.times(1)).findByEmail(userEmail);
+        Mockito.verify(userRepository, Mockito.times(0)).save(existingUser);
+    }
 
 
     @Test
