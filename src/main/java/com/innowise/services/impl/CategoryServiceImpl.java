@@ -29,9 +29,4 @@ public class CategoryServiceImpl implements CategoryService {
                 .map(Category::getName)
                 .toList();
     }
-
-    /*@Autowired
-    public void setCategoryRepository(CategoryRepository categoryRepository) {
-        this.categoryRepository = categoryRepository;
-    }*/
 }
