@@ -40,6 +40,9 @@ public class GetCsrfTokenFilter extends OncePerRequestFilter {
         if (this.requestMatcher.matches(request)) {
             response.setStatus(HttpServletResponse.SC_OK);
             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+            response.setHeader("Access-Control-Allow-Origin", "http://localhost:3000"); // CORS
+            response.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS, POST, PATCH, PUT, DELETE");
+            response.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
             this.objectMapper.writeValue(response.getWriter(), this.csrfTokenRepository.loadDeferredToken(request, response).get());
             return;
         }

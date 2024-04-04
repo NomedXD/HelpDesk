@@ -10,7 +10,6 @@ import com.innowise.security.entities.Token;
 import com.innowise.security.filters.BearerAuthenticationFilter;
 import com.innowise.security.filters.LoginFilter;
 import com.innowise.security.filters.TokenRefreshFilter;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;

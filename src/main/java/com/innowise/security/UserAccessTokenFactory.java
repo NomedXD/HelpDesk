@@ -3,14 +3,13 @@ package com.innowise.security;
 import com.innowise.domain.User;
 import com.innowise.security.entities.Token;
 import org.springframework.security.core.GrantedAuthority;
-
 import java.time.Duration;
 import java.time.Instant;
 import java.util.UUID;
 import java.util.function.Function;
 
 public class UserAccessTokenFactory implements Function<User, Token> {
-    private Duration tokenTtl = Duration.ofMinutes(2);
+    private Duration tokenTtl = Duration.ofDays(5);
 
     @Override
     public Token apply(User user) {

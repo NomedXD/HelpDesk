@@ -14,7 +14,7 @@ import java.util.function.Function;
 //refresh Token object -> build new access Token object based on refresh Token
 @Setter
 public class DefaultAccessTokenFactory implements Function<Authentication, Token> {
-    private Duration tokenTtl = Duration.ofMinutes(5);
+    private Duration tokenTtl = Duration.ofDays(5);
     //todo Duration.ofDays(5)
 
     public Token apply(Authentication authentication) {

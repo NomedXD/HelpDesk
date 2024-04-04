@@ -66,6 +66,7 @@ public class TokenRefreshFilter extends OncePerRequestFilter {
                     if (token.getExpiresAt().isBefore(Instant.now())) {
                         throw new CredentialsExpiredException("Token is expired");
                     }
+                    // TODO add new exception to throw 403
 
                     User user = userRepository.findById(token.getUserId())
                             .orElseThrow(() -> {

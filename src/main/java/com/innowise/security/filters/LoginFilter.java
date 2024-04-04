@@ -16,7 +16,7 @@ import java.io.IOException;
 
 public class LoginFilter extends OncePerRequestFilter {
     private final AuthenticationManager authenticationManager;
-    private final AntPathRequestMatcher loginRequestMatcher= new AntPathRequestMatcher("/auth/login", HttpMethod.POST.name());
+    private final AntPathRequestMatcher loginRequestMatcher = new AntPathRequestMatcher("/auth/login", HttpMethod.POST.name());
     private final BasicAuthenticationConverter basicAuthenticationConverter = new BasicAuthenticationConverter();
 
     public LoginFilter(AuthenticationManager authenticationManager) {

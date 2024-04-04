@@ -159,7 +159,7 @@ public class TicketServiceImpl implements TicketService {
     }
 
 
-    // TODO add checks (switch-case please) of editor role for possible status transition (NomedXD) *URGENT*
+    // TODO implement ticket state transition logic of UserRole enum
     @Override
     @Validated
     public TicketResponse updateStatus(@Valid UpdateTicketStatusRequest updateTicketStatusRequest) {
