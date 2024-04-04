@@ -1,16 +1,14 @@
 package com.innowise.util.mappers;
 
-import com.innowise.dto.request.CreateTicketRequest;
 import com.innowise.dto.response.TicketResponse;
 import com.innowise.domain.Ticket;
+import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper(componentModel = "spring", uses = {HistoryListMapper.class, CommentListMapper.class, AttachmentListMapper.class})
+@Mapper(componentModel = "spring", uses = {HistoryListMapper.class, CommentListMapper.class, AttachmentListMapper.class},
+        injectionStrategy = InjectionStrategy.CONSTRUCTOR)
 public interface TicketMapper {
-    @Mapping(source = "categoryId", target = "category.id")
-    Ticket toTicket(CreateTicketRequest request);
-
 
     @Mapping(source = "category.name", target = "categoryName")
     @Mapping(source = "owner.firstName", target = "ownerName")

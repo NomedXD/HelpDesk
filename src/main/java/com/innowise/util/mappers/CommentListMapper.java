@@ -3,11 +3,12 @@ package com.innowise.util.mappers;
 import com.innowise.dto.request.CommentRequest;
 import com.innowise.dto.response.CommentResponse;
 import com.innowise.domain.Comment;
+import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring", uses = CommentMapper.class)
+@Mapper(componentModel = "spring", uses = CommentMapper.class, injectionStrategy = InjectionStrategy.CONSTRUCTOR)
 public interface CommentListMapper {
     List<Comment> toCommentList(List<CommentRequest> commentRequestList);
 
