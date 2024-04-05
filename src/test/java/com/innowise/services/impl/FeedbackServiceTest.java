@@ -42,6 +42,7 @@ public class FeedbackServiceTest {
 
     @Mock
     private EmailService emailService;
+
     @Test
     public void save_withValidTicketId_savesFeedback() {
         // FeedbackRequest
