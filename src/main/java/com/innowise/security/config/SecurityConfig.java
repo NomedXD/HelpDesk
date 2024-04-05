@@ -72,8 +72,10 @@ public class SecurityConfig {
                 .addFilterBefore(new GetCsrfTokenFilter(), ExceptionTranslationFilter.class)
                 .authorizeHttpRequests(authorizeHttpRequests ->
                         authorizeHttpRequests
+                                .requestMatchers("/tickets").permitAll()
+                                .requestMatchers("/public/**").permitAll()
                                 .requestMatchers("/auth/**").permitAll()
-                                .requestMatchers("/error", "index.html").permitAll()
+                                .requestMatchers("/error", "index.html", "favicon.ico").permitAll()
                                 .anyRequest().authenticated())
                 .sessionManagement(sessionManagement -> sessionManagement
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)

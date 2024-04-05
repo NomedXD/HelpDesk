@@ -3,19 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <title>Login</title>
-    <link rel="stylesheet" href="../static/style/form-style.css">
-    <script src="../static/script/login.js"></script>
+    <link rel="stylesheet" href="/public/style/form-style.css">
+    <link rel="stylesheet" href="/public/style/error.css">
+    <script src="/public/script/login.js"></script>
 <body>
 <div class="form-container">
-    <form>
+
+    <form id="form-login">
         <h3>Login to the Help Desk</h3>
+        <div hidden class="error-message">Bad login or password, please try again</div>
         <div>
             <label for="input-email">User Name: </label>
-            <span><input id="input-email" type="text"/></span>
+            <span><input id="input-email" type="text" required/></span>
         </div>
         <div>
             <label for="input-password">Password: </label>
-            <span><input id="input-password" type="password"/></span>
+            <span><input id="input-password" type="password" required/></span>
         </div>
         <button type="submit" id="submit-button">Enter</button>
     </form>
