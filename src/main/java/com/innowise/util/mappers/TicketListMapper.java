@@ -8,7 +8,7 @@ import org.mapstruct.Mapper;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring", uses = FeedbackMapper.class, injectionStrategy = InjectionStrategy.CONSTRUCTOR)
+@Mapper(componentModel = "spring", uses = TicketMapper.class, injectionStrategy = InjectionStrategy.CONSTRUCTOR)
 public interface TicketListMapper {
     List<Ticket> toTicketList(List<UpdateTicketRequest> updateTicketRequestList);
 

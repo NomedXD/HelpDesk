@@ -1,6 +1,5 @@
 package com.innowise.services.impl;
 
-import com.innowise.domain.Category;
 import com.innowise.domain.Comment;
 import com.innowise.domain.Ticket;
 import com.innowise.domain.User;
