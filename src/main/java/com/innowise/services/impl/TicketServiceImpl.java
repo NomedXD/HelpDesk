@@ -12,6 +12,7 @@ import com.innowise.exceptions.AttachedFileReadException;
 import com.innowise.exceptions.EntityTypeMessages;
 import com.innowise.exceptions.NoSuchEntityIdException;
 import com.innowise.exceptions.NotOwnerTicketException;
+import com.innowise.exceptions.TicketCannotBeDoneMarkedException;
 import com.innowise.exceptions.TicketStateTransferException;
 import com.innowise.mails.EmailService;
 import com.innowise.util.MimeDetector;
@@ -168,7 +169,10 @@ public class TicketServiceImpl implements TicketService {
                         updateTicketStatusRequest.ticketId()));
         User editor = userService.findByEmailService(contextUserName);
         if(!checkStatusChangeAuthorities(editor, ticket, updateTicketStatusRequest)) {
-            throw new TicketStateTransferException(ticket.getId(), editor.getRole(), ticket.getState());
+            throw new TicketStateTransferException(ticket.getId(), editor.getRole(), updateTicketStatusRequest.state());
+        }
+        if (updateTicketStatusRequest.state().equals(TicketState.DONE) && (ticket.getAssignee() == null || ticket.getApprover() == null)) {
+            throw new TicketCannotBeDoneMarkedException(ticket.getId());
         }
         emailService.notifyTicketStateTransfer(ticket.getState(), ticket, updateTicketStatusRequest.state());
         ticket.setState(updateTicketStatusRequest.state());

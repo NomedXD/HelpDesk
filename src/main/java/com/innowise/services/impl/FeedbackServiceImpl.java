@@ -2,6 +2,7 @@ package com.innowise.services.impl;
 
 import com.innowise.exceptions.EntityTypeMessages;
 import com.innowise.exceptions.NoSuchEntityIdException;
+import com.innowise.exceptions.TicketHasFeedbackException;
 import com.innowise.mails.EmailService;
 import com.innowise.util.mappers.FeedbackListMapper;
 import com.innowise.util.mappers.FeedbackMapper;
@@ -56,6 +57,9 @@ public class FeedbackServiceImpl implements FeedbackService {
         }
         if (!ticket.getOwner().getId().equals(owner.getId())) {
             throw new NotOwnerTicketException(owner.getId(), ticket.getId());
+        }
+        if (!(ticket.getFeedback() == null)) {
+            throw new TicketHasFeedbackException(ticket.getId());
         }
         emailService.notifyFeedbackProvide(ticket.getAssignee(), ticket.getId());
         feedback.setUser(owner);

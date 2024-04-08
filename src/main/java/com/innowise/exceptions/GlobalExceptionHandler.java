@@ -95,4 +95,18 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.BAD_REQUEST)
                 .body(new ApiErrorResponse(HttpStatus.BAD_REQUEST, LocalDateTime.now(), exception.getMessage()));
     }
+
+    @ExceptionHandler(TicketHasFeedbackException.class)
+    public ResponseEntity<ApiErrorResponse> handleTicketHasFeedbackException(TicketHasFeedbackException exception) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(new ApiErrorResponse(HttpStatus.BAD_REQUEST, LocalDateTime.now(), exception.getMessage()));
+    }
+
+    @ExceptionHandler(TicketCannotBeDoneMarkedException.class)
+    public ResponseEntity<ApiErrorResponse> handleTicketCannotBeDoneMarkedException(TicketCannotBeDoneMarkedException exception) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(new ApiErrorResponse(HttpStatus.BAD_REQUEST, LocalDateTime.now(), exception.getMessage()));
+    }
 }
