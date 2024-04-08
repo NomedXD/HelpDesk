@@ -17,9 +17,10 @@ public class TicketResponse{
     private TicketUrgency urgency;
     private String categoryName;
     private LocalDate desiredResolutionDate;
-    private String ownerName;
-    private String approverName;
-    private String assigneeName;
+    private String ownerEmail;
+    private String ownerRole;
+    private String approverEmail;
+    private String assigneeEmail;
     private List<AttachmentResponse> attachments;
     private String description;
     private List<HistoryResponse> historyResponseList;

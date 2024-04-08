@@ -17,7 +17,7 @@ body {
     margin-bottom: 20px;
 }
 
-.button {
+.button, .refresh-button {
     padding: 10px 20px;
     background-color: #007bff;
     color: #fff;
@@ -25,10 +25,13 @@ body {
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s ease;
+    width: 40%;
 }
-.button:hover {
-    background-color: #0056b3;
+.refresh-button {
+    width: 10%;
+    background-color: #28a745;
 }
+
 .table {
     width: 100%;
     border-collapse: collapse;
@@ -45,9 +48,7 @@ body {
 .table td {
     background-color: #fff;
 }
-.table tr:hover {
-    background-color: #f2f2f2;
-}
+
 .actions {
     display: flex;
 }
@@ -73,7 +74,4 @@ body {
     display: flex;
     justify-content: space-between;
     margin: 10px;
-}
-.tabs button {
-    width: 45%;
 }
