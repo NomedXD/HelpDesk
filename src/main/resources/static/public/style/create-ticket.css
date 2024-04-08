@@ -1,0 +1,147 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+h1 {
+    margin-bottom: 50px;
+    color: white;
+}
+
+h3 {
+    text-align: center;
+    margin-bottom: 5px;
+    font-weight: 350;
+    color: lightgray;
+}
+
+body {
+    background: black;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 15px;
+    width: 100%;
+    min-height: 100vh;
+}
+
+.drop-area {
+    width: 650px;
+    height: 150px;
+    background: mediumpurple;
+    text-align: center;
+    border-radius: 30px;
+    cursor: pointer;
+}
+
+.drop-input {
+    visibility: hidden;
+}
+
+.popup {
+    position: absolute;
+    background-color: #333;
+    color: #fff;
+    padding: 5px;
+    border-radius: 5px;
+    font-size: 12px;
+    z-index: 9999;
+}
+
+.file-container {
+    display: inline-block;
+}
+
+.file-preview {
+    display: inline-block;
+    text-align: center;
+}
+
+.file-preview img,
+.file-preview embed,
+.file-preview iframe {
+    display: block;
+    margin: 0 auto;
+}
+
+.drop-area p {
+    color: lightgray;
+    font-family: sans-serif;
+    font-weight: 300;
+}
+
+.ticket-form {
+    max-width: 720px;
+    max-height: 750px;
+    padding: 25px;
+    border: 1px solid rebeccapurple;
+    border-radius: 35px;
+}
+
+.ticket-form input,
+.ticket-form textarea,
+.ticket-form select {
+    max-width: 650px;
+    width: 100%;
+    text-align: left;
+    padding-left: 3px;
+    padding-top: 3px;
+    min-height: 30px;
+}
+
+#category {
+    text-align: center;
+}
+
+
+.ticket-form button {
+    margin-top: 20px;
+    align-self: flex-end;
+}
+
+#urgency {
+    text-align: center;
+}
+
+button {
+    padding: 5px;
+    all:unset;
+    text-align: center;
+    align-content: center;
+    transition-duration: 0.45s;
+}
+
+
+.submit-button {
+    height: 35px;
+    width: 65px;
+    border-radius: 10px;
+    background-color: mediumpurple;
+    color: white;
+}
+
+.draft-button {
+    height: 35px;
+    width: 115px;
+    border-radius: 10px;
+    background-color: mediumpurple;
+    color: white;
+}
+
+.submit-button:hover {
+    background-color: wheat;
+    color: rebeccapurple;
+}
+
+.draft-button:hover {
+    background-color: wheat;
+    color: rebeccapurple;
+}
+
+
+
+

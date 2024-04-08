@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Create Ticket</title>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="../static/public/style/create-ticket.css">
+</head>
+
+<header>
+  <h1>Create Ticket</h1>
+</header>
+
+<body>
+
+<form id="ticket-form" class="ticket-form">
+  <input type="text"
+         id="name"
+         name="name"
+         placeholder="Title"
+         required>
+  <br><br>
+
+  <select id="category" name="category" required>
+    <option selected disabled>CATEGORY</option>
+    <option value="1">Application &amp; Services</option>
+    <option value="2">Benefits &amp; Paper Work</option>
+    <option value="3">Hardware &amp; Software</option>
+    <option value="4">People Management</option>
+    <option value="5">Security &amp; Access</option>
+    <option value="6">Workplaces &amp; Facilities</option>
+  </select>
+  <br><br>
+
+  <textarea id="description"
+            name="description"
+            placeholder="Description"></textarea>
+  <br><br>
+
+  <select id="urgency"
+          name="urgency"
+          required>
+    <option selected disabled>URGENCY</option>
+    <option id="1" value="CRITICAL">CRITICAL</option>
+    <option id="2" value="HIGH">HIGH</option>
+    <option id="3" value="MEDIUM">MEDIUM</option>
+    <option id="4" value="LOW">LOW</option>
+  </select>
+  <br><br>
+
+  <input type="text"
+         placeholder="DESIRED RESOLUTION DATE"
+         onfocus="(this.type='date')"
+         onblur="(this.type='text')" id="desired-resolution-date"
+         required>
+  <br><br>
+
+  <h3>drop your files here</h3>
+  <div class="drop-area" id="drop-area">
+    <input class="drop-input"
+           type="file" id="drop-input"
+           multiple>
+  </div>
+
+  <br><br>
+
+  <textarea id="comment"
+            name="comment"
+            placeholder="COMMENT"></textarea>
+
+  <br><br>
+
+  <button type="button"
+          class="submit-button"
+          id="submit-button">submit</button>
+  <button type="button"
+          class="draft-button"
+          id="draft-button">save as Draft</button>
+</form>
+<script src="../static/public/script/drag-n-drop.js"></script>
+<script src="../static/public/script/create-ticket.js"></script>
+</body>
+</html>
