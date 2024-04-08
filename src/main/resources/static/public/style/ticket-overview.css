@@ -1,0 +1,123 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+button {
+    all: unset;
+    padding: 5px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    border-radius: 15px;
+    min-width: 80px;
+    text-align: center;
+    align-items: center;
+    background: mediumpurple;
+    font-family: sans-serif;
+    font-weight: 350;
+}
+
+body {
+    background: black;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 15px;
+    width: 100%;
+    min-height: 100vh;
+}
+
+.ticket-container {
+    width: 50%;
+    border: 2px solid wheat;
+    border-radius: 30px;
+    padding: 10px;
+}
+
+.table-container {
+    width: 50%;
+    border: 2px solid wheat;
+    border-radius: 30px;
+    padding: 10px;
+}
+
+.field {
+    width: 20%;
+    text-align: right;
+}
+
+.value {
+    text-align: left;
+}
+
+.ticket-table,
+.comment-table,
+.history-table {
+    width: 100%;
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+.ticket-table td,
+.comment-table td,
+.history-table td {
+    padding: 10px;
+    border-right: 2px solid wheat;
+    border-bottom: 2px solid wheat;
+}
+
+.ticket-table th,
+.comment-table th,
+.history-table th {
+    padding: 10px;
+    border-right: 2px solid wheat;
+    border-bottom: 2px solid wheat;
+}
+
+.ticket-table td:last-child,
+.comment-table td:last-child,
+.history-table td:last-child,
+.ticket-table th:last-child,
+.comment-table th:last-child,
+.history-table th:last-child {
+    border-right: none;
+}
+
+.ticket-table tr:last-child td,
+.comment-table tr:last-child td,
+.history-table tr:last-child td,
+.ticket-table tr:last-child th,
+.comment-table tr:last-child th,
+.history-table tr:last-child th {
+    border-bottom: none;
+}
+
+.comment-table thead tr {
+    border-bottom: 2px solid wheat
+}
+
+.history-table thead tr {
+    border-bottom: 2px solid wheat
+}
+
+.table-buttons {
+    display: inline-flex;
+    gap: 200px;
+    flex-direction: row;
+}
+
+button:hover {
+    background-color: wheat;
+    color: rebeccapurple;
+    transition: background-color 0.45s ease;
+}
+
+.comment-input-container {
+
+}
+
+
