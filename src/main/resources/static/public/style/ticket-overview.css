@@ -8,8 +8,6 @@
 button {
     all: unset;
     padding: 5px;
-    margin-top: 5px;
-    margin-bottom: 5px;
     border-radius: 15px;
     min-width: 80px;
     text-align: center;
@@ -17,6 +15,31 @@ button {
     background: mediumpurple;
     font-family: sans-serif;
     font-weight: 350;
+}
+
+header button {
+    height: 35px;
+    width: 100px;
+    border-radius: 25px;
+}
+
+#to-ticket-list {
+    position: fixed;
+    left: 30px;
+    top: 15px;
+}
+
+#to-ticket-feedback {
+    position: fixed;
+    top: 75px;
+    right: 30px;
+
+}
+
+#to-ticket-edit {
+    position: fixed;
+    top: 15px;
+    right: 30px;
 }
 
 body {
@@ -31,11 +54,20 @@ body {
     min-height: 100vh;
 }
 
+
 .ticket-container {
     width: 50%;
     border: 2px solid wheat;
     border-radius: 30px;
     padding: 10px;
+}
+
+.table-buttons {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    width: 45%;
+    display: flex;
+    justify-content: space-between;
 }
 
 .table-container {
@@ -104,12 +136,6 @@ body {
     border-bottom: 2px solid wheat
 }
 
-.table-buttons {
-    display: inline-flex;
-    gap: 200px;
-    flex-direction: row;
-}
-
 button:hover {
     background-color: wheat;
     color: rebeccapurple;
@@ -117,7 +143,31 @@ button:hover {
 }
 
 .comment-input-container {
-
+    margin-top: 10px;
 }
+
+.comment-input {
+    text-align: justify;
+    border-radius: 20px;
+    padding: 15px;
+    min-width: 100%;
+    max-width: 100%;
+    min-height: 100px;
+}
+
+.td-history {
+    text-align: center;
+    align-content: center;
+}
+
+.td-comment-center {
+    text-align: center;
+    align-content: center;
+}
+
+.td-comment-justify {
+    text-align: justify;
+}
+
 
 

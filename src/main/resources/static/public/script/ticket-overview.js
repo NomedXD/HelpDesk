@@ -1,31 +1,78 @@
+const commentButton = document.createElement('button');
+commentButton.id = 'comment-button';
+commentButton.textContent = 'comments';
 
-const commentButton = document.getElementById('comment-button');
-const historyButton = document.getElementById('history-button');
-const ticketContainer = document.getElementById('ticket-container');
-const tableContainer = document.getElementById('table-container');
+const historyButton = document.createElement('button');
+historyButton.id = 'history-button';
+historyButton.textContent = 'history';
+
+const toTicketList = document.createElement('button');
+toTicketList.id = 'to-ticket-list';
+toTicketList.textContent = 'Ticket List';
+
+const toTicketEdit = document.createElement('button');
+toTicketEdit.id = 'to-ticket-edit';
+toTicketEdit.textContent = 'Edit';
+
+const toTicketFeedback = document.createElement('button');
+toTicketFeedback.id = 'to-ticket-feedback';
+toTicketFeedback.textContent = 'Feedback';
+
+const header = document.createElement('header');
+header.appendChild(toTicketList);
+header.appendChild(toTicketEdit);
+header.appendChild(toTicketFeedback);
+
+const ticketContainer = document.createElement('div');
+ticketContainer.classList.add('ticket-container');
+ticketContainer.id = 'ticket-container';
+
+const tableButtons = document.createElement('div');
+tableButtons.classList.add('table-buttons');
+tableButtons.id = 'table-buttons';
+tableButtons.appendChild(historyButton);
+tableButtons.appendChild(commentButton);
+
+
+const tableContainer = document.createElement('div');
+tableContainer.classList.add('table-container');
+tableContainer.id = 'table-container';
 tableContainer.style.display = 'none';
 
+const body = document.querySelector('body')
+body.appendChild(header);
+body.appendChild(ticketContainer);
+body.appendChild(tableButtons);
+body.appendChild(tableContainer);
+
 const commentData = [
-    { id: 1, author: 'John', text: 'Great post!' },
-    { id: 2, author: 'Jane', text: 'I disagree.' },
+    { date: '2024-03-15', user: 'ycovich', comment: 'test comment' },
+    { date: '2024-03-16', user: 'VladK27', comment: 'really long test comment really long test comment ' +
+            'really long test comment really long test comment really long test comment ' +
+            'really long test comment really long test comment really long test comment ' +
+            'really long test comment really long test comment really long test comment ' +
+            'really long test comment really long test comment really long test comment ' +
+            'really long test comment really long test comment really long test comment ' +
+            'really long test comment really long test comment really long test comment' },
 ];
 const historyData = [
-    { id: 1, event: 'Logged in', date: '2024-03-15' },
-    { id: 2, event: 'Updated profile', date: '2024-03-16' },
+    { date: '2024-03-15', user: 'ycovich', action: 'created ticket', description: 'ticket for NomedXD' },
+    { date: '2024-03-16', user: 'VladK27', action: 'approved & assigned ticket', description: '' },
 ];
 
 const ticketInfo = {
     title: 'Title',
-    createdOn: 'Created On',
-    status: 'Status',
+    id: 'ID',
     category: 'Category',
+    description: 'Description',
+    status: 'Status',
     urgency: 'Urgency',
-    desiredResolutionDate: 'Desired Resolution Date',
+    createdOn: 'Created On',
+    desiredResolutionDate: 'Deadline',
+    attachments: 'Attachments',
     owner: 'Owner',
     approver: 'Approver',
     assignee: 'Assignee',
-    attachments: 'Attachments',
-    description: 'Description',
 };
 
 let isCommentTableOpen = false;
@@ -34,12 +81,14 @@ let isHistoryTableOpen = false;
 function renderCommentTable() {
     const table = document.createElement('table');
     table.classList.add('comment-table');
+    table.id = 'comment-table';
+
     table.innerHTML = `
     <thead>
       <tr>
-        <th>ID</th>
-        <th>Author</th>
-        <th>Text</th>
+        <th>Date</th>
+        <th>User</th>
+        <th>Comment</th>
       </tr>
     </thead>
     <tbody>
@@ -47,17 +96,31 @@ function renderCommentTable() {
         .map(
             (comment) => `
           <tr>
-            <td>${comment.id}</td>
-            <td>${comment.author}</td>
-            <td>${comment.text}</td>
+            <td class="td-comment-center">${comment.date}</td>
+            <td class="td-comment-center">${comment.user}</td>
+            <td class="td-comment-justify">${comment.comment}</td>
           </tr>
         `
         )
         .join('')}
     </tbody>
   `;
+
+    const commentInputContainer = document.createElement('div');
+    const textarea = document.createElement('textarea');
+    commentInputContainer.classList.add('comment-input-container');
+    textarea.classList.add('comment-input');
+    commentInputContainer.id = 'comment-input-container';
+    textarea.id = 'comment-input';
+
+
+    textarea.setAttribute('placeholder', 'add comment');
+    commentInputContainer.innerHTML = '';
+    commentInputContainer.appendChild(textarea);
+
     tableContainer.innerHTML = '';
     tableContainer.appendChild(table);
+    tableContainer.appendChild(commentInputContainer);
     tableContainer.style.display = 'block';
     isCommentTableOpen = true;
     isHistoryTableOpen = false;
@@ -66,12 +129,14 @@ function renderCommentTable() {
 function renderHistoryTable() {
     const table = document.createElement('table');
     table.classList.add('history-table');
+    table.id = 'history-table';
     table.innerHTML = `
     <thead>
       <tr>
-        <th>ID</th>
-        <th>Event</th>
         <th>Date</th>
+        <th>User</th>
+        <th>Action</th>
+        <th>Description</th>
       </tr>
     </thead>
     <tbody>
@@ -79,9 +144,10 @@ function renderHistoryTable() {
         .map(
             (entry) => `
           <tr>
-            <td>${entry.id}</td>
-            <td>${entry.event}</td>
-            <td>${entry.date}</td>
+            <td class="td-history">${entry.date}</td>
+            <td class="td-history">${entry.user}</td>
+            <td class="td-history">${entry.action}</td>
+            <td>${entry.description}</td>
           </tr>
         `
         )
@@ -96,9 +162,10 @@ function renderHistoryTable() {
 }
 
 function renderTicketInfo() {
-    const ticketInfoTable = document.createElement('table');
-    ticketInfoTable.classList.add('ticket-table')
-    ticketInfoTable.innerHTML = `
+    const ticketTable = document.createElement('table');
+    ticketTable.classList.add('ticket-table');
+    ticketTable.id = 'ticket-table';
+    ticketTable.innerHTML = `
     <tbody>
       ${Object.entries(ticketInfo)
         .map(
@@ -113,7 +180,7 @@ function renderTicketInfo() {
     </tbody>
   `;
     ticketContainer.innerHTML = '';
-    ticketContainer.appendChild(ticketInfoTable);
+    ticketContainer.appendChild(ticketTable);
 }
 
 commentButton.addEventListener('click', () => {
@@ -133,17 +200,5 @@ historyButton.addEventListener('click', () => {
         renderHistoryTable();
     }
 });
-
-
-const commentInputContainer = document.getElementById('comment-input-container');
-function renderCommentInput() {
-    const textarea = document.createElement('textarea');
-    textarea.classList.add('comment-input');
-    textarea.setAttribute('placeholder', 'Enter your comment');
-    commentInputContainer.innerHTML = '';
-    commentInputContainer.appendChild(textarea);
-    commentInputContainer.style.display = 'block';
-}
-
 
 renderTicketInfo();
