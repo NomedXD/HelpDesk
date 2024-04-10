@@ -1,9 +1,49 @@
 window.onload = function() {
     createForm();
     const form = document.getElementById('ticket-form');
+    const urlParams = new URLSearchParams(window.location.search);
+    const ticketId = urlParams.get('ticketId');
+
+    if (ticketId) {
+        fetchTicketData(ticketId);
+    }
+
     form.addEventListener('submit', function (event) {
         event.preventDefault();
-        submitForm();
+        if (ticketId) {
+            submitForm(ticketId);
+        } else {
+            // exception ?
+        }
+    });
+}
+
+function fetchTicketData(ticketId) {
+    fetch(`https://localhost:8080/api/tickets/${ticketId}`)
+        .then(response => response.json())
+        .then(data => {
+            // Populate the form fields with the ticket data
+            document.getElementById('name').value = data.name;
+            document.getElementById('category').value = data.category;
+            document.getElementById('description').value = data.description;
+            document.getElementById('urgency').value = data.urgency;
+            document.getElementById('desired-resolution-date').value = data.desiredResolutionDate;
+
+            // Fetch and display attachments
+            fetchAttachments(data.attachments);
+        })
+        .catch(error => console.error('Error:', error));
+}
+
+function fetchAttachments(attachments) {
+    attachments.forEach(attachment => {
+        fetch(attachment.url)
+            .then(response => response.blob())
+            .then(blob => {
+                const file = new File([blob], attachment.name, { type: attachment.type });
+                handleFiles([file]);
+            })
+            .catch(error => console.error('Error:', error));
     });
 }
 
@@ -13,7 +53,7 @@ function createForm() {
     // Create header
     const header = document.createElement('header');
     const h1 = document.createElement('h1');
-    h1.textContent = 'Create Ticket';
+    h1.textContent = 'Edit Ticket';
     header.appendChild(h1);
     body.appendChild(header);
 
@@ -115,37 +155,28 @@ function createForm() {
     form.appendChild(document.createElement('br'));
     form.appendChild(document.createElement('br'));
 
-    const commentInput = document.createElement('textarea');
-    commentInput.id = 'comment';
-    commentInput.name = 'comment';
-    commentInput.placeholder = 'COMMENT';
-    form.appendChild(commentInput);
-    form.appendChild(document.createElement('br'));
-    form.appendChild(document.createElement('br'));
-
     const submitButton = document.createElement('button');
     submitButton.type = 'button';
     submitButton.classList.add('submit-button');
     submitButton.id = 'submit-button';
-    submitButton.textContent = 'submit';
+    submitButton.textContent = 'edit';
     form.appendChild(submitButton);
 
     const draftButton = document.createElement('button');
     draftButton.type = 'button';
     draftButton.classList.add('draft-button');
     draftButton.id = 'draft-button';
-    draftButton.textContent = 'save as Draft';
+    draftButton.textContent = 'save as draft';
     form.appendChild(draftButton);
 
+    const toTicketOverviewButton = document.createElement('button');
+    toTicketOverviewButton.type = 'button';
+    toTicketOverviewButton.classList.add('to-ticket-overview-button');
+    toTicketOverviewButton.id = 'to-ticket-overview-button';
+    toTicketOverviewButton.textContent = 'Ticket Overview';
+    body.appendChild(toTicketOverviewButton);
+
     body.appendChild(form);
-
-    const toTicketListButton = document.createElement('button');
-    toTicketListButton.type = 'button';
-    draftButton.classList.add('to-ticket-list-button');
-    draftButton.id = 'to-ticket-list-button';
-    draftButton.textContent = 'Ticket List';
-    body.appendChild(toTicketListButton);
-
 
     // Load drag-n-drop.js
     const dragNDropScript = document.createElement('script');
@@ -154,17 +185,14 @@ function createForm() {
 }
 
 
-function submitForm() {
-    // TODO flag for draft
-
+function submitForm(ticketId) {
     const formData = new FormData();
 
     const nameInput = document.getElementById('name');
     formData.append('name', nameInput.value);
 
     const categorySelect = document.getElementById('category');
-    formData.append('category', categorySelect.value);
-    // TODO send id, not a string
+    formData.append('categoryId', categorySelect.value);
 
     const descriptionInput = document.getElementById('description');
     formData.append('description', descriptionInput.value);
@@ -177,24 +205,23 @@ function submitForm() {
 
     const urgencySelect = document.getElementById('urgency');
     formData.append('urgency', urgencySelect.value);
-    // TODO send id, not a string
-
-    const commentInput = document.getElementById('comment');
-    formData.append('comment', commentInput.value);
 
     const desiredResolutionDate = document.getElementById('desired-resolution-date');
     formData.append('desiredResolutionDate', desiredResolutionDate.value);
 
-    // TODO Security shit
-    fetch('https://localhost:8080/api/tickets', {
-        method: 'POST',
+    fetch(`https://localhost:8080/api/tickets/${ticketId}`, {
+        method: 'PUT',
         body: formData
     })
         .then(response => {
-
+            if (response.ok) {
+                console.log('Ticket updated successfully');
+                // Optionally, you can redirect the user or display a success message
+            } else {
+                console.error('Error updating ticket');
+                // Optionally, you can display an error message
+            }
         })
-        .catch(error => {
-
-        });
+        .catch(error => console.error('Error:', error));
 }
 

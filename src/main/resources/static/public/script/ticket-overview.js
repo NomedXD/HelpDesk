@@ -2,6 +2,10 @@ const commentButton = document.createElement('button');
 commentButton.id = 'comment-button';
 commentButton.textContent = 'comments';
 
+const postCommentButton = document.createElement('button');
+postCommentButton.id = 'post-comment-button';
+postCommentButton.textContent = 'post';
+
 const historyButton = document.createElement('button');
 historyButton.id = 'history-button';
 historyButton.textContent = 'history';
@@ -121,6 +125,7 @@ function renderCommentTable() {
     tableContainer.innerHTML = '';
     tableContainer.appendChild(table);
     tableContainer.appendChild(commentInputContainer);
+    tableContainer.appendChild(postCommentButton);
     tableContainer.style.display = 'block';
     isCommentTableOpen = true;
     isHistoryTableOpen = false;
@@ -200,5 +205,7 @@ historyButton.addEventListener('click', () => {
         renderHistoryTable();
     }
 });
+
+// TODO EventListener for PostCommentButton
 
 renderTicketInfo();

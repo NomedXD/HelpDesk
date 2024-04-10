@@ -169,9 +169,9 @@ button {
     color: rebeccapurple;
 }
 
-.to-ticket-list-button {
+.to-ticket-overview-button {
     height: 35px;
-    width: 115px;
+    width: 130px;
     border-radius: 10px;
     background-color: mediumpurple;
     color: white;
@@ -181,11 +181,9 @@ button {
     left: 20px;
 }
 
-.to-ticket-list-button:hover {
+.to-ticket-overview-button:hover {
     background-color: wheat;
     color: rebeccapurple;
 }
-
-
 
 

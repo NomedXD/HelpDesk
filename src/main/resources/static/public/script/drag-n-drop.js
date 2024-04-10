@@ -53,6 +53,20 @@ function handleFiles(files) {
             const fileExtension = getFileExtension(file.name);
             const fileName = file.name.length > 10 ? file.name.slice(0, 9) + '..' : file.name;
 
+            const deleteButton = document.createElement('button');
+            deleteButton.textContent = 'X';
+            deleteButton.classList.add('delete-button');
+            deleteButton.style.display = 'none';
+            deleteButton.addEventListener('click', function (e) {
+                e.stopPropagation();
+                dropArea.removeChild(fileContainer);
+
+                const index = tempStorage.findIndex((item) => item.file === file);
+                if (index !== -1) {
+                    tempStorage.splice(index, 1);
+                }
+            });
+
             if (file.type.startsWith('image/')) {
                 const image = document.createElement('img');
                 image.src = fileData;
@@ -77,48 +91,21 @@ function handleFiles(files) {
             fileNameElement.textContent = fileName;
             fileNameElement.title = file.name;
 
-            const deleteButton = document.createElement('button');
-            deleteButton.textContent = 'X';
-            deleteButton.style.display = 'none';
-            deleteButton.addEventListener('click', function (e) {
-                e.stopPropagation();
-                dropArea.removeChild(fileContainer);
-
-                const index = tempStorage.findIndex((item) => item.file === file);
-                if (index !== -1) {
-                    tempStorage.splice(index, 1);
-                }
-            });
-
+            fileContainer.appendChild(deleteButton);
             fileContainer.appendChild(thumbnail);
             fileContainer.appendChild(fileNameElement);
-            fileContainer.appendChild(deleteButton);
 
             dropArea.appendChild(fileContainer);
 
             thumbnail.addEventListener('contextmenu', function (e) {
                 e.preventDefault();
-                deleteButton.style.display = 'inline-block';
+                deleteButton.style.display = 'block';
             });
-
-            fileNameElement.addEventListener('mouseenter', function (e) {
-                const popUp = document.createElement('div');
-                popUp.classList.add('popup');
-                popUp.textContent = file.name;
-                popUp.style.top = `${e.clientY - 20}px`;
-                popUp.style.left = `${e.clientX + 10}px`;
-
-                document.body.appendChild(popUp);
-
-                fileNameElement.addEventListener('mouseleave', function () {
-                    document.body.removeChild(popUp);
-                });
-            });
-
 
             document.addEventListener('click', function (e) {
                 if (!e.target.closest('.file-container')) {
-                    deleteButton.style.display = 'none';
+                    const deleteButtons = document.querySelectorAll('.delete-button');
+                    deleteButtons.forEach(button => button.style.display = 'none');
                 }
             });
         };
@@ -132,7 +119,6 @@ function getFileExtension(fileName) {
 }
 
 function getFileIcon(fileExtension) {
-    // TODO add icons
     const iconMap = {
         pdf: 'pdf.png',
         doc: 'doc-icon.png',

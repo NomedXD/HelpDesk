@@ -169,5 +169,13 @@ button:hover {
     text-align: justify;
 }
 
+#post-comment-button {
+    width: 98%;
+}
+
+.table-container {
+    text-align: center;
+}
+
 
 
