@@ -186,7 +186,7 @@ function submitForm() {
     formData.append('desiredResolutionDate', desiredResolutionDate.value);
 
     // TODO Security shit
-    fetch('https://localhost:8080/api/tickets', {
+    fetch('/tickets', {
         method: 'POST',
         body: formData
     })
