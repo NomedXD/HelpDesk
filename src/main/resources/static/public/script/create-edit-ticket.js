@@ -143,32 +143,26 @@ function createForm() {
 
     const toTicketListButton = document.createElement('button');
     toTicketListButton.type = 'button';
-    draftButton.classList.add('to-ticket-list-button');
-    draftButton.id = 'to-ticket-list-button';
-    draftButton.textContent = 'Ticket List';
+    toTicketListButton.classList.add('to-ticket-list-button');
+    toTicketListButton.id = 'to-ticket-list-button';
+    toTicketListButton.textContent = 'Ticket List';
     body.appendChild(toTicketListButton);
 
     const dragNDropScript = document.createElement('script');
     dragNDropScript.src = '/public/script/drag-n-drop.js';
     body.appendChild(dragNDropScript);
 
-    form.addEventListener('submit', function (event) {
+    submitButton.addEventListener('click', (event) => {
         event.preventDefault();
         submitForm().then(_ => console.log('some shit happened'));
     });
 }
 
 async function submitForm() {
-    const formData = new FormData();
-
-    const nameInput = document.getElementById('name');
-    formData.append('name', nameInput.value);
+    const formData = new FormData(document.querySelector("#ticket-form"));
 
     const categorySelect = document.getElementById('category');
-    formData.append('category', categorySelect.value);
-
-    const descriptionInput = document.getElementById('description');
-    formData.append('description', descriptionInput.value);
+    formData.append('categoryId', categorySelect.value);
 
     const fileInput = document.getElementById('drop-input');
     const files = fileInput.files;
@@ -178,28 +172,21 @@ async function submitForm() {
 
     formData.append('state', state);
 
-    const urgencySelect = document.getElementById('urgency');
-    formData.append('urgency', urgencySelect.value);
-
-    const commentInput = document.getElementById('comment');
-    formData.append('comment', commentInput.value);
-
     const desiredResolutionDate = document.getElementById('desired-resolution-date');
     formData.append('desiredResolutionDate', desiredResolutionDate.value);
 
     return await fetch('/api/tickets', {
         method: 'POST',
         headers: {
-            Authorization: await authorizationHeader(),
-            "Content-Type": "application/json"
+            Authorization: await authorizationHeader()
         },
         body: formData
     }).then(response => {
-        if(response.status === 201) {
-            return response.json();
+        if(response.status === 200) {
+            return response.json()
         } else {
             showError("Error")
         }
-    });
+    }).then( json => document.location.href = `/tickets/${json.id}`);
 }
 
