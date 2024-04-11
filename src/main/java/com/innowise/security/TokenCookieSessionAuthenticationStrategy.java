@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.session.SessionAuthenticationException;
@@ -59,6 +60,7 @@ public class TokenCookieSessionAuthenticationStrategy implements SessionAuthenti
             try {
                 response.addCookie(cookie);
                 objectMapper.writeValue(response.getWriter(), new TokenResponseWrapper(accessTokenString));
+                response.setContentType(MediaType.APPLICATION_JSON_VALUE);
                 response.setStatus(HttpStatus.OK.value());
             } catch (IOException e) {
                 log.error("Error while write token value!", e);

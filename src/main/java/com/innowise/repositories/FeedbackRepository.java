@@ -18,5 +18,5 @@ public interface FeedbackRepository {
 
     Optional<Feedback> findById(Integer id);
 
-    List<Feedback> findAllByTicketId(Integer ticketId);
+    Feedback findByTicketId(Integer ticketId);
 }

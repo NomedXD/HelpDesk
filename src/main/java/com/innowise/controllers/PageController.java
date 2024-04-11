@@ -15,4 +15,9 @@ public class PageController {
     public String tickets () {
         return "tickets";
     }
+
+    @GetMapping("/tickets/{id}/feedback")
+    public String feedback() {
+        return "feedback";
+    }
 }

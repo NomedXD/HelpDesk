@@ -1,5 +1,7 @@
 package com.innowise.controllers;
 
+import com.innowise.domain.enums.TicketState;
+import com.innowise.domain.enums.UserRole;
 import com.innowise.dto.request.ChangeEmailRequest;
 import com.innowise.dto.request.ChangePasswordRequest;
 import com.innowise.dto.request.UpdateUserRequest;
@@ -18,6 +20,9 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @RestController
@@ -65,6 +70,12 @@ public class UserController {
     public ResponseEntity<String> deleteProfile(@AuthenticationPrincipal UserDetails userDetails) {
         userService.delete(userDetails.getUsername());
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body("profile deleted successfully");
+    }
+
+    @GetMapping("/actions")
+    public ResponseEntity<Map<TicketState, List<TicketState>>> getUserRoleActions(@AuthenticationPrincipal UserDetails userDetails) {
+        var response = ((UserRole) userDetails.getAuthorities().iterator().next()).getFromToStateAuthorities();
+        return ResponseEntity.ok(response);
     }
 
 }

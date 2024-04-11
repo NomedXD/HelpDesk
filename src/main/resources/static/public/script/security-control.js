@@ -2,10 +2,23 @@ let csrfToken;
 let accessToken;
 let accessTokenString;
 
+const user = {
+    actions: undefined,
+    role: undefined,
+    email: undefined
+};
+
 async function fetchCsrf() {
     return await fetch("/csrf") .then(response => response.json())
         .then(json => {csrfToken = json})
 
+}
+function csrfParam() {
+    if (csrfToken === undefined) {
+        fetchCsrf();
+    }
+
+    return `${csrfToken.parameterName}=${csrfToken.token}`
 }
 async function refreshToken() {
     if (csrfToken === undefined) {
@@ -41,4 +54,26 @@ function isTokenExpired () {
     const currentTimeInSeconds = Math.floor(Date.now() / 1000); // Current time in seconds
 
     return (expirationTimeInSeconds - currentTimeInSeconds < 5);
+}
+async function fetchUserInfo() {
+    await fetch("/api/user/actions", {
+        headers: {
+            Authorization: await authorizationHeader()
+        }
+    }).then(response => response.json())
+        .then(json => {user.actions = json})
+
+    await fetch("/api/user/roles", {
+        headers: {
+            Authorization: await authorizationHeader()
+        }
+    }).then(response => response.text())
+        .then(text => {user.role = text})
+
+    await fetch("/api/user/whoami", {
+        headers: {
+            Authorization: await authorizationHeader()
+        }
+    }).then(response => response.text())
+        .then(text => {user.email = text})
 }

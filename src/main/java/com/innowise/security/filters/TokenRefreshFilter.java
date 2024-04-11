@@ -98,6 +98,8 @@ public class TokenRefreshFilter extends OncePerRequestFilter {
                     throw new RuntimeException("Internal error"); //todo where is internal exception?
                 }
 
+            } else {
+                throw new AccessDeniedException("Token cookie id not provided");
             }
         }
 

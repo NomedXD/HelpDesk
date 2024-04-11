@@ -27,21 +27,11 @@ function performLogin () {
         }
     }).then(response => {
         if(response.ok) {
-            return response.json().then(json => {
-                localStorage.setItem("token", json.accessToken);
-                fetch("/api/tickets",{
-                    headers: {
-                        "Authorization": "Bearer " + json.accessToken
-                    }
-                }).then(response => {
-                    return response.json()
-                        .then(json => location.href="/tickets")
-                })
-            })
+            return response.json()
+                .then(json => location.href="/tickets")
+        } else {
+            showError("Wrong credentials")
         }
-    }).catch(error => {
-        document.querySelector(".error-message").removeAttribute("hidden");
-        console.log(error)
     })
 }
 
@@ -53,3 +43,13 @@ document.addEventListener("DOMContentLoaded", () => {
         performLogin();
     })
 })
+
+function showError(message) {
+    const errorDiv = document.querySelector(".error-message");
+    errorDiv.style.display = "block";
+    errorDiv.innerText = message;
+
+    setTimeout(function() {
+        errorDiv.style.display = "none";
+    }, 3000);
+}

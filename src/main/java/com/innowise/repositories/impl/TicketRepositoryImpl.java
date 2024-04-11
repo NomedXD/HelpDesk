@@ -27,7 +27,9 @@ public class TicketRepositoryImpl implements TicketRepository {
 
     @Override
     public List<Ticket> findAllByAssigneeId(Integer id) {
-        return session.createQuery("FROM Ticket WHERE assignee.id = :id", Ticket.class).list();
+        return session.createQuery("FROM Ticket WHERE assignee.id = :id", Ticket.class)
+                .setParameter("id", id)
+                .list();
     }
 
     @Override

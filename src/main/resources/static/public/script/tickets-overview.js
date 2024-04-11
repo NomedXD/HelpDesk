@@ -1,12 +1,6 @@
 let allTickets;
 let myTickets;
 
-const user = {
-    actions: undefined,
-    role: undefined,
-    email: undefined
-};
-
 let currentTab = "all"
 
 const setAllTickets = (tickets) => {allTickets = tickets}
@@ -114,13 +108,11 @@ async function fetchTickets(url, setTickets) {
                         || (item.state === "NEW" && item.ownerRole === "ROLE_EMPLOYEE"))
                     {
                         for (let act in user.actions[item.state]) {
-
                             const option = document.createElement("option")
                             option.value = `${item.id}:${user.actions[item.state][act]}`;
                             option.innerText = user.actions[item.state][act];
 
                             select.appendChild(option)
-
                         }
 
                         button.addEventListener("click", () => {changeTicketStatus(row)})
@@ -128,13 +120,17 @@ async function fetchTickets(url, setTickets) {
                     }
                 } else {
                     for (let act in user.actions[item.state]) {
+                        if("DONE" === user.actions[item.state][act]) {
+                            if(item.ownerEmail == null || item.approverEmail == null || item.assigneeEmail == null) {
+                                continue
+                            }
+                        }
 
                         const option = document.createElement("option")
                         option.value = `${item.id}:${user.actions[item.state][act]}`;
                         option.innerText = user.actions[item.state][act];
 
                         select.appendChild(option)
-
                     }
 
                     button.addEventListener("click", () => {changeTicketStatus(row)})
@@ -213,27 +209,4 @@ function switchToAllTickets() {
 
     currentTab = "all"
     fetchAllTickets()
-}
-
-async function fetchUserInfo() {
-    await fetch("/api/user/actions", {
-        headers: {
-            Authorization: await authorizationHeader()
-        }
-    }).then(response => response.json())
-        .then(json => {user.actions = json})
-
-    await fetch("/api/user/roles", {
-        headers: {
-            Authorization: await authorizationHeader()
-        }
-    }).then(response => response.text())
-        .then(text => {user.role = text})
-
-    await fetch("/api/user/whoami", {
-        headers: {
-            Authorization: await authorizationHeader()
-        }
-    }).then(response => response.text())
-        .then(text => {user.email = text})
 }

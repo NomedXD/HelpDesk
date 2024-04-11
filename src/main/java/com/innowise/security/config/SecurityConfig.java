@@ -68,11 +68,12 @@ public class SecurityConfig {
 
         http
                 .httpBasic(basic -> basic.disable())
+                .headers(headers -> headers.contentTypeOptions(type -> type.disable()))
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(new GetCsrfTokenFilter(), ExceptionTranslationFilter.class)
                 .authorizeHttpRequests(authorizeHttpRequests ->
                         authorizeHttpRequests
-                                .requestMatchers("/tickets").permitAll()
+                                .requestMatchers("/tickets/**").permitAll()
                                 .requestMatchers("/public/**").permitAll()
                                 .requestMatchers("/auth/**").permitAll()
                                 .requestMatchers("/error", "index.html", "favicon.ico").permitAll()
