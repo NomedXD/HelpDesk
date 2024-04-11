@@ -77,8 +77,7 @@ public class TicketServiceImpl implements TicketService {
         User owner = userService.getUserFromPrincipal();
         List<Attachment> content = new ArrayList<>();
         List<History> history = new ArrayList<>();
-        TicketState state = (request.isDraft() != null && request.isDraft()) ?
-                TicketState.DRAFT : TicketState.NEW;
+        TicketState state = request.state();
         Ticket ticket = Ticket.builder()
                 .name(request.name())
                 .createdOn(LocalDate.now())

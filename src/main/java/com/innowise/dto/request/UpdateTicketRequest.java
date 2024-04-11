@@ -1,5 +1,6 @@
 package com.innowise.dto.request;
 
+import com.innowise.domain.enums.TicketState;
 import com.innowise.domain.enums.TicketUrgency;
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.Future;
@@ -35,6 +36,9 @@ public record UpdateTicketRequest(
 
         @NotNull
         @Future
-        LocalDate desiredResolutionDate
+        LocalDate desiredResolutionDate,
+
+        @NotNull
+        TicketState state
 ) {
 }

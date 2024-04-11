@@ -155,12 +155,12 @@ function createForm() {
     form.appendChild(document.createElement('br'));
     form.appendChild(document.createElement('br'));
 
-    const submitButton = document.createElement('button');
-    submitButton.type = 'button';
-    submitButton.classList.add('submit-button');
-    submitButton.id = 'submit-button';
-    submitButton.textContent = 'edit';
-    form.appendChild(submitButton);
+    const editButton = document.createElement('button');
+    editButton.type = 'button';
+    editButton.classList.add('submit-button');
+    editButton.id = 'edit-button';
+    editButton.textContent = 'edit';
+    form.appendChild(editButton);
 
     const draftButton = document.createElement('button');
     draftButton.type = 'button';

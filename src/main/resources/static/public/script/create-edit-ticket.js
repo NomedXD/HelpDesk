@@ -1,28 +1,27 @@
-window.onload = function() {
-    createForm();
-    const form = document.getElementById('ticket-form');
-    form.addEventListener('submit', function (event) {
-        event.preventDefault();
-        submitForm();
-    });
+document.addEventListener("DOMContentLoaded", init)
+let state = 'NEW';
+
+async function init(){
+    await refreshToken();
+    if (accessTokenString !== undefined) {
+        console.log("Token is defined")
+        createForm();
+    }
 }
 
 function createForm() {
     const body = document.body;
 
-    // Create header
     const header = document.createElement('header');
     const h1 = document.createElement('h1');
     h1.textContent = 'Create Ticket';
     header.appendChild(h1);
     body.appendChild(header);
 
-    // Create form
     const form = document.createElement('form');
     form.id = 'ticket-form';
     form.classList.add('ticket-form');
 
-    // Create form elements
     const nameInput = document.createElement('input');
     nameInput.type = 'text';
     nameInput.id = 'name';
@@ -136,6 +135,9 @@ function createForm() {
     draftButton.id = 'draft-button';
     draftButton.textContent = 'save as Draft';
     form.appendChild(draftButton);
+    draftButton.addEventListener('click', function() {
+        state = 'DRAFT';
+    })
 
     body.appendChild(form);
 
@@ -146,17 +148,17 @@ function createForm() {
     draftButton.textContent = 'Ticket List';
     body.appendChild(toTicketListButton);
 
-
-    // Load drag-n-drop.js
     const dragNDropScript = document.createElement('script');
-    dragNDropScript.src = 'drag-n-drop.js';
+    dragNDropScript.src = '/public/script/drag-n-drop.js';
     body.appendChild(dragNDropScript);
+
+    form.addEventListener('submit', function (event) {
+        event.preventDefault();
+        submitForm().then(_ => console.log('some shit happened'));
+    });
 }
 
-
-function submitForm() {
-    // TODO flag for draft
-
+async function submitForm() {
     const formData = new FormData();
 
     const nameInput = document.getElementById('name');
@@ -164,7 +166,6 @@ function submitForm() {
 
     const categorySelect = document.getElementById('category');
     formData.append('category', categorySelect.value);
-    // TODO send id, not a string
 
     const descriptionInput = document.getElementById('description');
     formData.append('description', descriptionInput.value);
@@ -175,9 +176,10 @@ function submitForm() {
         formData.append('files', file);
     });
 
+    formData.append('state', state);
+
     const urgencySelect = document.getElementById('urgency');
     formData.append('urgency', urgencySelect.value);
-    // TODO send id, not a string
 
     const commentInput = document.getElementById('comment');
     formData.append('comment', commentInput.value);
@@ -185,16 +187,19 @@ function submitForm() {
     const desiredResolutionDate = document.getElementById('desired-resolution-date');
     formData.append('desiredResolutionDate', desiredResolutionDate.value);
 
-    // TODO Security shit
-    fetch('/tickets', {
+    return await fetch('/api/tickets', {
         method: 'POST',
+        headers: {
+            Authorization: await authorizationHeader(),
+            "Content-Type": "application/json"
+        },
         body: formData
-    })
-        .then(response => {
-
-        })
-        .catch(error => {
-
-        });
+    }).then(response => {
+        if(response.status === 201) {
+            return response.json();
+        } else {
+            showError("Error")
+        }
+    });
 }
 

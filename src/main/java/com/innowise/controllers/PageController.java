@@ -2,6 +2,7 @@ package com.innowise.controllers;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 
 @Controller
 public class PageController {
@@ -20,4 +21,13 @@ public class PageController {
     public String feedback() {
         return "feedback";
     }
+
+    @GetMapping("/tickets/{id}")
+    public String view(){return "ticket-overview";}
+
+    @GetMapping("/tickets/{id}/edit")
+    public String edit(){return "edit-ticket";}
+
+    @GetMapping("/tickets/add")
+    public String create(){return "create-ticket";}
 }

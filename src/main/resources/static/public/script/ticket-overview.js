@@ -1,3 +1,7 @@
+const ticketId = location.href.split("/")[location.href.split("/").length - 2];
+// TODO it is wrong string split, ask poe later
+
+
 const commentButton = document.createElement('button');
 commentButton.id = 'comment-button';
 commentButton.textContent = 'comments';
