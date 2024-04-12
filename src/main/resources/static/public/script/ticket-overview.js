@@ -1,6 +1,14 @@
-const ticketId = location.href.split("/")[location.href.split("/").length - 2];
-// TODO it is wrong string split, ask poe later
+const defineTicketId = () => {
+    const ticketId = location.href.split("/")[location.href.split("/").length - 1];
+    if(!isNaN(parseInt(ticketId))) {
+        return parseInt(ticketId);
+    } else {
+        showError("Oh my, error in url!!!")
+    }
+}
 
+const ticketId = defineTicketId();
+// TODO it is wrong string split, ask poe later
 
 const commentButton = document.createElement('button');
 commentButton.id = 'comment-button';
@@ -17,19 +25,25 @@ historyButton.textContent = 'history';
 const toTicketList = document.createElement('button');
 toTicketList.id = 'to-ticket-list';
 toTicketList.textContent = 'Ticket List';
+toTicketList.addEventListener('click', () => {location.href = "/tickets"})
 
 const toTicketEdit = document.createElement('button');
 toTicketEdit.id = 'to-ticket-edit';
 toTicketEdit.textContent = 'Edit';
+toTicketEdit.addEventListener('click', () => {location.href = `/tickets/${ticketId}/edit`})
 
 const toTicketFeedback = document.createElement('button');
 toTicketFeedback.id = 'to-ticket-feedback';
 toTicketFeedback.textContent = 'Feedback';
+toTicketFeedback.addEventListener('click', () => {location.href = `/tickets/${ticketId}/feedback`})
+
+const errorDiv = document.createElement("div");
+errorDiv.className = "error-message"
 
 const header = document.createElement('header');
 header.appendChild(toTicketList);
-header.appendChild(toTicketEdit);
 header.appendChild(toTicketFeedback);
+header.appendChild(errorDiv);
 
 const ticketContainer = document.createElement('div');
 ticketContainer.classList.add('ticket-container');
@@ -53,38 +67,65 @@ body.appendChild(ticketContainer);
 body.appendChild(tableButtons);
 body.appendChild(tableContainer);
 
-const commentData = [
-    { date: '2024-03-15', user: 'ycovich', comment: 'test comment' },
-    { date: '2024-03-16', user: 'VladK27', comment: 'really long test comment really long test comment ' +
-            'really long test comment really long test comment really long test comment ' +
-            'really long test comment really long test comment really long test comment ' +
-            'really long test comment really long test comment really long test comment ' +
-            'really long test comment really long test comment really long test comment ' +
-            'really long test comment really long test comment really long test comment ' +
-            'really long test comment really long test comment really long test comment' },
-];
-const historyData = [
-    { date: '2024-03-15', user: 'ycovich', action: 'created ticket', description: 'ticket for NomedXD' },
-    { date: '2024-03-16', user: 'VladK27', action: 'approved & assigned ticket', description: '' },
-];
+let commentData = [];
+let historyData = [];
 
 const ticketInfo = {
-    title: 'Title',
+    name: 'Name',
     id: 'ID',
-    category: 'Category',
+    categoryName: 'Category',
     description: 'Description',
-    status: 'Status',
+    state: 'Status',
     urgency: 'Urgency',
     createdOn: 'Created On',
     desiredResolutionDate: 'Deadline',
-    attachments: 'Attachments',
-    owner: 'Owner',
-    approver: 'Approver',
-    assignee: 'Assignee',
+    ownerEmail: 'Owner',
+    approverEmail: 'Approver',
+    assigneeEmail: 'Assignee',
 };
+
+async function fetchTicket() {
+    if(!ticketId){
+        console.log("Error, ticketId is not defined!")
+        return;
+    }
+
+    return await fetch(`/api/tickets/${ticketId}`, {
+        headers: {
+            Authorization: await authorizationHeader()
+        }
+    }).then(response => {
+        return response.json()
+    }).then(ticket => {
+        const ticketTable = document.createElement('table');
+        ticketTable.classList.add('ticket-table');
+        ticketTable.id = 'ticket-table';
+        const tbody = document.createElement('tbody');
+
+        if(ticket.state === "DRAFT"){
+            header.appendChild(toTicketEdit);
+        }
+
+        for (let field in ticketInfo) {
+            const row = document.createElement("tr")
+            row.innerHTML = `
+            <td class="field">${ticketInfo[field]}</td>
+            <td class="value">${ticket[field] == null ? "blank" : ticket[field]}</td>`
+
+            console.log(`field: ${field}, row: ${row}`)
+            tbody.appendChild(row)
+        }
+
+        ticketTable.appendChild(tbody);
+        ticketContainer.appendChild(ticketTable);
+
+    })
+}
 
 let isCommentTableOpen = false;
 let isHistoryTableOpen = false;
+
+let currentTab = "none"
 
 function renderCommentTable() {
     const table = document.createElement('table');
@@ -104,9 +145,9 @@ function renderCommentTable() {
         .map(
             (comment) => `
           <tr>
-            <td class="td-comment-center">${comment.date}</td>
-            <td class="td-comment-center">${comment.user}</td>
-            <td class="td-comment-justify">${comment.comment}</td>
+            <td class="td-comment-center">${comment.date.split("T")[0]}</td>
+            <td class="td-comment-center">${comment.userEmail}</td>
+            <td class="td-comment-justify">${comment.text}</td>
           </tr>
         `
         )
@@ -153,10 +194,10 @@ function renderHistoryTable() {
         .map(
             (entry) => `
           <tr>
-            <td class="td-history">${entry.date}</td>
-            <td class="td-history">${entry.user}</td>
+            <td class="td-history">${entry.date.split("T")[0]}</td>
+            <td class="td-history">${entry.userEmail}</td>
             <td class="td-history">${entry.action}</td>
-            <td>${entry.description}</td>
+            <td class="td-history">${entry.description}</td>
           </tr>
         `
         )
@@ -170,46 +211,84 @@ function renderHistoryTable() {
     isCommentTableOpen = false;
 }
 
-function renderTicketInfo() {
-    const ticketTable = document.createElement('table');
-    ticketTable.classList.add('ticket-table');
-    ticketTable.id = 'ticket-table';
-    ticketTable.innerHTML = `
-    <tbody>
-      ${Object.entries(ticketInfo)
-        .map(
-            ([_, fieldName]) => `
-          <tr>
-            <td class="field">${fieldName}</td>
-            <td class="value">blank</td>
-          </tr>
-        `
-        )
-        .join('')}
-    </tbody>
-  `;
-    ticketContainer.innerHTML = '';
-    ticketContainer.appendChild(ticketTable);
+async function fetchComments() {
+    return await fetch(`/api/tickets/${ticketId}/comments`, {
+        headers: {
+            Authorization: await authorizationHeader()
+        }
+    }).then(response => {
+        return response.json()
+    }).then(json => {commentData = [...json]})
+}
+async function fetchHistory() {
+    return await fetch(`/api/tickets/${ticketId}/histories`, {
+        headers: {
+            Authorization: await authorizationHeader()
+        }
+    }).then(response => {
+        return response.json()
+    }).then(json => {historyData = [...json]})
 }
 
-commentButton.addEventListener('click', () => {
-    if (isCommentTableOpen) {
-        tableContainer.style.display = 'none';
-        isCommentTableOpen = false;
-    } else {
-        renderCommentTable();
+async function postComment(text) {
+    return await fetch(`/api/comments?${csrfParam()}`, {
+        method: "POST",
+        headers: {
+            "Authorization": await authorizationHeader(),
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            ticketId:ticketId,
+            text: text
+        })
+    }).then(response => {
+        if(response.ok) {
+            return response.json()
+                .then(comment => {
+                    commentData.push(comment)
+                    renderCommentTable();
+                })
+        } else {
+            showError("Wrong comment text")
+        }
+    })
+}
+
+async function init() {
+    await refreshToken();
+
+    if(accessToken) {
+        await fetchTicket();
+        await fetchComments();
+        await fetchHistory();
     }
-});
 
-historyButton.addEventListener('click', () => {
-    if (isHistoryTableOpen) {
-        tableContainer.style.display = 'none';
-        isHistoryTableOpen = false;
-    } else {
-        renderHistoryTable();
-    }
-});
+    commentButton.addEventListener('click', () => {
+        if (isCommentTableOpen) {
+            tableContainer.style.display = 'none';
+            isCommentTableOpen = false;
+        } else {
+            renderCommentTable();
+        }
+    });
 
-// TODO EventListener for PostCommentButton
+    historyButton.addEventListener('click', () => {
+        if (isHistoryTableOpen) {
+            tableContainer.style.display = 'none';
+            isHistoryTableOpen = false;
+        } else {
+            renderHistoryTable();
+        }
+    });
 
-renderTicketInfo();
+    postCommentButton.addEventListener('click', async () => {
+        const text = document.querySelector("#comment-input").value;
+        if(text.length < 1){
+            showError("Wrong comment text")
+        } else {
+            await postComment(text)
+        }
+    })
+}
+
+document.addEventListener("DOMContentLoaded", init);

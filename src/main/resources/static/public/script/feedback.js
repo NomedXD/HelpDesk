@@ -155,7 +155,7 @@ let output;
         page.innerHTML = `
     <div class="card">
         <button id="go-back-button">Back</button>
-        <h3 class="error-message">${message}</h3>
+        <h3 class="error">${message}</h3>
     </div>`
         document.querySelector("body").appendChild(page)
 
@@ -232,13 +232,3 @@ let output;
             renderFeedbackView()
         })
     }
-
-function showError(message) {
-    const errorDiv = document.querySelector(".error-message");
-    errorDiv.style.display = "block";
-    errorDiv.innerText = message;
-
-    setTimeout(function() {
-        errorDiv.style.display = "none";
-    }, 3000);
-}

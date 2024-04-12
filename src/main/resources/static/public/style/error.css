@@ -1,7 +1,10 @@
-.error-message {
+.error-message , .error{
     color: darkred;
     padding: 10px;
     background-color: rgba(205, 92, 92, 0.51);
     margin: 10px;
     border-radius: 5px;
+}
+.error-message {
+    display: none;
 }
