@@ -31,13 +31,6 @@ public class UserController {
     private final UserService userService;
     private final UserMapper userMapper;
 
-    @GetMapping("/roles")
-    public ResponseEntity<String> getRoles(@AuthenticationPrincipal UserDetails userDetails) {
-        String response = userDetails.getAuthorities().iterator().next().getAuthority();
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(response);
-    }
-
     @PatchMapping("/edit")
     public ResponseEntity<UserResponse> editProfile(@RequestBody UpdateUserRequest request) {
         UserResponse response = userMapper.toUserResponse(userService.update(request));

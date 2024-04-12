@@ -200,7 +200,7 @@ async function submitForm() {
     if (path === 'edit') {
         method = 'PUT';
     }
-    return await fetch('/api/tickets', {
+    return await fetch(`/api/tickets?${csrfParam()}`, {
         method: method,
         headers: {
             Authorization: await authorizationHeader()

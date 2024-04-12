@@ -12,7 +12,8 @@ button {
     min-width: 80px;
     text-align: center;
     align-items: center;
-    background: mediumpurple;
+    background-color: #043927;
+    color: white;
     font-family: sans-serif;
     font-weight: 350;
 }
@@ -43,8 +44,8 @@ header button {
 }
 
 body {
-    background: black;
-    color: white;
+    background: white;
+    color: black;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -57,7 +58,7 @@ body {
 
 .ticket-container {
     width: 50%;
-    border: 2px solid wheat;
+    border: 2px solid #043927;
     border-radius: 30px;
     padding: 10px;
     overflow-x: auto;
@@ -73,7 +74,7 @@ body {
 
 .table-container {
     width: 50%;
-    border: 2px solid wheat;
+    border: 2px solid #043927;
     border-radius: 30px;
     padding: 10px;
     overflow-x: auto;
@@ -102,16 +103,16 @@ body {
 .comment-table td,
 .history-table td {
     padding: 10px;
-    border-right: 2px solid wheat;
-    border-bottom: 2px solid wheat;
+    border-right: 2px solid #043927;
+    border-bottom: 2px solid #043927;
 }
 
 .ticket-table th,
 .comment-table th,
 .history-table th {
     padding: 10px;
-    border-right: 2px solid wheat;
-    border-bottom: 2px solid wheat;
+    border-right: 2px solid #043927;
+    border-bottom: 2px solid #043927;
 }
 
 .ticket-table td:last-child,
@@ -133,16 +134,16 @@ body {
 }
 
 .comment-table thead tr {
-    border-bottom: 2px solid wheat
+    border-bottom: 2px solid #043927
 }
 
 .history-table thead tr {
-    border-bottom: 2px solid wheat
+    border-bottom: 2px solid #043927
 }
 
 button:hover {
     background-color: wheat;
-    color: rebeccapurple;
+    color: #043927;
     transition: background-color 0.45s ease;
 }
 
@@ -181,6 +182,8 @@ button:hover {
 .table-container {
     text-align: center;
 }
+
+
 
 
 

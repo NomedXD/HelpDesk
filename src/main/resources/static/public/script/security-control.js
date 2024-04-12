@@ -62,18 +62,4 @@ async function fetchUserInfo() {
         }
     }).then(response => response.json())
         .then(json => {user.actions = json})
-
-    await fetch("/api/user/roles", {
-        headers: {
-            Authorization: await authorizationHeader()
-        }
-    }).then(response => response.text())
-        .then(text => {user.role = text})
-
-    await fetch("/api/user/whoami", {
-        headers: {
-            Authorization: await authorizationHeader()
-        }
-    }).then(response => response.text())
-        .then(text => {user.email = text})
 }

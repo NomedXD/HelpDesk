@@ -36,33 +36,34 @@ async function init () {
 }
 function renderPage() {
     const page = document.createElement("div");
+    page.className = 'container';
     page.innerHTML = `
-    <div class="container">
     <div class="header">
-        <h3>Ticket Management System</h3>
+        <button class="refresh-button" id="refresh-tickets-button">↻ Refresh</button>
         <button class="button" id="create-button">Create New Ticket</button>
     </div>
     <div class="tabs">
         <button class="button" id="all-tickets-button">All Tickets</button>
         <button class="button" id="my-tickets-button">My Tickets</button>
-        <button class="refresh-button" id="refresh-tickets-button">↻ Refresh</button>
     </div>
-    <table class="table">
-        <thead>
-        <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Desired Date</th>
-            <th>Urgency</th>
-            <th>Status</th>
-            <th>Action</th>
-        </tr>
-        </thead>
-        <tbody id="table-body">
-        
-        </tbody>
-    </table>
-</div>
+    <div class="table-container">
+        <table class="table">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Desired Date</th>
+                <th>Urgency</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+            </thead>
+            <tbody id="table-body">
+            
+            </tbody>
+        </table>
+    </div>
+    
     `
     document.querySelector("body").appendChild(page)
 
@@ -103,6 +104,7 @@ async function fetchTickets(url, setTickets) {
                 const select = td.appendChild(document.createElement("select"));
 
                 const button = td.appendChild(document.createElement("button"));
+                button.className = 'submit-status-button';
                 button.innerText = "▶";
 
                 if( user.role === "ROLE_MANAGER") {
@@ -171,16 +173,6 @@ function refreshTickets() {
 function switchToMyTickets() {
     console.log("my tickets")
     const body = document.querySelector("#table-body");
-    const myTicketsButton = document.querySelector("#my-tickets-button")
-    const allTicketsButton = document.querySelector("#all-tickets-button")
-
-    myTicketsButton.style.background = "white"
-    myTicketsButton.style.border = "solid 1px black"
-    myTicketsButton.style.color = "black"
-
-    allTicketsButton.style.background = "#007bff"
-    allTicketsButton.style.border = "none"
-    allTicketsButton.style.color = "white"
 
     while (body.firstChild) {
         body.removeChild(body.firstChild);
@@ -192,18 +184,7 @@ function switchToMyTickets() {
 
 function switchToAllTickets() {
     console.log("all tickets")
-
     const body = document.querySelector("#table-body");
-    const myTicketsButton = document.querySelector("#my-tickets-button")
-    const allTicketsButton = document.querySelector("#all-tickets-button")
-
-    allTicketsButton.style.background = "white"
-    allTicketsButton.style.border = "solid 1px black"
-    allTicketsButton.style.color = "black"
-
-    myTicketsButton.style.background = "#007bff"
-    myTicketsButton.style.border = "none"
-    myTicketsButton.style.color = "white"
 
     while (body.firstChild) {
         body.removeChild(body.firstChild);
