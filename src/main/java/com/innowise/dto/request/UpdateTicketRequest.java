@@ -1,5 +1,6 @@
 package com.innowise.dto.request;
 
+import com.innowise.domain.enums.TicketState;
 import com.innowise.domain.enums.TicketUrgency;
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.Future;
@@ -8,6 +9,8 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.time.LocalDate;
 
 @Builder
@@ -35,6 +38,12 @@ public record UpdateTicketRequest(
 
         @NotNull
         @Future
-        LocalDate desiredResolutionDate
+        LocalDate desiredResolutionDate,
+
+        @NotNull
+        TicketState state,
+
+        @Nullable
+        MultipartFile[] files
 ) {
 }

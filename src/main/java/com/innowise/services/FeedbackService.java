@@ -15,5 +15,5 @@ public interface FeedbackService {
 
     FeedbackResponse findById(Integer id);
 
-    List<FeedbackResponse> findAllByTicketId(Integer ticketId);
+    FeedbackResponse findByTicketId(Integer ticketId);
 }

@@ -67,6 +67,8 @@ public class FeedbackServiceImpl implements FeedbackService {
             throw new NotOwnerTicketException(owner.getId(), ticket.getId());
         }
         emailService.notifyFeedbackProvide(ticket.getAssignee(), ticket.getId());
+
+        feedback.setId(ticket.getId());
         feedback.setUser(owner);
         feedback.setTicket(ticket);
         feedback.setDate(LocalDate.now());
@@ -95,9 +97,13 @@ public class FeedbackServiceImpl implements FeedbackService {
     }
 
     @Override
-    public List<FeedbackResponse> findAllByTicketId(Integer ticketId) {
+    public FeedbackResponse findByTicketId(Integer ticketId) {
         if (ticketService.existsByIdService(ticketId)) {
-            return feedbackListMapper.toFeedbackResponseDtoList(feedbackRepository.findAllByTicketId(ticketId));
+            if(feedbackRepository.existsById(ticketId)){
+                return feedbackMapper.toFeedbackResponseDto(feedbackRepository.findByTicketId(ticketId));
+            } else {
+                throw new NoSuchEntityIdException(EntityTypeMessages.FEEDBACK_MESSAGE, ticketId);
+            }
         } else {
             throw new NoSuchEntityIdException(EntityTypeMessages.TICKET_MESSAGE, ticketId);
         }

@@ -7,6 +7,6 @@ import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface HistoryMapper {
-    @Mapping(source = "user.firstName", target = "userName")
+    @Mapping(source = "user.email", target = "userEmail")
     HistoryResponse toHistoryResponseDto(History history);
 }

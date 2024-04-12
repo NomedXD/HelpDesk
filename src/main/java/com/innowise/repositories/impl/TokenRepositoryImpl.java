@@ -5,6 +5,7 @@ import com.innowise.repositories.TokenRepository;
 import jakarta.persistence.PersistenceContext;
 import org.hibernate.Session;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
@@ -55,6 +56,7 @@ public class TokenRepositoryImpl implements TokenRepository {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public void replace(RefreshToken newToken, Integer userId) {
         session.createMutationQuery("DELETE FROM RefreshToken WHERE userId = :userId")
                 .setParameter("userId", userId)

@@ -21,10 +21,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.ExceptionTranslationFilter;
-import org.springframework.security.web.access.channel.ChannelProcessingFilter;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.filter.CorsFilter;
+import org.springframework.security.web.csrf.*;
 
 @Configuration
 @Slf4j
@@ -64,7 +61,6 @@ public class SecurityConfig {
             AuthenticationProvider authenticationProvider,
             TokenRepository tokenRepository) throws Exception
     {
-        CorsFilter corsFilter = getCorsFilter(); // CORS
         TokenCookieSessionAuthenticationStrategy tokenCookieSessionAuthenticationStrategy =
                 new TokenCookieSessionAuthenticationStrategy(tokenRepository);
         tokenCookieSessionAuthenticationStrategy
@@ -73,35 +69,24 @@ public class SecurityConfig {
         http
                 .httpBasic(basic -> basic.disable())
                 .authenticationProvider(authenticationProvider)
-                .addFilterBefore(corsFilter, ChannelProcessingFilter.class) // CORS
                 .addFilterBefore(new GetCsrfTokenFilter(), ExceptionTranslationFilter.class)
                 .authorizeHttpRequests(authorizeHttpRequests ->
                         authorizeHttpRequests
+                                .requestMatchers("/tickets/**").permitAll()
+                                .requestMatchers("/public/**").permitAll()
                                 .requestMatchers("/auth/**").permitAll()
-                                .requestMatchers("/error", "static/index.html").permitAll()
+                                .requestMatchers("/error", "favicon.ico").permitAll()
                                 .anyRequest().authenticated())
                 .sessionManagement(sessionManagement -> sessionManagement
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                         .sessionAuthenticationStrategy(tokenCookieSessionAuthenticationStrategy))
-                .csrf(csrf -> csrf.disable());
-//                        csrf.csrfTokenRepository(new CookieCsrfTokenRepository())
-//                        .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler())
-//                        .sessionAuthenticationStrategy((authentication, request, response) -> {}));
+                .csrf(csrf -> csrf.csrfTokenRepository(new CookieCsrfTokenRepository())
+                        .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler())
+                        .sessionAuthenticationStrategy((authentication, request, response) -> {}));
 
         http.with(tokenAuthenticationConfigurer, Customizer.withDefaults());
 
         return http.build();
-    }
-
-    private static CorsFilter getCorsFilter() {
-        CorsConfiguration corsConfiguration = new CorsConfiguration();
-        corsConfiguration.addAllowedOrigin("http://localhost:3000");
-        corsConfiguration.addAllowedHeader("*");
-        corsConfiguration.addAllowedMethod("*");
-        corsConfiguration.setAllowCredentials(true);
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", corsConfiguration);
-        return new CorsFilter(source);
     }
 
     @Bean

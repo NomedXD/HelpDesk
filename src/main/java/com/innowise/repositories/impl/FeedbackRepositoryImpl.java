@@ -49,9 +49,9 @@ public class FeedbackRepositoryImpl implements FeedbackRepository {
     }
 
     @Override
-    public List<Feedback> findAllByTicketId(Integer ticketId) {
-        return session.createQuery("FROM Feedback WHERE ticket.id = :id ORDER BY date DESC", Feedback.class)
+    public Feedback findByTicketId(Integer ticketId) {
+        return session.createQuery("FROM Feedback WHERE ticket.id = :id", Feedback.class)
                 .setParameter("id", ticketId)
-                .list();
+                .getSingleResult();
     }
 }

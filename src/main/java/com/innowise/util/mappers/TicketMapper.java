@@ -13,9 +13,10 @@ public interface TicketMapper {
 
 
     @Mapping(source = "category.name", target = "categoryName")
-    @Mapping(source = "owner.firstName", target = "ownerName")
-    @Mapping(source = "approver.firstName", target = "approverName")
-    @Mapping(source = "assignee.firstName", target = "assigneeName")
+    @Mapping(source = "owner.email", target = "ownerEmail")
+    @Mapping(source = "owner.role", target = "ownerRole")
+    @Mapping(source = "approver.email", target = "approverEmail")
+    @Mapping(source = "assignee.email", target = "assigneeEmail")
     @Mapping(source = "histories", target = "historyResponseList")
     @Mapping(source = "comments", target = "commentResponseList")
     TicketResponse toTicketResponseDto(Ticket ticket);

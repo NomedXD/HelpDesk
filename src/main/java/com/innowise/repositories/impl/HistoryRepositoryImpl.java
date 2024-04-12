@@ -49,7 +49,7 @@ public class HistoryRepositoryImpl implements HistoryRepository {
 
     @Override
     public List<History> findAllByTicketId(Integer ticketId) {
-        return session.createQuery("FROM Feedback WHERE ticket.id = :id ORDER BY date DESC", History.class)
+        return session.createQuery("FROM History WHERE ticket.id = :id ORDER BY date DESC", History.class)
                 .setParameter("id", ticketId)
                 .list();
     }

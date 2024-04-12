@@ -4,6 +4,7 @@ import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -82,8 +83,8 @@ public class GlobalExceptionHandler {
                 .body(new ApiErrorResponse(HttpStatus.BAD_REQUEST, LocalDateTime.now(), exception.getMessage()));
     }
 
-    @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<ApiErrorResponse> handleAccessDeniedException(AccessDeniedException exception) {
+    @ExceptionHandler({AccessDeniedException.class, BadCredentialsException.class})
+    public ResponseEntity<ApiErrorResponse> handleAccessDeniedException(Exception exception) {
         return ResponseEntity
                 .status(HttpStatus.FORBIDDEN)
                 .body(new ApiErrorResponse(HttpStatus.FORBIDDEN, LocalDateTime.now(), exception.getMessage()));
@@ -95,4 +96,5 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.BAD_REQUEST)
                 .body(new ApiErrorResponse(HttpStatus.BAD_REQUEST, LocalDateTime.now(), exception.getMessage()));
     }
+
 }
