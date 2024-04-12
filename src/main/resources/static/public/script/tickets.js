@@ -92,7 +92,7 @@ async function fetchTickets(url, setTickets) {
 
             row.innerHTML = `
             <td>${item.id}</td>
-            <td>${item.name}</td>
+            <td><a href="/tickets/${item.id}">${item.name}</a></td>
             <td>${item.desiredResolutionDate}</td>
             <td>${item.urgency}</td>
             <td>${item.state}</td>`
