@@ -110,7 +110,7 @@ async function fetchTicket() {
             const row = document.createElement("tr")
             row.innerHTML = `
             <td class="field">${ticketInfo[field]}</td>
-            <td class="value">${ticket[field] == null ? "blank" : ticket[field]}</td>`
+            <td class="value">${ticket[field] == null ? "—" : ticket[field]}</td>`
 
             console.log(`field: ${field}, row: ${row}`)
             tbody.appendChild(row)

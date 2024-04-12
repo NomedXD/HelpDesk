@@ -152,15 +152,15 @@ function getFileExtension(fileName) {
 
 function getFileIcon(fileExtension) {
     const iconMap = {
-        pdf: 'pdf.png',
-        doc: 'doc-icon.png',
-        docx: 'doc-icon.png',
-        xls: 'xls-icon.png',
-        xlsx: 'xls-icon.png',
-        ppt: 'ppt-icon.png',
-        pptx: 'ppt-icon.png',
-        txt: 'txt-icon.png',
-        other: 'default-icon.png',
+        pdf: '/public/icons/pdf-icon.png',
+        doc: '/public/icons/doc-icon.png',
+        docx: '/public/icons/doc-icon.png',
+        xls: '/public/icons/xls-icon.png',
+        xlsx: '/public/icons/xls-icon.png',
+        ppt: '/public/icons/ppt-icon.png',
+        pptx: '/public/icons/ppt-icon.png',
+        txt: '/public/icons/txt-icon.png',
+        other: '/public/icons/default-icon.png',
     };
 
     return iconMap[fileExtension] || iconMap['other'];

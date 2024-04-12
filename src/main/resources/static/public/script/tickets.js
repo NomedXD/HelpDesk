@@ -40,7 +40,7 @@ function renderPage() {
     <div class="container">
     <div class="header">
         <h3>Ticket Management System</h3>
-        <button class="button">Create New Ticket</button>
+        <button class="button" id="create-button">Create New Ticket</button>
     </div>
     <div class="tabs">
         <button class="button" id="all-tickets-button">All Tickets</button>
@@ -66,6 +66,8 @@ function renderPage() {
     `
     document.querySelector("body").appendChild(page)
 
+    document.querySelector("#create-button")
+        .addEventListener("click", () => {location.href = `/tickets/add`})
     document.querySelector("#my-tickets-button").addEventListener("click", switchToMyTickets)
     document.querySelector("#all-tickets-button").addEventListener("click", switchToAllTickets)
 

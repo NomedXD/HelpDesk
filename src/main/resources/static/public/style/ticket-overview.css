@@ -31,14 +31,14 @@ header button {
 
 #to-ticket-feedback {
     position: fixed;
-    top: 75px;
+    top: 15px;
     right: 30px;
 
 }
 
 #to-ticket-edit {
     position: fixed;
-    top: 15px;
+    top: 75px;
     right: 30px;
 }
 
@@ -75,6 +75,7 @@ body {
     border: 2px solid wheat;
     border-radius: 30px;
     padding: 10px;
+    overflow-x: auto;
 }
 
 .field {
@@ -84,6 +85,12 @@ body {
 
 .value {
     text-align: left;
+}
+
+.comment-table td,
+.history-table td {
+    word-wrap: break-word;
+    max-width: 100%;
 }
 
 .ticket-table,
@@ -167,6 +174,7 @@ button:hover {
 
 .td-comment-justify {
     text-align: justify;
+    word-wrap: break-word;
 }
 
 #post-comment-button {

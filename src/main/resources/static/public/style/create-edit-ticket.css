@@ -1,4 +1,4 @@
-*{
+* {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
@@ -9,7 +9,8 @@ h3 {
     text-align: center;
     margin-bottom: 5px;
     font-weight: 350;
-    color: lightgray;
+    font-family: sans-serif;
+    color: black;
 }
 
 header {
@@ -17,8 +18,8 @@ header {
 }
 
 body {
-    background: black;
-    color: white;
+    background: white;
+    color: black;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -31,45 +32,40 @@ body {
 .drop-area {
     width: 650px;
     height: 150px;
-    background: mediumpurple;
+    background: #043927;
     text-align: center;
     align-content: center;
     border-radius: 30px;
     cursor: pointer;
     margin-bottom: 15px;
+    padding-top: 10px;
 }
 
 .drop-input {
     visibility: hidden;
 }
 
-.popup {
-    position: absolute;
-    background-color: #333;
-    color: #fff;
-    padding: 5px;
-    border-radius: 5px;
-    font-size: 12px;
-    z-index: 9999;
-}
-
 .file-container {
     position: relative;
     display: inline-block;
-    margin-right: 10px;
-    margin-bottom: 10px;
+    margin-top: 5px;
+}
+
+.filename {
+    color: wheat;
 }
 
 .thumbnail {
+    margin-top: 5px;
     position: relative;
 }
 
 .delete-button {
     position: absolute;
-    top: -23px;
+    top: -20px;
     left: 50%;
     transform: translateX(-50%);
-    background-color: #ff0000;
+    background-color: darkred;
     color: #ffffff;
     border: none;
     border-radius: 25px;
@@ -96,7 +92,7 @@ body {
     max-width: 720px;
     max-height: 750px;
     padding: 25px;
-    border: 1px solid rebeccapurple;
+    border: 2px solid #043927;
     border-radius: 35px;
 }
 
@@ -110,7 +106,7 @@ body {
     padding-top: 3px;
     min-height: 30px;
     border-radius: 15px;
-    border: none;
+    border: 2px solid #043927;
     margin-bottom: 15px;
 }
 
@@ -122,21 +118,24 @@ body {
     text-align: center;
 }
 
+#desired-resolution-date {
+    text-align: center;
+}
+
 button {
     padding: 5px;
-    all:unset;
+    all: unset;
     text-align: center;
     align-content: center;
     transition-duration: 0.45s;
 }
 
-
 .create-or-edit-button {
     height: 35px;
     width: 65px;
     border-radius: 10px;
-    background-color: mediumpurple;
-    color: white;
+    background-color: #043927;
+    color: wheat;
     margin-right: 10px;
 }
 
@@ -144,37 +143,32 @@ button {
     height: 35px;
     width: 115px;
     border-radius: 10px;
-    background-color: mediumpurple;
-    color: white;
+    background-color: #043927;
+    color: wheat;
 }
 
 .create-or-edit-button:hover {
-    background-color: wheat;
-    color: rebeccapurple;
+    background-color: wheat; /* Changed to green */
+    color: #043927;
 }
 
 .draft-button:hover {
-    background-color: wheat;
-    color: rebeccapurple;
+    background-color: wheat; /* Changed to green */
+    color: #043927;
 }
 
 .to-ticket-overview-or-ticket-list-button {
     height: 35px;
     width: 115px;
     border-radius: 10px;
-    background-color: mediumpurple;
-    color: white;
-
+    background-color: #043927;
+    color: wheat;
     position: fixed;
     top: 20px;
     left: 20px;
 }
 
 .to-ticket-overview-or-ticket-list-button:hover {
-    background-color: wheat;
-    color: rebeccapurple;
+    background-color: wheat; /* Changed to green */
+    color: #043927;
 }
-
-
-
-

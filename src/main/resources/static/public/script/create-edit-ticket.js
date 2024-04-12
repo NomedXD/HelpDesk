@@ -1,6 +1,7 @@
 document.addEventListener("DOMContentLoaded", init)
 let state = 'NEW';
 let method = 'POST';
+const ticketId = location.href.split("/")[location.href.split("/").length - 2];
 const path = window.location.pathname.split("/").pop();
 
 const categoryNames = {
@@ -29,6 +30,9 @@ function createForm() {
     const header = document.createElement('header');
     const h1 = document.createElement('h1');
     h1.textContent = 'Create Ticket';
+    if (path === 'edit') {
+        h1.textContent = 'Edit Ticket';
+    }
     header.appendChild(h1);
     body.appendChild(header);
 
@@ -107,7 +111,7 @@ function createForm() {
     form.appendChild(desiredResolutionDate);
 
     const h3 = document.createElement('h3');
-    h3.textContent = 'drop your files here';
+    h3.textContent = 'drop your files below';
     form.appendChild(h3);
 
     const dropArea = document.createElement('div');
@@ -141,6 +145,15 @@ function createForm() {
     form.appendChild(draftButton);
     draftButton.addEventListener('click', function() {
         state = 'DRAFT';
+        submitForm()
+            .then(response => {
+                if(response.status === 201 || response.status === 202) {
+                    tempStorage = [];
+                    return response.json();
+                } else {
+                    showError("Error");
+                }
+            }).then( json => document.location.href = `/tickets/${json.id}`);
     })
     body.appendChild(form);
 
@@ -154,6 +167,14 @@ function createForm() {
         toTicketOverviewOrTicketListButton.textContent = 'Ticket List';
     }
     body.appendChild(toTicketOverviewOrTicketListButton);
+    toTicketOverviewOrTicketListButton.addEventListener('click', (event) => {
+        event.preventDefault();
+        if (path === 'edit') {
+            location.href = `/tickets/${ticketId}`
+        } else {
+            location.href = `/tickets`
+        }
+    })
 
     const dragNDropScript = document.createElement('script');
     dragNDropScript.src = '/public/script/drag-n-drop.js';
@@ -163,12 +184,11 @@ function createForm() {
         event.preventDefault();
         submitForm().then(_ => console.log('something went wrong :('));
     });
+
 }
 
 async function submitForm() {
     const formData = new FormData(document.querySelector("#ticket-form"));
-    const ticketId = location.href.split("/")[location.href.split("/").length - 2];
-
     formData.append('id', ticketId);
 
     tempStorage.forEach((item) => {
@@ -198,7 +218,6 @@ async function submitForm() {
 
 async function populateForm() {
     tempStorage = [];
-    const ticketId = location.href.split("/")[location.href.split("/").length - 2];
     const response = await fetch(`/api/tickets/${ticketId}`, {
         headers: {
             Authorization: await authorizationHeader()
