@@ -248,6 +248,10 @@ async function populateForm() {
         await Promise.all(filePromises);
 
         previewFiles();
+        if (ticket.state !== 'DRAFT')
+        {
+            renderErrorPage('Ticket editing is available only if state is draft')
+        }
     } else {
         showError('Failed to fetch ticket data');
     }
@@ -293,6 +297,22 @@ async function downloadFile(attachmentId) {
     } else {
         throw new Error(`Failed to fetch file info: ${response.status} ${response.statusText}`);
     }
+}
+
+
+function renderErrorPage(message) {
+    const page = document.createElement("div");
+    page.className = "center"
+    page.innerHTML = `
+    <div class="card">
+        <button id="go-back-button">Back</button>
+        <h3 class="error">${message}</h3>
+    </div>`
+    document.querySelector("body").innerHTML = page.innerHTML;
+
+    document.querySelector("#go-back-button").addEventListener("click", () => {
+        location.href = `/tickets/${ticketId}`
+    })
 }
 
 

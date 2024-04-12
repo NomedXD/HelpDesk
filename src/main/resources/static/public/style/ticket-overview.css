@@ -60,6 +60,7 @@ body {
     border: 2px solid wheat;
     border-radius: 30px;
     padding: 10px;
+    overflow-x: auto;
 }
 
 .table-buttons {
@@ -87,18 +88,14 @@ body {
     text-align: left;
 }
 
-.comment-table td,
-.history-table td {
-    word-wrap: break-word;
-    max-width: 100%;
-}
-
 .ticket-table,
 .comment-table,
 .history-table {
     width: 100%;
     border-collapse: collapse;
     border-spacing: 0;
+    word-wrap: break-word;
+    max-width: 100%;
 }
 
 .ticket-table td,

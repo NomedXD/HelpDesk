@@ -172,3 +172,23 @@ button {
     background-color: wheat; /* Changed to green */
     color: #043927;
 }
+
+
+.error-message , .error{
+    color: darkred;
+    padding: 10px;
+    background-color: rgba(205, 92, 92, 0.51);
+    margin: 10px;
+    border-radius: 5px;
+}
+.error-message {
+    display: none;
+}
+
+#go-back-button {
+    height: 35px;
+    width: 115px;
+    border-radius: 10px;
+    background-color: #043927;
+    color: wheat;
+}
