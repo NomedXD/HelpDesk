@@ -11,8 +11,6 @@ public interface TicketRepository {
 
     List<Ticket> findAll();
 
-    List<Ticket> findAllByAssigneeId(Integer id);
-
     Ticket update(Ticket ticket);
 
     void delete(Integer id);
@@ -22,4 +20,7 @@ public interface TicketRepository {
     Optional<Ticket> findById(Integer id);
 
     void saveAttachmetsToTicket(List<Attachment> attachmentList);
+
+    List<Ticket> findAllByAssigneeId(Integer id);
+    List<Ticket> findAllByAssigneeEmail(String email);
 }

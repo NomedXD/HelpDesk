@@ -5,6 +5,7 @@ import com.innowise.domain.enums.UserRole;
 import com.innowise.dto.request.ChangeEmailRequest;
 import com.innowise.dto.request.ChangePasswordRequest;
 import com.innowise.dto.request.UpdateUserRequest;
+import com.innowise.dto.response.UserInfoResponse;
 import com.innowise.dto.response.UserResponse;
 import com.innowise.services.UserService;
 import com.innowise.util.mappers.UserMapper;
@@ -60,15 +61,17 @@ public class UserController {
                 .body("profile deleted successfully");
     }
 
-    @GetMapping("/actions")
-    public ResponseEntity<Map<TicketState, List<TicketState>>> getUserRoleActions(@AuthenticationPrincipal UserDetails userDetails) {
-        Map<TicketState, List<TicketState>> response =
+    @GetMapping("/user-info")
+    public ResponseEntity<UserInfoResponse> getUserRoleActions(@AuthenticationPrincipal UserDetails userDetails) {
+        UserRole role = (UserRole) userDetails.getAuthorities().iterator().next();
+        String email = userDetails.getUsername();
+        Map<TicketState, List<TicketState>> actions =
                 ((UserRole) userDetails.getAuthorities()
                         .iterator()
                         .next())
                         .getFromToStateAuthorities();
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(response);
+
+        return ResponseEntity.ok(new UserInfoResponse(email, role, actions));
     }
 
 }

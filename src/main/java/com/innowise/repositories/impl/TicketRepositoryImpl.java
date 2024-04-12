@@ -33,6 +33,13 @@ public class TicketRepositoryImpl implements TicketRepository {
     }
 
     @Override
+    public List<Ticket> findAllByAssigneeEmail(String email) {
+        return session.createQuery("FROM Ticket WHERE assignee.email = :email", Ticket.class)
+                .setParameter("email", email)
+                .list();
+    }
+
+    @Override
     public Ticket update(Ticket ticket) {
         return session.merge(ticket);
     }

@@ -2,7 +2,7 @@ let csrfToken;
 let accessToken;
 let accessTokenString;
 
-const user = {
+let user = {
     actions: undefined,
     role: undefined,
     email: undefined
@@ -59,10 +59,10 @@ function isTokenExpired () {
 
 // TODO fix this func – we only retrieve user.actions *VladK27*
 async function fetchUserInfo() {
-    await fetch("/api/user/actions", {
+    fetch("/api/user/user-info", {
         headers: {
             Authorization: await authorizationHeader()
         }
     }).then(response => response.json())
-        .then(json => {user.actions = json})
+        .then(json => {user = json})
 }

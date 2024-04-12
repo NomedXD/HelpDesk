@@ -126,14 +126,10 @@ public class TicketServiceImpl implements TicketService {
         return ticketListMapper.toTicketResponseDtoList(ticketRepository.findAll());
     }
 
-    // TODO something went wrong [VladK27 to fix]
-    //
     @Override
     public List<TicketResponse> findAllByAssigneeEmail(String email) {
         return ticketListMapper
-                .toTicketResponseDtoList(ticketRepository
-                        .findAllByAssigneeId(userService
-                                .findByEmail(email).id()));
+                .toTicketResponseDtoList(ticketRepository.findAllByAssigneeEmail(email));
     }
 
     @Override
