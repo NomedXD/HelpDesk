@@ -8,6 +8,8 @@ import java.util.Optional;
 public interface AttachmentRepository {
     Attachment save(Attachment attachment);
 
+    List<Attachment> saveAll(List<Attachment> attachments);
+
     List<Attachment> findAll();
 
     Attachment update(Attachment attachment);
@@ -15,6 +17,8 @@ public interface AttachmentRepository {
     boolean existsById(Integer id);
 
     void delete(Integer id);
+
+    void deleteAllByTicketId(Integer ticketId);
 
     Optional<Attachment> findById(Integer id);
 }

@@ -6,6 +6,7 @@ import jakarta.persistence.PersistenceContext;
 import org.hibernate.Session;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,6 +18,15 @@ public class AttachmentRepositoryImpl implements AttachmentRepository {
     @Override
     public Attachment save(Attachment attachment) {
         return session.merge(attachment);
+    }
+
+    @Override
+    public List<Attachment> saveAll(List<Attachment> attachments) {
+        List<Attachment> savedAttachments = new ArrayList<>();
+        for (Attachment attachment : attachments){
+            savedAttachments.add(save(attachment));
+        }
+        return savedAttachments;
     }
 
     @Override
@@ -35,6 +45,13 @@ public class AttachmentRepositoryImpl implements AttachmentRepository {
                 .setParameter("id", id)
                 .executeUpdate();
     }
+
+    public void deleteAllByTicketId(Integer ticketId) {
+        session.createMutationQuery("DELETE FROM Attachment WHERE ticket.id = :ticketId")
+                .setParameter("ticketId", ticketId)
+                .executeUpdate();
+    }
+
 
     @Override
     public boolean existsById(Integer id) {

@@ -9,6 +9,8 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.time.LocalDate;
 
 @Builder
@@ -39,6 +41,9 @@ public record UpdateTicketRequest(
         LocalDate desiredResolutionDate,
 
         @NotNull
-        TicketState state
+        TicketState state,
+
+        @Nullable
+        MultipartFile[] files
 ) {
 }

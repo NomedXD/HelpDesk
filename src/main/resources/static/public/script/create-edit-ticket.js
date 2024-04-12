@@ -1,11 +1,25 @@
 document.addEventListener("DOMContentLoaded", init)
 let state = 'NEW';
+let method = 'POST';
+const path = window.location.pathname.split("/").pop();
 
-async function init(){
+const categoryNames = {
+    1: 'Application & Services',
+    2: 'Benefits & Paper Work',
+    3: 'Hardware & Software',
+    4: 'People Management',
+    5: 'Security & Access',
+    6: 'Workplaces & Facilities'
+};
+
+async function init() {
     await refreshToken();
     if (accessTokenString !== undefined) {
-        console.log("Token is defined")
         createForm();
+
+        if (path === 'edit') {
+            await populateForm();
+        }
     }
 }
 
@@ -29,36 +43,34 @@ function createForm() {
     nameInput.placeholder = 'Title';
     nameInput.required = true;
     form.appendChild(nameInput);
-    form.appendChild(document.createElement('br'));
-    form.appendChild(document.createElement('br'));
 
     const categorySelect = document.createElement('select');
     categorySelect.id = 'category';
-    categorySelect.name = 'category';
+    categorySelect.name = 'categoryId';
     categorySelect.required = true;
-    const categoryOption = document.createElement('option');
-    categoryOption.selected = true;
-    categoryOption.disabled = true;
-    categoryOption.textContent = 'CATEGORY';
-    categorySelect.appendChild(categoryOption);
-    const options = ['Application &amp; Services', 'Benefits &amp; Paper Work', 'Hardware &amp; Software', 'People Management', 'Security &amp; Access', 'Workplaces &amp; Facilities'];
-    for (let i = 0; i < options.length; i++) {
+
+    if (path !== 'edit') {
+        const categoryOption = document.createElement('option');
+        categoryOption.selected = true;
+        categoryOption.disabled = true;
+        categoryOption.textContent = 'CATEGORY';
+        categorySelect.appendChild(categoryOption);
+    }
+
+    for (const [categoryId, categoryName] of Object.entries(categoryNames)) {
         const option = document.createElement('option');
-        option.value = i + 1;
-        option.textContent = options[i];
+        option.value = categoryId;
+        option.textContent = categoryName;
         categorySelect.appendChild(option);
     }
+
     form.appendChild(categorySelect);
-    form.appendChild(document.createElement('br'));
-    form.appendChild(document.createElement('br'));
 
     const descriptionInput = document.createElement('textarea');
     descriptionInput.id = 'description';
     descriptionInput.name = 'description';
     descriptionInput.placeholder = 'Description';
     form.appendChild(descriptionInput);
-    form.appendChild(document.createElement('br'));
-    form.appendChild(document.createElement('br'));
 
     const urgencySelect = document.createElement('select');
     urgencySelect.id = 'urgency';
@@ -69,6 +81,7 @@ function createForm() {
     urgencyOption.disabled = true;
     urgencyOption.textContent = 'URGENCY';
     urgencySelect.appendChild(urgencyOption);
+    // TODO maybe a separate request to retrieve it from enum instead of hardcode?
     const urgencyOptions = ['CRITICAL', 'HIGH', 'MEDIUM', 'LOW'];
     for (let i = 0; i < urgencyOptions.length; i++) {
         const option = document.createElement('option');
@@ -78,8 +91,6 @@ function createForm() {
         urgencySelect.appendChild(option);
     }
     form.appendChild(urgencySelect);
-    form.appendChild(document.createElement('br'));
-    form.appendChild(document.createElement('br'));
 
     const desiredResolutionDate = document.createElement('input');
     desiredResolutionDate.type = 'text';
@@ -91,10 +102,9 @@ function createForm() {
         this.type = 'text';
     };
     desiredResolutionDate.id = 'desired-resolution-date';
+    desiredResolutionDate.name = 'desiredResolutionDate';
     desiredResolutionDate.required = true;
     form.appendChild(desiredResolutionDate);
-    form.appendChild(document.createElement('br'));
-    form.appendChild(document.createElement('br'));
 
     const h3 = document.createElement('h3');
     h3.textContent = 'drop your files here';
@@ -111,23 +121,17 @@ function createForm() {
     dropInput.multiple = true;
     dropArea.appendChild(dropInput);
     form.appendChild(dropArea);
-    form.appendChild(document.createElement('br'));
-    form.appendChild(document.createElement('br'));
 
-    const commentInput = document.createElement('textarea');
-    commentInput.id = 'comment';
-    commentInput.name = 'comment';
-    commentInput.placeholder = 'COMMENT';
-    form.appendChild(commentInput);
-    form.appendChild(document.createElement('br'));
-    form.appendChild(document.createElement('br'));
-
-    const submitButton = document.createElement('button');
-    submitButton.type = 'button';
-    submitButton.classList.add('submit-button');
-    submitButton.id = 'submit-button';
-    submitButton.textContent = 'submit';
-    form.appendChild(submitButton);
+    const createOrEditButton = document.createElement('button');
+    createOrEditButton.classList.add('create-or-edit-button');
+    createOrEditButton.type = 'button';
+    createOrEditButton.id = 'create-or-edit-button';
+    if (path === 'edit') {
+        createOrEditButton.textContent = 'edit';
+    } else {
+        createOrEditButton.textContent = 'submit';
+    }
+    form.appendChild(createOrEditButton);
 
     const draftButton = document.createElement('button');
     draftButton.type = 'button';
@@ -138,55 +142,139 @@ function createForm() {
     draftButton.addEventListener('click', function() {
         state = 'DRAFT';
     })
-
     body.appendChild(form);
 
-    const toTicketListButton = document.createElement('button');
-    toTicketListButton.type = 'button';
-    toTicketListButton.classList.add('to-ticket-list-button');
-    toTicketListButton.id = 'to-ticket-list-button';
-    toTicketListButton.textContent = 'Ticket List';
-    body.appendChild(toTicketListButton);
+    const toTicketOverviewOrTicketListButton = document.createElement('button');
+    toTicketOverviewOrTicketListButton.type = 'button';
+    toTicketOverviewOrTicketListButton.classList.add('to-ticket-overview-or-ticket-list-button');
+    toTicketOverviewOrTicketListButton.id = 'to-ticket-overview-button';
+    if (path === 'edit') {
+        toTicketOverviewOrTicketListButton.textContent = 'Discard';
+    } else {
+        toTicketOverviewOrTicketListButton.textContent = 'Ticket List';
+    }
+    body.appendChild(toTicketOverviewOrTicketListButton);
 
     const dragNDropScript = document.createElement('script');
     dragNDropScript.src = '/public/script/drag-n-drop.js';
     body.appendChild(dragNDropScript);
 
-    submitButton.addEventListener('click', (event) => {
+    createOrEditButton.addEventListener('click', (event) => {
         event.preventDefault();
-        submitForm().then(_ => console.log('some shit happened'));
+        submitForm().then(_ => console.log('something went wrong :('));
     });
 }
 
 async function submitForm() {
     const formData = new FormData(document.querySelector("#ticket-form"));
+    const ticketId = location.href.split("/")[location.href.split("/").length - 2];
 
-    const categorySelect = document.getElementById('category');
-    formData.append('categoryId', categorySelect.value);
+    formData.append('id', ticketId);
 
-    const fileInput = document.getElementById('drop-input');
-    const files = fileInput.files;
-    Array.from(files).forEach((file) => {
-        formData.append('files', file);
+    tempStorage.forEach((item) => {
+        formData.append('files', item.file, item.file.name);
     });
 
     formData.append('state', state);
 
-    const desiredResolutionDate = document.getElementById('desired-resolution-date');
-    formData.append('desiredResolutionDate', desiredResolutionDate.value);
-
+    if (path === 'edit') {
+        method = 'PUT';
+    }
     return await fetch('/api/tickets', {
-        method: 'POST',
+        method: method,
         headers: {
             Authorization: await authorizationHeader()
         },
         body: formData
     }).then(response => {
-        if(response.status === 200) {
-            return response.json()
+        if(response.status === 201 || response.status === 202) {
+            tempStorage = [];
+            return response.json();
         } else {
-            showError("Error")
+            showError("Error");
         }
     }).then( json => document.location.href = `/tickets/${json.id}`);
 }
+
+async function populateForm() {
+    tempStorage = [];
+    const ticketId = location.href.split("/")[location.href.split("/").length - 2];
+    const response = await fetch(`/api/tickets/${ticketId}`, {
+        headers: {
+            Authorization: await authorizationHeader()
+        }
+    });
+
+    if (response.ok) {
+        const ticket = await response.json();
+
+        document.getElementById('name').value = ticket.name;
+        const categorySelect = document.getElementById('category');
+        const categoryName = categoryNames[ticket.categoryId];
+        const categoryOptions = categorySelect.options;
+        for (let i = 0; i < categoryOptions.length; i++) {
+            if (categoryOptions[i].textContent === categoryName) {
+                categoryOptions[i].selected = true;
+                break;
+            }
+        }
+        document.getElementById('description').value = ticket.description;
+        document.getElementById('urgency').value = ticket.urgency;
+        document.getElementById('desired-resolution-date').value = ticket.desiredResolutionDate;
+
+        const filePromises = ticket.attachments.map(async attachment => {
+            await downloadFile(attachment.id);
+        });
+
+        await Promise.all(filePromises);
+
+        previewFiles();
+    } else {
+        showError('Failed to fetch ticket data');
+    }
+}
+
+const CHUNK_SIZE = 1024 * 1024; // 1 MB chunks
+
+async function fetchFileChunk(attachmentId, start, length) {
+    const response = await fetch(`/api/attachments/${attachmentId}/chunk?start=${start}&length=${length}`, {
+        headers: {
+            Authorization: await authorizationHeader()
+        }
+    });
+
+    if (response.ok) {
+        return await response.arrayBuffer();
+    } else {
+        throw new Error(`Failed to fetch file chunk: ${response.status} ${response.statusText}`);
+    }
+}
+
+async function downloadFile(attachmentId) {
+    const response = await fetch(`/api/attachments/${attachmentId}/info`, {
+        headers: {
+            Authorization: await authorizationHeader()
+        }
+    });
+
+    if (response.ok) {
+        const fileInfo = await response.json();
+        const fileSize = fileInfo.size;
+        const chunks = [];
+
+        for (let start = 0; start < fileSize; start += CHUNK_SIZE) {
+            const length = Math.min(CHUNK_SIZE, fileSize - start);
+            const chunkData = await fetchFileChunk(attachmentId, start, length);
+            chunks.push(chunkData);
+        }
+
+        const blob = new Blob(chunks, { type: fileInfo.type });
+        const file = new File([blob], fileInfo.name, { type: fileInfo.type });
+        tempStorage.push({ file, fileData: URL.createObjectURL(blob) });
+    } else {
+        throw new Error(`Failed to fetch file info: ${response.status} ${response.statusText}`);
+    }
+}
+
+
 

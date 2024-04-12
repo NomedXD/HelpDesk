@@ -36,6 +36,7 @@ body {
     align-content: center;
     border-radius: 30px;
     cursor: pointer;
+    margin-bottom: 15px;
 }
 
 .drop-input {
@@ -79,8 +80,6 @@ body {
     cursor: pointer;
 }
 
-
-
 .file-preview {
     display: inline-block;
     text-align: center;
@@ -91,12 +90,6 @@ body {
 .file-preview iframe {
     display: block;
     margin: 0 auto;
-}
-
-.drop-area p {
-    color: lightgray;
-    font-family: sans-serif;
-    font-weight: 300;
 }
 
 .ticket-form {
@@ -118,6 +111,7 @@ body {
     min-height: 30px;
     border-radius: 15px;
     border: none;
+    margin-bottom: 15px;
 }
 
 #category {
@@ -126,11 +120,6 @@ body {
 
 #urgency {
     text-align: center;
-}
-
-#comment {
-    min-width: 100%;
-    min-height: 100px;
 }
 
 button {
@@ -142,7 +131,7 @@ button {
 }
 
 
-.submit-button {
+.create-or-edit-button {
     height: 35px;
     width: 65px;
     border-radius: 10px;
@@ -159,7 +148,7 @@ button {
     color: white;
 }
 
-.submit-button:hover {
+.create-or-edit-button:hover {
     background-color: wheat;
     color: rebeccapurple;
 }
@@ -169,9 +158,9 @@ button {
     color: rebeccapurple;
 }
 
-.to-ticket-overview-button {
+.to-ticket-overview-or-ticket-list-button {
     height: 35px;
-    width: 130px;
+    width: 115px;
     border-radius: 10px;
     background-color: mediumpurple;
     color: white;
@@ -181,9 +170,11 @@ button {
     left: 20px;
 }
 
-.to-ticket-overview-button:hover {
+.to-ticket-overview-or-ticket-list-button:hover {
     background-color: wheat;
     color: rebeccapurple;
 }
+
+
 
 

@@ -14,6 +14,7 @@ import com.innowise.exceptions.NoSuchEntityIdException;
 import com.innowise.exceptions.NotOwnerTicketException;
 import com.innowise.exceptions.TicketStateTransferException;
 import com.innowise.mails.EmailService;
+import com.innowise.services.AttachmentService;
 import com.innowise.util.MimeDetector;
 import com.innowise.util.mappers.TicketListMapper;
 import com.innowise.util.mappers.TicketMapper;
@@ -50,19 +51,21 @@ public class TicketServiceImpl implements TicketService {
     private final TicketMapper ticketMapper;
     private final TicketListMapper ticketListMapper;
     private final UserService userService;
+    private final AttachmentService attachmentService;
     private final CategoryService categoryService;
     private final EmailService emailService;
     private final MimeDetector mimeDetector;
     private final String API_CONTEXT_PATH;
     @Autowired
     public TicketServiceImpl(TicketRepository ticketRepository, TicketMapper ticketMapper,
-                             TicketListMapper ticketListMapper, UserService userService,
+                             TicketListMapper ticketListMapper, UserService userService, AttachmentService attachmentService,
                              CategoryService categoryService, EmailService emailService, MimeDetector mimeDetector,
                              @Value("${api.context.path}") String API_CONTEXT_PATH) {
         this.ticketRepository = ticketRepository;
         this.ticketMapper = ticketMapper;
         this.ticketListMapper = ticketListMapper;
         this.userService = userService;
+        this.attachmentService = attachmentService;
         this.categoryService = categoryService;
         this.emailService = emailService;
         this.mimeDetector = mimeDetector;
@@ -135,23 +138,40 @@ public class TicketServiceImpl implements TicketService {
     @Override
     @PreAuthorize(value = "hasAnyRole('MANAGER', 'EMPLOYEE')")
     @Validated
-    public TicketResponse update(@Valid UpdateTicketRequest updateTicketRequest) {
-        Ticket ticket = ticketRepository.findById(updateTicketRequest.id())
+    public TicketResponse update(@Valid UpdateTicketRequest request) {
+        Ticket ticket = ticketRepository.findById(request.id())
                 .orElseThrow(() ->
-                        new NoSuchEntityIdException(EntityTypeMessages.TICKET_MESSAGE, updateTicketRequest.id()));
+                        new NoSuchEntityIdException(EntityTypeMessages.TICKET_MESSAGE, request.id()));
         if (!ticket.getState().equals(TicketState.DRAFT)) {
-            throw new TicketNotDraftException(updateTicketRequest.id());
+            throw new TicketNotDraftException(request.id());
         }
         User updatedBy = userService.getUserFromPrincipal();
         if (!ticket.getOwner().equals(updatedBy)) {
             throw new NotOwnerTicketException(updatedBy.getId(), ticket.getId());
         }
 
-        ticket.setName(updateTicketRequest.name());
-        ticket.setDescription(updateTicketRequest.description());
-        ticket.setUrgency(updateTicketRequest.urgency());
-        ticket.setDesiredResolutionDate(updateTicketRequest.desiredResolutionDate());
-        ticket.setCategory(categoryService.findById(updateTicketRequest.categoryId()));
+        List<Attachment> content = new ArrayList<>();
+        if (request.files() != null) {
+            for (MultipartFile file : request.files()) {
+                try {
+                    content.add(Attachment.builder()
+                            .name(file.getOriginalFilename())
+                            .blob(file.getBytes())
+                            .ticket(ticket)
+                            .build());
+                } catch (IOException e) {
+                    log.error(e.getMessage(), e);
+                    throw new AttachedFileReadException(file.getOriginalFilename(), e.getMessage());
+                }
+            }
+        }
+        ticket.getAttachments().clear();
+        attachmentService.replaceAttachmentsByTicketId(request.id(), content);
+        ticket.setName(request.name());
+        ticket.setDescription(request.description());
+        ticket.setUrgency(request.urgency());
+        ticket.setDesiredResolutionDate(request.desiredResolutionDate());
+        ticket.setCategory(categoryService.findById(request.categoryId()));
         ticket.getHistories().add(History.ofUpdate(updatedBy, ticket));
         Ticket savedTicket = ticketRepository.update(ticket);
         return toTicketResponse(savedTicket);

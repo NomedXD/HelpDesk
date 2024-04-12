@@ -34,48 +34,48 @@ public class UserController {
     @GetMapping("/roles")
     public ResponseEntity<String> getRoles(@AuthenticationPrincipal UserDetails userDetails) {
         String response = userDetails.getAuthorities().iterator().next().getAuthority();
-        return ResponseEntity.status(HttpStatus.OK).body(response);
-    }
-
-    @GetMapping("/{username}")
-    public ResponseEntity<UserResponse> getProfile(@AuthenticationPrincipal UserDetails userDetails) {
-        return ResponseEntity.status(HttpStatus.OK).body(userService.findByEmail(userDetails.getUsername()));
-    } // todo what is this method for?
-
-    @GetMapping("/whoami")
-    public ResponseEntity<String> whoami(@AuthenticationPrincipal UserDetails userDetails) {
-        return ResponseEntity.status(HttpStatus.OK).body(userDetails.getUsername());
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(response);
     }
 
     @PatchMapping("/edit")
     public ResponseEntity<UserResponse> editProfile(@RequestBody UpdateUserRequest request) {
         UserResponse response = userMapper.toUserResponse(userService.update(request));
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
+        return ResponseEntity.status(HttpStatus.ACCEPTED)
+                .body(response);
     }
 
     @PatchMapping("/edit/email")
     public ResponseEntity<String> changeEmail(@RequestBody ChangeEmailRequest request,
                                               HttpServletRequest httpRequest) {
         String token = userService.changeEmail(request, httpRequest);
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body(token);
+        return ResponseEntity.status(HttpStatus.ACCEPTED)
+                .body(token);
     }
 
     @PatchMapping("/edit/password")
     public ResponseEntity<String> changePassword(@RequestBody ChangePasswordRequest request) {
         userService.changePassword(request);
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body("password changed successfully");
+        return ResponseEntity.status(HttpStatus.ACCEPTED)
+                .body("password changed successfully");
     }
 
     @DeleteMapping("/delete")
     public ResponseEntity<String> deleteProfile(@AuthenticationPrincipal UserDetails userDetails) {
         userService.delete(userDetails.getUsername());
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).body("profile deleted successfully");
+        return ResponseEntity.status(HttpStatus.NO_CONTENT)
+                .body("profile deleted successfully");
     }
 
     @GetMapping("/actions")
     public ResponseEntity<Map<TicketState, List<TicketState>>> getUserRoleActions(@AuthenticationPrincipal UserDetails userDetails) {
-        var response = ((UserRole) userDetails.getAuthorities().iterator().next()).getFromToStateAuthorities();
-        return ResponseEntity.ok(response);
+        Map<TicketState, List<TicketState>> response =
+                ((UserRole) userDetails.getAuthorities()
+                        .iterator()
+                        .next())
+                        .getFromToStateAuthorities();
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(response);
     }
 
 }
