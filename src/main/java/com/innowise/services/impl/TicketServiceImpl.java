@@ -126,13 +126,14 @@ public class TicketServiceImpl implements TicketService {
         return ticketListMapper.toTicketResponseDtoList(ticketRepository.findAll());
     }
 
+    // TODO something went wrong [VladK27 to fix]
+    //
     @Override
     public List<TicketResponse> findAllByAssigneeEmail(String email) {
         return ticketListMapper
                 .toTicketResponseDtoList(ticketRepository
                         .findAllByAssigneeId(userService
-                                .findByEmail(email)
-                                .id()));
+                                .findByEmail(email).id()));
     }
 
     @Override
@@ -178,7 +179,7 @@ public class TicketServiceImpl implements TicketService {
     }
 
 
-    // TODO implement ticket state transition logic of UserRole enum
+    // TODO ASS_ign fucking ASS_ignee *to NomedXD*
     @Override
     @Validated
     public TicketResponse updateStatus(@Valid UpdateTicketStatusRequest updateTicketStatusRequest) {
@@ -211,7 +212,7 @@ public class TicketServiceImpl implements TicketService {
                         return ticketTransferStatesList.contains(updateTicketStatusRequest.state()) && ticket.getOwner().getId().equals(editor.getId());
                     }
                     case NEW -> {
-                        return ticketTransferStatesList.contains(updateTicketStatusRequest.state()) && ticket.getOwner().getRole().equals(UserRole.ROLE_EMPLOYEE);
+                        return ticketTransferStatesList.contains(updateTicketStatusRequest.state());
                     }
                 }
             } else {
@@ -240,7 +241,6 @@ public class TicketServiceImpl implements TicketService {
         return ticketRepository.existsById(id);
     }
 
-    // TODO make this a separate class and move to util package *NOT URGENT*
     private TicketResponse toTicketResponse(Ticket ticket) {
         TicketResponse response = ticketMapper.toTicketResponseDto(ticket);
         List<Attachment> attachments = ticket.getAttachments();

@@ -8,8 +8,6 @@ const defineTicketId = () => {
 }
 
 const ticketId = defineTicketId();
-// TODO it is wrong string split, ask poe later
-
 const commentButton = document.createElement('button');
 commentButton.id = 'comment-button';
 commentButton.textContent = 'comments';

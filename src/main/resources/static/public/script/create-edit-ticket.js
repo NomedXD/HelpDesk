@@ -85,7 +85,7 @@ function createForm() {
     urgencyOption.disabled = true;
     urgencyOption.textContent = 'URGENCY';
     urgencySelect.appendChild(urgencyOption);
-    // TODO maybe a separate request to retrieve it from enum instead of hardcode?
+    // TODO maybe a separate request to retrieve it from enum instead of hardcode [to ycovich]
     const urgencyOptions = ['CRITICAL', 'HIGH', 'MEDIUM', 'LOW'];
     for (let i = 0; i < urgencyOptions.length; i++) {
         const option = document.createElement('option');

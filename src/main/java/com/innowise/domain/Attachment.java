@@ -23,7 +23,6 @@ public class Attachment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    // TODO make unique
     @Column(name = "name")
     private String name;
 

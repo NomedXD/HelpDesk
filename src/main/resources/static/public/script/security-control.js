@@ -55,6 +55,9 @@ function isTokenExpired () {
 
     return (expirationTimeInSeconds - currentTimeInSeconds < 5);
 }
+
+
+// TODO fix this func – we only retrieve user.actions *VladK27*
 async function fetchUserInfo() {
     await fetch("/api/user/actions", {
         headers: {

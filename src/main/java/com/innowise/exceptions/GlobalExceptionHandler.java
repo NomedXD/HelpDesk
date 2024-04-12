@@ -47,7 +47,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(new ApiErrorResponse(HttpStatus.BAD_REQUEST, LocalDateTime.now(), exception.getConstraintViolations().toString()));
-    } // TODO подумать, как лучше возвращать ошибку при валидации, когда будет готов фронт (NomedXD) *NOT URGENT*
+    } // TODO lame fucking ass error on front *URGENT* [to VladK27]
 
     @ExceptionHandler(UserAlreadyExistsException.class)
     public ResponseEntity<ApiErrorResponse> handleUserAlreadyExistsException(UserAlreadyExistsException exception) {

@@ -32,7 +32,6 @@ public class TicketController {
                 .body(ticketService.update(request));
     }
 
-    // TODO retrieve a Page maybe, not a List *NOT URGENT*
     @GetMapping
     public ResponseEntity<List<TicketResponse>> getAllTickets() {
         return ResponseEntity.status(HttpStatus.OK)

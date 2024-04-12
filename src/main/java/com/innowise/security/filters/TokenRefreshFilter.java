@@ -66,7 +66,7 @@ public class TokenRefreshFilter extends OncePerRequestFilter {
                     if (token.getExpiresAt().isBefore(Instant.now())) {
                         throw new CredentialsExpiredException("Token is expired");
                     }
-                    // TODO add new exception to throw 403
+                    // TODO add new exception to throw 403 [to VladK27]
 
                     User user = userRepository.findById(token.getUserId())
                             .orElseThrow(() -> {
@@ -96,7 +96,7 @@ public class TokenRefreshFilter extends OncePerRequestFilter {
                     throw new AccessDeniedException("Token is not valid: " + refreshCookie.getValue());
                 } catch (IOException e) {
                     log.error("Error while write token value!", e);
-                    throw new RuntimeException("Internal error"); //todo where is internal exception?
+                    throw new RuntimeException("Internal error");
                 }
 
             } else {

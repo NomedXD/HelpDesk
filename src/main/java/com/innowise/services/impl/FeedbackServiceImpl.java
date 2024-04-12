@@ -59,7 +59,6 @@ public class FeedbackServiceImpl implements FeedbackService {
                 new NoSuchEntityIdException(EntityTypeMessages.TICKET_MESSAGE, feedbackRequest.ticketId()));
         User owner = userService.getUserFromPrincipal();
 
-        // todo DISABLE FEEDBACK ON NON-DONE TICKETS ON FRONT *NOT URGENT*
         if (!ticket.getState().equals(TicketState.DONE)) {
             throw new TicketNotDoneException(ticket.getId());
         }
