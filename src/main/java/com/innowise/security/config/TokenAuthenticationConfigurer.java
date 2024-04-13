@@ -8,6 +8,7 @@ import com.innowise.security.TokenAuthenticationUserDetailsService;
 import com.innowise.security.entities.RefreshToken;
 import com.innowise.security.entities.Token;
 import com.innowise.security.filters.BearerAuthenticationFilter;
+import com.innowise.security.filters.FilterChainExceptionHandler;
 import com.innowise.security.filters.LoginFilter;
 import com.innowise.security.filters.TokenRefreshFilter;
 import jakarta.servlet.http.HttpServletResponse;
@@ -20,6 +21,7 @@ import org.springframework.security.web.authentication.logout.CookieClearingLogo
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationProvider;
 import org.springframework.security.web.csrf.CsrfFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import java.util.Arrays;
 import java.util.UUID;
@@ -27,6 +29,7 @@ import java.util.function.Function;
 
 public class TokenAuthenticationConfigurer
         extends AbstractHttpConfigurer<TokenAuthenticationConfigurer, HttpSecurity> {
+    private HandlerExceptionResolver resolver;
 
     private Function<Token, String> accessTokenSerializer;
     private Function<String, Token> accessTokenStringDeserializer;
@@ -67,11 +70,15 @@ public class TokenAuthenticationConfigurer
         tokenRefreshFilter.setAccessTokenFactory(this.accessTokenFactory);
         tokenRefreshFilter.setRefreshTokenFactory(this.refreshTokenFactory);
 
+        var filterChainExceptionHandler = new FilterChainExceptionHandler(resolver);
+
         var authenticationProvider = new PreAuthenticatedAuthenticationProvider();
         authenticationProvider.setPreAuthenticatedUserDetailsService(
                 new TokenAuthenticationUserDetailsService(this.tokenRepository));
 
-        builder.addFilterAfter(loginFilter, CsrfFilter.class)
+        builder
+                .addFilterAfter(loginFilter, CsrfFilter.class)
+                .addFilterBefore(filterChainExceptionHandler, LoginFilter.class)
                 .addFilterAfter(tokenRefreshFilter, ExceptionTranslationFilter.class)
                 .addFilterAfter(bearerAuthenticationFilter, TokenRefreshFilter.class)
                 .authenticationProvider(authenticationProvider);
@@ -104,6 +111,11 @@ public class TokenAuthenticationConfigurer
 
     public TokenAuthenticationConfigurer refreshTokenFactory(Function<Token, RefreshToken> refreshTokenFactory) {
         this.refreshTokenFactory = refreshTokenFactory;
+        return this;
+    }
+
+    public TokenAuthenticationConfigurer exceptionResolver(HandlerExceptionResolver resolver) {
+        this.resolver = resolver;
         return this;
     }
 }

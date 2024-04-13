@@ -9,6 +9,7 @@ import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jose.jwk.OctetSequenceKey;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,6 +23,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.ExceptionTranslationFilter;
 import org.springframework.security.web.csrf.*;
+import org.springframework.web.servlet.HandlerExceptionResolver;
 
 @Configuration
 @Slf4j
@@ -38,7 +40,8 @@ public class SecurityConfig {
     public TokenAuthenticationConfigurer tokenCookieAuthenticationConfigurer(
             @Value("${jwt.cookie-token-key}") String cookieTokenKey,
             TokenRepository tokenRepository,
-            UserRepository userRepository
+            UserRepository userRepository,
+            @Qualifier("handlerExceptionResolver") HandlerExceptionResolver resolver
     ) throws Exception {
         return new TokenAuthenticationConfigurer()
                 .accessTokenFactory(new UserAccessTokenFactory())
@@ -50,7 +53,8 @@ public class SecurityConfig {
                 .tokenRepository(tokenRepository)
                 .accessTokenStringDeserializer(new AccessTokenJwsStringDeserializer(
                         new MACVerifier(OctetSequenceKey.parse(cookieTokenKey))
-                ));
+                ))
+                .exceptionResolver(resolver);
     }
 
     @Bean
