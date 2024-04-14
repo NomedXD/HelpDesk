@@ -175,7 +175,6 @@ public class TicketServiceImpl implements TicketService {
     }
 
 
-    // TODO ASS_ign fucking ASS_ignee *to NomedXD*
     @Override
     @Validated
     public TicketResponse updateStatus(@Valid UpdateTicketStatusRequest updateTicketStatusRequest) {
@@ -186,6 +185,9 @@ public class TicketServiceImpl implements TicketService {
         User editor = userService.getUserFromPrincipal();
         if(!checkStatusChangeAuthorities(editor, ticket, updateTicketStatusRequest)) {
             throw new TicketStateTransferException(ticket.getId(), editor.getRole(), ticket.getState());
+        }
+        if(updateTicketStatusRequest.state().equals(TicketState.IN_PROGRESS)) {
+            ticket.setAssignee(editor); // И все? хмм
         }
         emailService.notifyTicketStateTransfer(ticket.getState(), ticket, updateTicketStatusRequest.state());
         ticket.setState(updateTicketStatusRequest.state());
