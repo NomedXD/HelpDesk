@@ -3,11 +3,20 @@ let myTickets;
 
 let currentTab = "all"
 
+const actionsNames = {
+    "NEW": "Submit",
+    "APPROVED": "Approve",
+    "DECLINED": "Decline",
+    "CANCELED": "Cancel",
+    "IN_PROGRESS": "Assign to me",
+    "DONE": "Set done"
+}
+
 const setAllTickets = (tickets) => {allTickets = tickets}
 const setMyTickets = (tickets) => {myTickets = tickets}
 
 async function changeTicketStatus(row) {
-    const selectedValue = row.querySelector("select").options[row.querySelector("select").selectedIndex].value;;
+    const selectedValue = row.querySelector("select").options[row.querySelector("select").selectedIndex].value;
     const ticketId = selectedValue.split(":")[0];
     const newState = selectedValue.split(":")[1];
 
@@ -112,9 +121,10 @@ async function fetchTickets(url, setTickets) {
                         || (item.state === "NEW" && item.ownerRole === "ROLE_EMPLOYEE"))
                     {
                         for (let act in user.actions[item.state]) {
+                            console.log(user.actions[item.state][act])
                             const option = document.createElement("option")
                             option.value = `${item.id}:${user.actions[item.state][act]}`;
-                            option.innerText = user.actions[item.state][act];
+                            option.innerText = actionsNames[user.actions[item.state][act]];
 
                             select.appendChild(option)
                         }
@@ -125,14 +135,16 @@ async function fetchTickets(url, setTickets) {
                 } else {
                     for (let act in user.actions[item.state]) {
                         if("DONE" === user.actions[item.state][act]) {
-                            if(item.ownerEmail == null || item.approverEmail == null || item.assigneeEmail == null) {
+                            /*if(item.ownerEmail == null || item.approverEmail == null || item.assigneeEmail == null) {
+                                console.log("smth is null")
                                 continue
-                            }
+                            }*/
                         }
 
                         const option = document.createElement("option")
+                        console.log(user.actions[item.state][act])
                         option.value = `${item.id}:${user.actions[item.state][act]}`;
-                        option.innerText = user.actions[item.state][act];
+                        option.innerText = actionsNames[user.actions[item.state][act]];
 
                         select.appendChild(option)
                     }
