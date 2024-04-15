@@ -108,7 +108,7 @@ class UserServiceTest {
         Mockito.verify(userRepository, Mockito.times(1)).findByEmail(invalidEmail);
     }
 
-    // Does not work. Cause: getUserFromPrincipal
+    // TODO refactor getUserFromPrincipal method *to ycovich*
     @Test
     public void update_withValidUserId_returnsUpdatedUser() {
         Integer userId = 1;

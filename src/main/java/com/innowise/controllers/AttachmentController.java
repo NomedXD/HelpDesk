@@ -24,13 +24,9 @@ public class AttachmentController {
             @PathVariable("id") Integer id,
             @RequestParam("start") Integer start,
             @RequestParam("length") Integer length) throws IOException {
-
         FileChunkResponse response = attachmentService.getFileById(id, start, length);
-        HttpHeaders headers = new HttpHeaders();
-        headers.set(HttpHeaders.CONTENT_LENGTH, String.valueOf(response.chunk().length));
 
         return ResponseEntity.ok()
-                .headers(headers)
                 .contentLength(response.chunk().length)
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .body(new InputStreamResource(response.resource().getInputStream()));

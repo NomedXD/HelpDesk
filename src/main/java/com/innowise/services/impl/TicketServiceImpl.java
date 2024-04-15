@@ -78,7 +78,6 @@ public class TicketServiceImpl implements TicketService {
     public TicketResponse save(CreateTicketRequest request) {
         Category category = categoryService.findById(request.categoryId());
         User owner = userService.getUserFromPrincipal();
-        List<Attachment> content = new ArrayList<>();
         List<History> history = new ArrayList<>();
         TicketState state = request.state();
         Ticket ticket = Ticket.builder()
@@ -92,20 +91,7 @@ public class TicketServiceImpl implements TicketService {
                 .state(state)
                 .build();
 
-        if (request.files() != null) {
-            for (MultipartFile file : request.files()) {
-                try {
-                    content.add(Attachment.builder()
-                            .name(file.getOriginalFilename())
-                            .blob(file.getBytes())
-                            .ticket(ticket)
-                            .build());
-                } catch (IOException e) {
-                    log.error(e.getMessage(), e);
-                    throw new AttachedFileReadException(file.getOriginalFilename(), e.getMessage());
-                }
-            }
-        }
+        List<Attachment> content = toAttachmentList(ticket, request.files());
         ticket.setAttachments(content);
         history.add(History.ofCreate(owner, ticket));
         ticket.setHistories(history);
@@ -147,21 +133,7 @@ public class TicketServiceImpl implements TicketService {
             throw new NotOwnerTicketException(updatedBy.getId(), ticket.getId());
         }
 
-        List<Attachment> content = new ArrayList<>();
-        if (request.files() != null) {
-            for (MultipartFile file : request.files()) {
-                try {
-                    content.add(Attachment.builder()
-                            .name(file.getOriginalFilename())
-                            .blob(file.getBytes())
-                            .ticket(ticket)
-                            .build());
-                } catch (IOException e) {
-                    log.error(e.getMessage(), e);
-                    throw new AttachedFileReadException(file.getOriginalFilename(), e.getMessage());
-                }
-            }
-        }
+        List<Attachment> content = toAttachmentList(ticket, request.files());
         ticket.getAttachments().clear();
         attachmentService.replaceAttachmentsByTicketId(request.id(), content);
         ticket.setName(request.name());
@@ -187,7 +159,9 @@ public class TicketServiceImpl implements TicketService {
             throw new TicketStateTransferException(ticket.getId(), editor.getRole(), ticket.getState());
         }
         if(updateTicketStatusRequest.state().equals(TicketState.IN_PROGRESS)) {
-            ticket.setAssignee(editor); // И все? хмм
+            ticket.setAssignee(editor);
+            // TODO tests for TicketService *to ycovich & NomedXD*
+            // UPD method doesn't work at all :)
         }
         emailService.notifyTicketStateTransfer(ticket.getState(), ticket, updateTicketStatusRequest.state());
         ticket.setState(updateTicketStatusRequest.state());
@@ -256,5 +230,24 @@ public class TicketServiceImpl implements TicketService {
         }
         response.setAttachments(attachmentResponseList);
         return response;
+    }
+
+    private List<Attachment> toAttachmentList(Ticket ticket, MultipartFile[] files) {
+        List<Attachment> content = new ArrayList<>();
+        if (files != null) {
+            for (MultipartFile file : files) {
+                try {
+                    content.add(Attachment.builder()
+                            .name(file.getOriginalFilename())
+                            .blob(file.getBytes())
+                            .ticket(ticket)
+                            .build());
+                } catch (IOException e) {
+                    log.error(e.getMessage(), e);
+                    throw new AttachedFileReadException(file.getOriginalFilename(), e.getMessage());
+                }
+            }
+        }
+        return content;
     }
 }

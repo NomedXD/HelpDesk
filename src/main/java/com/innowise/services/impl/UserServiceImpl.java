@@ -69,7 +69,7 @@ public class UserServiceImpl implements UserService {
                     .orElseThrow(() -> new UserNotFoundException(authentication.getName()));
         }
         return null;
-        // some shit code IMHO, will refactor later
+        // TODO consider retrieving user id from token, refactor *to ycovich & VladK27*
     }
 
     @Override
@@ -97,6 +97,10 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
     }
 
+
+    /*TODO refactor (+ implement user profile page and stuff)
+     *  or just cut it :)
+     *  *to ycovich**/
     @Override
     public String changeEmail(ChangeEmailRequest request, HttpServletRequest httpRequest) {
         return null;
@@ -109,7 +113,6 @@ public class UserServiceImpl implements UserService {
         save(user);
         return newToken;*/
     }
-    // a little bit messy, maybe refactor later
 
     @Override
     public void delete(String email) {
