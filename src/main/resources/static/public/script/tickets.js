@@ -37,19 +37,30 @@ document.addEventListener("DOMContentLoaded",  init)
 async function init () {
     await refreshToken();
     await fetchUserInfo();
+    console.log(user)
 
     if(accessTokenString !== undefined) {
-        renderPage();
+        await renderPage();
         switchToAllTickets();
     }
 }
+function renderCreateButton() {
+    if(user.role !== "ROLE_ENGINEER" && user.role !== undefined) {
+        const button = document.createElement("button");
+        button.className = "button"
+        button.id = "create-button"
+        button.innerText = "Create New Ticket"
+        document.querySelector(".header").appendChild(button)
+        button.addEventListener("click", () => {location.href = `/tickets/add`})
+    }
+}
+
 function renderPage() {
     const page = document.createElement("div");
     page.className = 'container';
     page.innerHTML = `
     <div class="header">
         <button class="refresh-button" id="refresh-tickets-button">↻ Refresh</button>
-        <button class="button" id="create-button">Create New Ticket</button>
     </div>
     <div class="tabs">
         <button class="button" id="all-tickets-button">All Tickets</button>
@@ -76,8 +87,6 @@ function renderPage() {
     `
     document.querySelector("body").appendChild(page)
 
-    document.querySelector("#create-button")
-        .addEventListener("click", () => {location.href = `/tickets/add`})
     document.querySelector("#my-tickets-button").addEventListener("click", switchToMyTickets)
     document.querySelector("#all-tickets-button").addEventListener("click", switchToAllTickets)
 
@@ -146,7 +155,7 @@ async function fetchTickets(url, setTickets) {
                 }
 
             }
-
+            renderCreateButton();
             body.appendChild(row);
         })
     })
