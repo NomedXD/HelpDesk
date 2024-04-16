@@ -117,8 +117,7 @@ async function fetchTickets(url, setTickets) {
                 button.innerText = "▶";
 
                 if( user.role === "ROLE_MANAGER") {
-                    if(((item.state === "DRAFT" || item.state === "DECLINED") && user.email === item.ownerEmail)
-                        || (item.state === "NEW" && item.ownerRole === "ROLE_EMPLOYEE"))
+                    if(((item.state === "DRAFT" || item.state === "DECLINED") && user.email === item.ownerEmail) || item.state === "NEW")
                     {
                         for (let act in user.actions[item.state]) {
                             console.log(user.actions[item.state][act])

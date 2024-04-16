@@ -160,8 +160,9 @@ public class TicketServiceImpl implements TicketService {
         }
         if(updateTicketStatusRequest.state().equals(TicketState.IN_PROGRESS)) {
             ticket.setAssignee(editor);
-            // TODO tests for TicketService *to ycovich & NomedXD*
-            // UPD method doesn't work at all :)
+        }
+        if(updateTicketStatusRequest.state().equals(TicketState.NEW)) {
+            ticket.setApprover(editor);
         }
         emailService.notifyTicketStateTransfer(ticket.getState(), ticket, updateTicketStatusRequest.state());
         ticket.setState(updateTicketStatusRequest.state());
