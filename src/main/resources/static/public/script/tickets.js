@@ -133,13 +133,6 @@ async function fetchTickets(url, setTickets) {
                     }
                 } else {
                     for (let act in user.actions[item.state]) {
-                        if("DONE" === user.actions[item.state][act]) {
-                            /*if(item.ownerEmail == null || item.approverEmail == null || item.assigneeEmail == null) {
-                                console.log("smth is null")
-                                continue
-                            }*/
-                        }
-
                         const option = document.createElement("option")
                         console.log(user.actions[item.state][act])
                         option.value = `${item.id}:${user.actions[item.state][act]}`;
