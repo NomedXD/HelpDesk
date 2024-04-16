@@ -8,11 +8,7 @@ import com.innowise.domain.User;
 import com.innowise.domain.enums.UserRole;
 import com.innowise.dto.request.CreateTicketRequest;
 import com.innowise.dto.response.AttachmentResponse;
-import com.innowise.exceptions.AttachedFileReadException;
-import com.innowise.exceptions.EntityTypeMessages;
-import com.innowise.exceptions.NoSuchEntityIdException;
-import com.innowise.exceptions.NotOwnerTicketException;
-import com.innowise.exceptions.TicketCannotBeDoneMarkedException;
+import com.innowise.exceptions.*;
 import com.innowise.mails.EmailService;
 import com.innowise.services.AttachmentService;
 import com.innowise.util.MimeDetector;
@@ -22,7 +18,6 @@ import com.innowise.dto.request.UpdateTicketStatusRequest;
 import com.innowise.dto.request.UpdateTicketRequest;
 import com.innowise.dto.response.TicketResponse;
 import com.innowise.domain.enums.TicketState;
-import com.innowise.exceptions.TicketNotDraftException;
 import com.innowise.repositories.TicketRepository;
 import com.innowise.services.CategoryService;
 import com.innowise.services.TicketService;
@@ -75,7 +70,7 @@ public class TicketServiceImpl implements TicketService {
     @Override
     @PreAuthorize(value = "hasAnyRole('MANAGER', 'EMPLOYEE')")
     @Validated
-    public TicketResponse save(CreateTicketRequest request) {
+    public TicketResponse save(CreateTicketRequest request, String contextUserName) {
         Category category = categoryService.findById(request.categoryId());
         User owner = userService.findByEmailService(contextUserName);
         List<History> history = new ArrayList<>();
@@ -129,7 +124,7 @@ public class TicketServiceImpl implements TicketService {
         if (!ticket.getState().equals(TicketState.DRAFT)) {
             throw new TicketNotDraftException(request.id());
         }
-        User updatedBy = userService.getUserFromPrincipal();
+        User updatedBy = userService.findByEmailService(contextUserName);
         if (!ticket.getOwner().equals(updatedBy)) {
             throw new NotOwnerTicketException(updatedBy.getId(), ticket.getId());
         }
@@ -156,23 +151,26 @@ public class TicketServiceImpl implements TicketService {
                         EntityTypeMessages.TICKET_MESSAGE,
                         updateTicketStatusRequest.ticketId()));
         User editor = userService.findByEmailService(contextUserName);
+        if (!checkStatusChangeAuthorities(editor, ticket, updateTicketStatusRequest)){
+            throw new TicketStateTransferException(ticket.getId(), editor.getRole(), ticket.getState());
+        }
         if (updateTicketStatusRequest.state().equals(TicketState.DONE) && (ticket.getAssignee() == null || ticket.getApprover() == null)) {
             throw new TicketCannotBeDoneMarkedException(ticket.getId());
         }
         if(updateTicketStatusRequest.state().equals(TicketState.IN_PROGRESS)) {
             ticket.setAssignee(editor);
         }
-        if(updateTicketStatusRequest.state().equals(TicketState.NEW)) {
+        if(updateTicketStatusRequest.state().equals(TicketState.APPROVED)) {
             ticket.setApprover(editor);
         }
         emailService.notifyTicketStateTransfer(ticket.getState(), ticket, updateTicketStatusRequest.state());
-        ticket.setState(updateTicketStatusRequest.state());
         ticket.getHistories()
                 .add(History.ofStatusChange(
                         ticket.getState(),
                         updateTicketStatusRequest.state(),
                         editor,
                         ticket));
+        ticket.setState(updateTicketStatusRequest.state());
         Ticket savedTicket = ticketRepository.update(ticket);
         return toTicketResponse(savedTicket);
     }
@@ -215,7 +213,6 @@ public class TicketServiceImpl implements TicketService {
         return ticketRepository.existsById(id);
     }
 
-    // TODO make this a separate class and move to util package *NOT URGENT*
     private TicketResponse toTicketResponse(Ticket ticket) {
         TicketResponse response = ticketMapper.toTicketResponseDto(ticket);
         List<Attachment> attachments = ticket.getAttachments();

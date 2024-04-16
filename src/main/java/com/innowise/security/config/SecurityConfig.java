@@ -16,6 +16,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -27,6 +28,7 @@ import org.springframework.web.servlet.HandlerExceptionResolver;
 
 @Configuration
 @Slf4j
+@EnableMethodSecurity
 public class SecurityConfig {
 
     @Bean
@@ -77,6 +79,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorizeHttpRequests ->
                         authorizeHttpRequests
                                 .requestMatchers("/tickets/**").permitAll()
+                                .requestMatchers("/tickets/add").hasAnyRole("MANAGER", "EMPLOYEE")
                                 .requestMatchers("/public/**").permitAll()
                                 .requestMatchers("/auth/**").permitAll()
                                 .requestMatchers("/error", "favicon.ico").permitAll()
@@ -84,9 +87,9 @@ public class SecurityConfig {
                 .sessionManagement(sessionManagement -> sessionManagement
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                         .sessionAuthenticationStrategy(tokenCookieSessionAuthenticationStrategy))
-                .csrf(csrf -> csrf.disable());
-                       /* .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler())
-                        .sessionAuthenticationStrategy((authentication, request, response) -> {}));*/
+                .csrf(csrf -> csrf.csrfTokenRepository(new CookieCsrfTokenRepository())
+                        .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler())
+                        .sessionAuthenticationStrategy((authentication, request, response) -> {}));
 
         http.with(tokenAuthenticationConfigurer, Customizer.withDefaults());
 

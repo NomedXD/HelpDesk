@@ -5,7 +5,6 @@ import com.innowise.dto.response.FileInfoResponse;
 import com.innowise.services.AttachmentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.InputStreamResource;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;

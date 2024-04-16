@@ -65,7 +65,7 @@ public class CommentServiceTest {
         // Ticket
         Ticket ticket = Ticket.builder().id(commentRequestTicketId).build();
         CommentResponse expectedCommentResponse = CommentResponse.builder().
-                text(commentRequestText).userName(userFirstName).date(commentDate).build();
+                text(commentRequestText).userEmail(contextUserName).date(commentDate).build();
 
         Mockito.when(userService.findByEmailService(contextUserName)).thenReturn(creator);
         Mockito.when(ticketService.findByIdService(commentRequest.ticketId())).thenReturn(Optional.of(ticket));
@@ -107,6 +107,7 @@ public class CommentServiceTest {
         LocalDateTime commentDate1 = LocalDateTime.now();
         LocalDateTime commentDate2 = LocalDateTime.now();
         String commentFirstName = "commentUserName";
+        String contextUserEmail = "commentUserName@gmail.com";
         String commentText1 = "commentText1";
         String commentText2 = "commentText1";
         Comment comment1 = Comment.builder().date(commentDate1).
@@ -117,8 +118,8 @@ public class CommentServiceTest {
         Mockito.when(commentRepository.findAll()).thenReturn(commentList);
 
         List<CommentResponse> expectedCommentResponseList = List.of(
-                CommentResponse.builder().date(commentDate1).userName(commentFirstName).text(commentText1).build(),
-                CommentResponse.builder().date(commentDate2).userName(commentFirstName).text(commentText2).build());
+                CommentResponse.builder().date(commentDate1).userEmail(contextUserEmail).text(commentText1).build(),
+                CommentResponse.builder().date(commentDate2).userEmail(contextUserEmail).text(commentText2).build());
 
         List<CommentResponse> actualCommentResponseList = commentService.findAll();
 

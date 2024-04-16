@@ -71,7 +71,7 @@ public class TicketServiceTest {
         CreateTicketRequest request = CreateTicketRequest.builder().categoryId(createTicketRequestCategoryId).
                 name(createTicketRequestName).description(createTicketRequestDescription).
                 urgency(createTicketRequestTicketUrgency).desiredResolutionDate(createTicketRequestDesiredResolutionDate).
-                files(createTicketRequestMultipartFile).isDraft(null).build();
+                files(createTicketRequestMultipartFile).state(null).build();
 
         String contextUserName = "user@example.com";
 
@@ -275,27 +275,5 @@ public class TicketServiceTest {
         Mockito.verify(userService, Mockito.times(1)).findByEmailService(contextUserName);
         Mockito.verify(categoryService, Mockito.times(0)).findById(Mockito.anyInt());
         Mockito.verify(ticketRepository, Mockito.times(0)).update(Mockito.any(Ticket.class));
-    }
-
-    @Test
-    // TODO think about using reflection to test this private method, but seems like shit
-    public void checkStatusChangeAuthorities_withPositiveCombinations_returnsAllTrue() {
-        /*
-        // Users
-        User employee = User.builder().id(1).role(UserRole.ROLE_EMPLOYEE).build();
-        User manager = User.builder().id(2).role(UserRole.ROLE_MANAGER).build();
-        User engineer = User.builder().id(3).role(UserRole.ROLE_ENGINEER).build();
-
-        // Tickets
-        Ticket ticketDraft = Ticket.builder().owner(manager).state(TicketState.DRAFT).build();
-        Ticket ticketNew = Ticket.builder().owner(employee).state(TicketState.NEW).build();
-        Ticket ticketApproved = Ticket.builder().state(TicketState.APPROVED).build();
-        Ticket ticketDeclined = Ticket.builder().owner(manager).state(TicketState.DECLINED).build();
-        Ticket ticketInProgress = Ticket.builder().state(TicketState.IN_PROGRESS).build();
-        Ticket ticketDone = Ticket.builder().state(TicketState.DONE).build();
-        Ticket ticketCanceled = Ticket.builder().state(TicketState.CANCELED).build();
-
-         Assertions.assertTrue(ticketService.checkStatusChangeAuthorities());
-         */
     }
 }

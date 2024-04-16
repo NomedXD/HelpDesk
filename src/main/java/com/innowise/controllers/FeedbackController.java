@@ -6,6 +6,8 @@ import com.innowise.services.FeedbackService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,9 +22,10 @@ public class FeedbackController {
     private final FeedbackService feedbackService;
 
     @PostMapping("/{id}/feedback")
-    public ResponseEntity<FeedbackResponse> createFeedback(@RequestBody FeedbackRequest feedbackRequest) {
+    public ResponseEntity<FeedbackResponse> createFeedback(@RequestBody FeedbackRequest feedbackRequest,
+                                                           @AuthenticationPrincipal UserDetails userDetails) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(feedbackService.save(feedbackRequest));
+                .body(feedbackService.save(feedbackRequest, userDetails.getUsername()));
     }
 
     @GetMapping("/{id}/feedback")

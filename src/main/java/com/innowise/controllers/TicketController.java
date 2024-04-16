@@ -26,13 +26,16 @@ public class TicketController {
                 .body(ticketService.save(request, userDetails.getUsername()));
     }
 
+    // TODO on «edit» button click – change current ticket draft
+    //  on «save as Draft» button click – leave current ticket untouched, create new draft ticket
+    //  *to ycovich*
     @PutMapping
-    public ResponseEntity<TicketResponse> updateTicket(@RequestBody UpdateTicketRequest request, @AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<TicketResponse> updateTicket(@ModelAttribute UpdateTicketRequest request,
+                                                       @AuthenticationPrincipal UserDetails userDetails) {
         return ResponseEntity.status(HttpStatus.ACCEPTED)
                 .body(ticketService.update(request, userDetails.getUsername()));
     }
 
-    // TODO retrieve a Page maybe, not a List *NOT URGENT*
     @GetMapping
     public ResponseEntity<List<TicketResponse>> getAllTickets() {
         return ResponseEntity.status(HttpStatus.OK)

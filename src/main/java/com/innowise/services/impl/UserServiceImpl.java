@@ -81,9 +81,8 @@ public class UserServiceImpl implements UserService {
     }
 
 
-    /*TODO refactor (+ implement user profile page and stuff)
-     *  or just cut it :)
-     *  *to ycovich**/
+    /*TODO in future refactor (+ implement user profile page and stuff)
+     * *to ycovich**/
     @Override
     public String changeEmail(ChangeEmailRequest request, HttpServletRequest httpRequest) {
         return null;
@@ -96,7 +95,6 @@ public class UserServiceImpl implements UserService {
         save(user);
         return newToken;*/
     }
-    // a little bit messy, maybe refactor later
 
     @Override
     public void delete(String email) {
