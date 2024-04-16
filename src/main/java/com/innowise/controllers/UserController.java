@@ -33,25 +33,24 @@ public class UserController {
     private final UserMapper userMapper;
 
     @PatchMapping("/edit")
-    public ResponseEntity<UserResponse> editProfile(@RequestBody UpdateUserRequest request) {
-        UserResponse response = userMapper.toUserResponse(userService.update(request));
-        return ResponseEntity.status(HttpStatus.ACCEPTED)
-                .body(response);
+    public ResponseEntity<UserResponse> editProfile(@RequestBody UpdateUserRequest request,
+                                                    @AuthenticationPrincipal UserDetails userDetails) {
+        UserResponse response = userMapper.toUserResponse(userService.update(request, userDetails.getUsername()));
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
     }
 
     @PatchMapping("/edit/email")
     public ResponseEntity<String> changeEmail(@RequestBody ChangeEmailRequest request,
                                               HttpServletRequest httpRequest) {
         String token = userService.changeEmail(request, httpRequest);
-        return ResponseEntity.status(HttpStatus.ACCEPTED)
-                .body(token);
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(token);
     }
 
     @PatchMapping("/edit/password")
-    public ResponseEntity<String> changePassword(@RequestBody ChangePasswordRequest request) {
-        userService.changePassword(request);
-        return ResponseEntity.status(HttpStatus.ACCEPTED)
-                .body("password changed successfully");
+    public ResponseEntity<String> changePassword(@RequestBody ChangePasswordRequest request,
+                                                 @AuthenticationPrincipal UserDetails userDetails) {
+        userService.changePassword(request, userDetails.getUsername());
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body("password changed successfully");
     }
 
     @DeleteMapping("/delete")

@@ -12,7 +12,7 @@ import com.innowise.exceptions.AttachedFileReadException;
 import com.innowise.exceptions.EntityTypeMessages;
 import com.innowise.exceptions.NoSuchEntityIdException;
 import com.innowise.exceptions.NotOwnerTicketException;
-import com.innowise.exceptions.TicketStateTransferException;
+import com.innowise.exceptions.TicketCannotBeDoneMarkedException;
 import com.innowise.mails.EmailService;
 import com.innowise.services.AttachmentService;
 import com.innowise.util.MimeDetector;
@@ -77,7 +77,7 @@ public class TicketServiceImpl implements TicketService {
     @Validated
     public TicketResponse save(CreateTicketRequest request) {
         Category category = categoryService.findById(request.categoryId());
-        User owner = userService.getUserFromPrincipal();
+        User owner = userService.findByEmailService(contextUserName);
         List<History> history = new ArrayList<>();
         TicketState state = request.state();
         Ticket ticket = Ticket.builder()
@@ -115,13 +115,14 @@ public class TicketServiceImpl implements TicketService {
     @Override
     public List<TicketResponse> findAllByAssigneeEmail(String email) {
         return ticketListMapper
-                .toTicketResponseDtoList(ticketRepository.findAllByAssigneeEmail(email));
+                .toTicketResponseDtoList(ticketRepository
+                        .findAllByAssigneeId(userService.findByEmailService(email).getId()));
     }
 
     @Override
     @PreAuthorize(value = "hasAnyRole('MANAGER', 'EMPLOYEE')")
     @Validated
-    public TicketResponse update(@Valid UpdateTicketRequest request) {
+    public TicketResponse update(@Valid UpdateTicketRequest request, String contextUserName) {
         Ticket ticket = ticketRepository.findById(request.id())
                 .orElseThrow(() ->
                         new NoSuchEntityIdException(EntityTypeMessages.TICKET_MESSAGE, request.id()));
@@ -149,14 +150,14 @@ public class TicketServiceImpl implements TicketService {
 
     @Override
     @Validated
-    public TicketResponse updateStatus(@Valid UpdateTicketStatusRequest updateTicketStatusRequest) {
+    public TicketResponse updateStatus(@Valid UpdateTicketStatusRequest updateTicketStatusRequest, String contextUserName) {
         Ticket ticket = ticketRepository.findById(updateTicketStatusRequest.ticketId()).orElseThrow(
                 () -> new NoSuchEntityIdException(
                         EntityTypeMessages.TICKET_MESSAGE,
                         updateTicketStatusRequest.ticketId()));
-        User editor = userService.getUserFromPrincipal();
-        if(!checkStatusChangeAuthorities(editor, ticket, updateTicketStatusRequest)) {
-            throw new TicketStateTransferException(ticket.getId(), editor.getRole(), ticket.getState());
+        User editor = userService.findByEmailService(contextUserName);
+        if (updateTicketStatusRequest.state().equals(TicketState.DONE) && (ticket.getAssignee() == null || ticket.getApprover() == null)) {
+            throw new TicketCannotBeDoneMarkedException(ticket.getId());
         }
         if(updateTicketStatusRequest.state().equals(TicketState.IN_PROGRESS)) {
             ticket.setAssignee(editor);
@@ -214,6 +215,7 @@ public class TicketServiceImpl implements TicketService {
         return ticketRepository.existsById(id);
     }
 
+    // TODO make this a separate class and move to util package *NOT URGENT*
     private TicketResponse toTicketResponse(Ticket ticket) {
         TicketResponse response = ticketMapper.toTicketResponseDto(ticket);
         List<Attachment> attachments = ticket.getAttachments();

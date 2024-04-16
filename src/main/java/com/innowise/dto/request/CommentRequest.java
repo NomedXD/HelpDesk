@@ -1,7 +1,9 @@
 package com.innowise.dto.request;
 
 import jakarta.validation.constraints.*;
+import lombok.Builder;
 
+@Builder
 public record CommentRequest(
         @NotBlank
         @Size(min = 1, max = 500)

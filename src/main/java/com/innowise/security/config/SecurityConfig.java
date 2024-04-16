@@ -84,9 +84,9 @@ public class SecurityConfig {
                 .sessionManagement(sessionManagement -> sessionManagement
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                         .sessionAuthenticationStrategy(tokenCookieSessionAuthenticationStrategy))
-                .csrf(csrf -> csrf.csrfTokenRepository(new CookieCsrfTokenRepository())
-                        .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler())
-                        .sessionAuthenticationStrategy((authentication, request, response) -> {}));
+                .csrf(csrf -> csrf.disable());
+                       /* .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler())
+                        .sessionAuthenticationStrategy((authentication, request, response) -> {}));*/
 
         http.with(tokenAuthenticationConfigurer, Customizer.withDefaults());
 

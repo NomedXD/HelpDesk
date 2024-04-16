@@ -11,13 +11,10 @@ import com.innowise.exceptions.UserNotFoundException;
 import com.innowise.exceptions.WrongConfirmedPasswordException;
 import com.innowise.exceptions.WrongCurrentPasswordException;
 import com.innowise.repositories.UserRepository;
-import com.innowise.services.AuthenticationService;
 import com.innowise.services.UserService;
 import com.innowise.util.mappers.UserMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,7 +28,6 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder encoder;
-    private AuthenticationService authenticationService;
 
     @Override
     public UserResponse findById(Integer id) {
@@ -61,31 +57,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User getUserFromPrincipal() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        if (authentication != null) {
-            return userRepository.findByEmail(authentication.getName())
-                    .orElseThrow(() -> new UserNotFoundException(authentication.getName()));
-        }
-        return null;
-        // TODO consider retrieving user id from token, refactor *to ycovich & VladK27*
-    }
-
-    @Override
-    public User update(UpdateUserRequest request) {
-        Integer id = getUserFromPrincipal().getId();
-        User userToBeUpdated = userRepository
-                .findById(id)
-                .orElseThrow(() -> new NoSuchEntityIdException(EntityTypeMessages.USER_MESSAGE, id));
+    public User update(UpdateUserRequest request, String contextUserName) {
+        User userToBeUpdated = userRepository.findByEmail(contextUserName).orElseThrow(() ->
+                new UserNotFoundException(contextUserName));
         userToBeUpdated.setFirstName(request.firstName());
         userToBeUpdated.setLastName(request.lastName());
         return userRepository.save(userToBeUpdated);
     }
 
     @Override
-    public void changePassword(ChangePasswordRequest request) {
-        User user = getUserFromPrincipal();
+    public void changePassword(ChangePasswordRequest request, String contextUserName) {
+        User user = userRepository.findByEmail(contextUserName).orElseThrow(() ->
+                new UserNotFoundException(contextUserName));
 
         if (!encoder.matches(request.currentPassword(), user.getPassword())) {
             throw new WrongCurrentPasswordException();
@@ -113,6 +96,7 @@ public class UserServiceImpl implements UserService {
         save(user);
         return newToken;*/
     }
+    // a little bit messy, maybe refactor later
 
     @Override
     public void delete(String email) {

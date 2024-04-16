@@ -8,20 +8,16 @@ import com.innowise.exceptions.UserAlreadyExistsException;
 import com.innowise.services.AuthenticationService;
 import com.innowise.services.UserService;
 import com.innowise.util.mappers.UserMapper;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class AuthenticationServiceImpl implements AuthenticationService {
     private final UserService userService;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
-
-    public AuthenticationServiceImpl(UserService userService, UserMapper userMapper, PasswordEncoder passwordEncoder) {
-        this.userService = userService;
-        this.userMapper = userMapper;
-        this.passwordEncoder = passwordEncoder;
-    }
 
     @Override
     public UserResponse register(RegistrationRequest request) {

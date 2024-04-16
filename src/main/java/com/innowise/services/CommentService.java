@@ -11,7 +11,7 @@ import java.util.List;
 
 public interface CommentService {
 
-    CommentResponse save(@Valid CommentRequest commentRequest);
+    CommentResponse save(@Valid CommentRequest commentRequest, String contextUserName);
 
     List<CommentResponse> findAll();
 

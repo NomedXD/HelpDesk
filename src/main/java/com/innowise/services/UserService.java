@@ -18,13 +18,11 @@ public interface UserService {
 
     List<User> findAll();
 
-    User getUserFromPrincipal();
-
     User findByEmailService(String email);
 
-    User update(UpdateUserRequest request);
+    User update(UpdateUserRequest request, String contextUserName);
 
-    void changePassword(ChangePasswordRequest request);
+    void changePassword(ChangePasswordRequest request, String contextUserName);
 
     String changeEmail(ChangeEmailRequest request, HttpServletRequest httpRequest);
 

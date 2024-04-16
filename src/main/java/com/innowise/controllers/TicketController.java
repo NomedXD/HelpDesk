@@ -21,17 +21,18 @@ public class TicketController {
     private final TicketService ticketService;
 
     @PostMapping
-    public ResponseEntity<TicketResponse> createTicket(@ModelAttribute CreateTicketRequest request) {
+    public ResponseEntity<TicketResponse> createTicket(@ModelAttribute CreateTicketRequest request, @AuthenticationPrincipal UserDetails userDetails) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ticketService.save(request));
+                .body(ticketService.save(request, userDetails.getUsername()));
     }
 
     @PutMapping
-    public ResponseEntity<TicketResponse> updateTicket(@ModelAttribute UpdateTicketRequest request) {
+    public ResponseEntity<TicketResponse> updateTicket(@RequestBody UpdateTicketRequest request, @AuthenticationPrincipal UserDetails userDetails) {
         return ResponseEntity.status(HttpStatus.ACCEPTED)
-                .body(ticketService.update(request));
+                .body(ticketService.update(request, userDetails.getUsername()));
     }
 
+    // TODO retrieve a Page maybe, not a List *NOT URGENT*
     @GetMapping
     public ResponseEntity<List<TicketResponse>> getAllTickets() {
         return ResponseEntity.status(HttpStatus.OK)
@@ -51,8 +52,9 @@ public class TicketController {
     }
 
     @PostMapping("/status")
-    public ResponseEntity<TicketResponse> updateTicketStatus(@RequestBody UpdateTicketStatusRequest updateTicketStatusRequest) {
+    public ResponseEntity<TicketResponse> updateTicketStatus(@RequestBody UpdateTicketStatusRequest updateTicketStatusRequest,
+                                                             @AuthenticationPrincipal UserDetails userDetails) {
         return ResponseEntity.status(HttpStatus.ACCEPTED)
-                .body(ticketService.updateStatus(updateTicketStatusRequest));
+                .body(ticketService.updateStatus(updateTicketStatusRequest, userDetails.getUsername()));
     }
 }
